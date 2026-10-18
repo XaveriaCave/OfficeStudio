@@ -1,0 +1,6 @@
+{
+  "name": "Pacific Mind Spatial — 3D Office Playground & CAD Studio",
+  "description": "Interactive 3D WebGL office space playground and 2D floor polygon CAD studio for configuring company office hierarchies, room geometry, and drag-and-drop 3D furniture.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
