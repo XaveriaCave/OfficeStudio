@@ -30,12 +30,14 @@ interface AgentChatModalProps {
   office: OfficeSpace;
   onClose: () => void;
   onUpdateAgent?: (id: string, patch: Partial<OfficeAgent>) => void;
+  onOpenAgentManager?: (agent: OfficeAgent) => void;
 }
 
 export const AgentChatModal: React.FC<AgentChatModalProps> = ({
   agent,
   office,
   onClose,
+  onOpenAgentManager,
 }) => {
   if (!agent) return null;
 

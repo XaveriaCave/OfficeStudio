@@ -21,10 +21,12 @@ import {
 interface AgentManagerModalProps {
   agent: OfficeAgent | null; // null if creating a new agent
   office: OfficeSpace;
-  existingAgents: OfficeAgent[];
+  existingAgents?: OfficeAgent[];
   isOpen: boolean;
   onClose: () => void;
-  onSave: (agent: Partial<OfficeAgent>) => void;
+  onSaveAgent?: (savedAgent: OfficeAgent, isNew: boolean) => void;
+  onDeleteAgent?: (id: string) => void;
+  onSave?: (agent: Partial<OfficeAgent>) => void;
   onDelete?: (id: string) => void;
 }
 
@@ -34,6 +36,8 @@ export const AgentManagerModal: React.FC<AgentManagerModalProps> = ({
   existingAgents,
   isOpen,
   onClose,
+  onSaveAgent,
+  onDeleteAgent,
   onSave,
   onDelete,
 }) => {
@@ -102,7 +106,38 @@ export const AgentManagerModal: React.FC<AgentManagerModalProps> = ({
       } catch {}
     }
 
-    onSave(payload);
+    if (onSaveAgent) {
+      const isNew = !agent;
+      const fullAgent: OfficeAgent = {
+        id:
+          agent?.id ||
+          `agent-${office.id}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        name: name.trim(),
+        role: role.trim(),
+        department,
+        hierarchy,
+        hierarchyLevel: level,
+        reportsToId: reportsToId || null,
+        officeId: office.id,
+        x: agent?.x ?? Number((office.vertices[0]?.x || 0).toFixed(2)),
+        z: agent?.z ?? Number((office.vertices[0]?.z || 0).toFixed(2)),
+        color,
+        avatarInitial: initials,
+        state: agent?.state || 'standing',
+        activityDescription: agent?.activityDescription || `Collaborating as ${role}`,
+        isAccountingAgent,
+        systemPrompt: systemPrompt.trim(),
+        createdAt: agent?.createdAt || new Date().toISOString(),
+      };
+      if (apiKey.trim()) {
+        try {
+          localStorage.setItem(`agent_api_key_${fullAgent.id}`, apiKey.trim());
+        } catch {}
+      }
+      onSaveAgent(fullAgent, isNew);
+    } else if (onSave) {
+      onSave(payload);
+    }
     onClose();
   };
 
@@ -124,7 +159,8 @@ export const AgentManagerModal: React.FC<AgentManagerModalProps> = ({
     'Collaborative',
   ];
 
-  const otherAgents = existingAgents.filter((a) => a.id !== agent?.id);
+  const allExistingAgents = existingAgents || office.agents || [];
+  const otherAgents = allExistingAgents.filter((a) => a.id !== agent?.id);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
@@ -295,12 +331,16 @@ export const AgentManagerModal: React.FC<AgentManagerModalProps> = ({
 
           {/* Footer Actions */}
           <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-3 shrink-0">
-            {isEditing && onDelete ? (
+            {isEditing && (onDeleteAgent || onDelete) ? (
               <button
                 type="button"
                 onClick={() => {
                   if (confirm(`Are you sure you want to delete ${agent?.name}?`)) {
-                    onDelete(agent!.id);
+                    if (onDeleteAgent && agent) {
+                      onDeleteAgent(agent.id);
+                    } else if (onDelete && agent) {
+                      onDelete(agent.id);
+                    }
                     onClose();
                   }
                 }}

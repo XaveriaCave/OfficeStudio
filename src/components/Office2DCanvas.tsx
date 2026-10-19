@@ -37,6 +37,7 @@ import {
   WallFeature,
   WallFeatureType,
   computePolygonArea,
+  computePolygonCentroid,
   computePolygonPerimeter,
 } from '../types';
 import { FLOOR_SHAPE_PRESETS, FURNITURE_CATALOG } from '../presets';
@@ -97,6 +98,8 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
   snapToGrid,
   onToggleSnapToGrid,
   compactMode = false,
+  isFullscreen = false,
+  onToggleFullscreen,
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
 

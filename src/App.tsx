@@ -65,7 +65,7 @@ export default function App() {
                 : getDefaultAgentsForOffice(off.id, off.department);
             const accounting =
               off.accounting ||
-              getDefaultAccountingForOffice(off.id, off.name, area, agents);
+              getDefaultAccountingForOffice(off.id, area, agents);
             return {
               ...off,
               agents,
@@ -1064,11 +1064,7 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => setViewMode('accounting')}
-                      className={`px-2 sm:px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 ${
-                        viewMode === 'accounting'
-                          ? 'bg-emerald-500 text-slate-950 font-semibold'
-                          : 'text-slate-300 hover:text-white hover:bg-white/5'
-                      }`}
+                      className="px-2 sm:px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 text-slate-300 hover:text-white hover:bg-white/5"
                       title="Open Accounting & Finance Panel"
                     >
                       <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
@@ -1323,7 +1319,8 @@ export default function App() {
           agent={chatAgent}
           office={activeOffice}
           onClose={() => setChatAgent(null)}
-          onOpenAgentManager={(ag) => {
+          onOpenAgentManager={(ag: OfficeAgent) => {
+            setChatAgent(null);
             setEditingAgent(ag);
             setIsAgentManagerOpen(true);
           }}
@@ -1336,6 +1333,7 @@ export default function App() {
           isOpen={isAgentManagerOpen}
           agent={editingAgent}
           office={activeOffice}
+          existingAgents={activeOffice.agents || []}
           onClose={() => {
             setIsAgentManagerOpen(false);
             setEditingAgent(null);
