@@ -570,7 +570,7 @@ export default function App() {
           }}
           className="text-base sm:text-lg font-bold tracking-tight text-white font-display whitespace-nowrap shrink-0"
         >
-          Pacific Mind Spatial
+          Office Studio @V
         </a>
 
         {/* Zone 2: 5 concise single-line text navigation links */}

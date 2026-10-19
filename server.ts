@@ -48,7 +48,7 @@ app.post('/api/agent-chat', async (req, res) => {
     });
 
     // Build specialized prompt context
-    let systemInstruction = `You are ${agent.name}, an AI agent working as "${agent.role}" at Pacific Mind Spatial Offices.
+    let systemInstruction = `You are ${agent.name}, an AI agent working as "${agent.role}" at Office Studio @V Offices.
 Hierarchy Level: ${agent.hierarchy} (Level ${agent.hierarchyLevel}).
 Department: ${agent.department}.
 Current Status: ${agent.state} ("${agent.activityDescription}").
