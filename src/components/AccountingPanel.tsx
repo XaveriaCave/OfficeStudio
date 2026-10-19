@@ -164,28 +164,90 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
 
     try {
       const apiKey = defaultAgent ? localStorage.getItem(`agent_api_key_${defaultAgent.id}`) : null;
-      const res = await fetch('/api/accounting-audit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          accounting: {
-            ...accounting,
-            areaM2,
-            monthlyLease,
-            monthlyPayroll,
-            totalMonthlyBurn,
-            netMonthlyMargin,
-            runwayMonths,
-            agentCount: agents.length,
-          },
-          agent: defaultAgent,
-          officeName: office.name,
-          customApiKey: apiKey || undefined,
-        }),
-      });
+      let auditText = '';
 
-      const data = await res.json();
-      setAuditReportText(data.report || 'Audit completed successfully.');
+      try {
+        const res = await fetch('/api/accounting-audit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            accounting: {
+              ...accounting,
+              areaM2,
+              monthlyLease,
+              monthlyPayroll,
+              totalMonthlyBurn,
+              netMonthlyMargin,
+              runwayMonths,
+              agentCount: agents.length,
+            },
+            agent: defaultAgent,
+            officeName: office.name,
+            customApiKey: apiKey || undefined,
+          }),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.report) {
+            auditText = data.report;
+          }
+        }
+      } catch {
+        // Backend not available (e.g. static GitHub Pages)
+      }
+
+      if (!auditText) {
+        if (apiKey && apiKey.trim()) {
+          // Direct client call with Gemini
+          const prompt = `Perform an executive GAAP financial audit and runway assessment for office suite "${office.name}". Financial metrics: Monthly Revenue: $${accounting.monthlyRevenue.toLocaleString()}, Cash Reserves: $${accounting.cashReserves.toLocaleString()}, Area: ${areaM2.toFixed(1)} m², Monthly Lease: $${monthlyLease.toLocaleString()}, Team Size: ${agents.length} agents, Monthly Payroll: $${monthlyPayroll.toLocaleString()}, Equipment Depreciation: $${equipmentDepreciation.toLocaleString()}/mo, Total Burn: $${totalMonthlyBurn.toLocaleString()}/mo, Net Margin: $${netMonthlyMargin.toLocaleString()}/mo, Runway: ${runwayMonths} months. Provide an executive summary, capital efficiency rating, and 3 strategic recommendations.`;
+
+          const directRes = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey.trim()}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ role: 'user', parts: [{ text: prompt }] }],
+              }),
+            }
+          );
+          if (directRes.ok) {
+            const directData = await directRes.json();
+            auditText = directData?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          }
+        }
+
+        if (!auditText) {
+          // Comprehensive client-calculated audit report
+          auditText =
+            `========================================================\n` +
+            `OFFICE FINANCIAL & RUNWAY AUDIT REPORT\n` +
+            `PACIFIC MIND SPATIAL — ${office.name.toUpperCase()}\n` +
+            `Audited by: ${defaultAgent ? defaultAgent.name : 'Corporate Accounting'} (${defaultAgent?.role || 'Financial Controller'})\n` +
+            `Date: ${new Date().toLocaleDateString()} · Status: VERIFIED\n` +
+            `========================================================\n\n` +
+            `1. EXECUTIVE BALANCE SHEET SUMMARY:\n` +
+            `• Cash Reserves: ${currency}${accounting.cashReserves.toLocaleString()}\n` +
+            `• Monthly Gross Revenue: ${currency}${accounting.monthlyRevenue.toLocaleString()}\n` +
+            `• Net Monthly Burn Rate: ${currency}${totalMonthlyBurn.toLocaleString()}\n` +
+            `• Net Operating Margin: ${netMonthlyMargin >= 0 ? '+' : ''}${currency}${netMonthlyMargin.toLocaleString()} / month\n` +
+            `• Runway Longevity: ${runwayMonths} Months (${Number(runwayMonths) > 18 ? 'Strong' : 'Moderate'} Capital Stability)\n\n` +
+            `2. REAL ESTATE & OPERATIONAL AMORTIZATION:\n` +
+            `• Spatial Area: ${areaM2.toFixed(1)} m² at ${currency}${accounting.monthlyLeaseRatePerM2}/m²\n` +
+            `• Base Real Estate Lease: ${currency}${monthlyLease.toLocaleString()} / month\n` +
+            `• Team Payroll (${agents.length} Active Agents): ${currency}${monthlyPayroll.toLocaleString()} / month\n` +
+            `• Asset & Workstation Depreciation: ${currency}${equipmentDepreciation.toLocaleString()} / month\n` +
+            `• Amenities, Coffee & Gigabit Uplink: ${currency}${amenitiesCost.toLocaleString()} / month\n\n` +
+            `3. STRATEGIC RECOMMENDATIONS:\n` +
+            `1. Density Optimization: Active workspace density is ${(areaM2 / Math.max(1, agents.length)).toFixed(1)} m² per agent, which meets ergonomic Class-A corporate spatial guidelines.\n` +
+            `2. Receivable Collection: Maintain positive net cash flow by executing open ledger receivables prior to net-30 terms.\n` +
+            `3. Capital Allocation: Runway of ${runwayMonths} months provides sufficient buffer for spatial footprint and team expansion.\n\n` +
+            `[GitHub Pages Note: Enter your Gemini API key in the Agent Chat Modal to activate dynamic real-time AI-generated audit reports!]`;
+        }
+      }
+
+      setAuditReportText(auditText);
     } catch (err: any) {
       setAuditReportText(`Audit failed: ${err.message}`);
     } finally {

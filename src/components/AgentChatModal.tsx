@@ -164,30 +164,69 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
     }
 
     try {
-      const res = await fetch('/api/agent-chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          agent,
-          message: text,
-          chatHistory: messages,
-          customApiKey: apiKey.trim(),
-          officeContext: {
-            name: office.name,
-            code: office.code,
-            department: office.department,
-            floorLevel: office.floorLevel,
-          },
-          accountingContext,
-        }),
-      });
+      let botReply = '';
+      try {
+        const res = await fetch('/api/agent-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            agent,
+            message: text,
+            chatHistory: messages,
+            customApiKey: apiKey.trim(),
+            officeContext: {
+              name: office.name,
+              code: office.code,
+              department: office.department,
+              floorLevel: office.floorLevel,
+            },
+            accountingContext,
+          }),
+        });
 
-      const data = await res.json();
-      if (!res.ok && !data.reply) {
-        throw new Error(data.error || 'Failed to fetch agent reply');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.reply) {
+            botReply = data.reply;
+          }
+        }
+      } catch {
+        // Backend not available (e.g. static GitHub Pages)
       }
 
-      const botReply = data.reply || '(No reply returned)';
+      // If backend was not reachable or didn't return a reply
+      if (!botReply) {
+        if (apiKey.trim()) {
+          // Direct client call to Gemini with the user-provided API key
+          const systemPrompt = `You are ${agent.name}, ${agent.role} in ${agent.department} department (${agent.hierarchy} level) at Pacific Mind Spatial, in office suite ${office.name} (${office.code}). Current status: ${agent.activityDescription}. ${agent.systemPrompt || ''}`;
+          const directRes = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey.trim()}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [
+                  {
+                    role: 'user',
+                    parts: [{ text: `${systemPrompt}\n\nUser query: ${text}` }],
+                  },
+                ],
+              }),
+            }
+          );
+          if (directRes.ok) {
+            const directData = await directRes.json();
+            botReply = directData?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+          } else {
+            const errJson = await directRes.json().catch(() => null);
+            throw new Error(errJson?.error?.message || `API error ${directRes.status}`);
+          }
+        } else {
+          // Contextual simulated response for static GitHub Pages when no API key is configured
+          botReply = `Hello! I'm ${agent.name}, ${agent.role} (${agent.hierarchy}) in ${office.name}. I'm currently ${agent.activityDescription.toLowerCase()}.\n\nTo enable live generative AI responses on GitHub Pages, click the "Gemini API Key" button above and enter your Google AI Studio API key (stored securely in your browser's localStorage).`;
+        }
+      }
+
       setMessages((prev) => [
         ...prev,
         {
