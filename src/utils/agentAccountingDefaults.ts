@@ -399,6 +399,10 @@ export function getDefaultAccountingForOffice(
     taxRate: 21,
     monthlyLeaseRatePerM2: leasePerM2,
     averageSalaryPerAgent: salaryPerAgent,
+    equipmentValuePerItem: 2800,
+    depreciationMonths: 36,
+    amenitiesCostPerAgent: 450,
+    customAssetValuation: null,
     lastAuditedAt: '2026-10-18T08:30:00Z',
     auditNotes:
       'Verified GAAP compliance. Operating cash flow is net positive. Runway exceeds 24 months. Asset amortizations match current 3D furniture catalog inventory.',

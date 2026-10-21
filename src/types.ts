@@ -94,6 +94,10 @@ export interface OfficeAccounting {
   invoices: AccountingInvoice[];
   monthlyLeaseRatePerM2: number;
   averageSalaryPerAgent: number;
+  equipmentValuePerItem?: number; // default $2,800 per furniture piece
+  depreciationMonths?: number; // straight-line depreciation period in months (default 36)
+  amenitiesCostPerAgent?: number; // monthly hospitality, snacks & coffee per agent (default $450)
+  customAssetValuation?: number | null; // direct manual asset override if set
   lastAuditedAt: string;
   auditNotes: string;
 }

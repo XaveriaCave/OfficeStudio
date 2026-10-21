@@ -482,13 +482,49 @@ export default function App() {
   // Office CRUD operations
   const handleSaveOfficeModal = (officeData: OfficeSpace, isNew: boolean) => {
     if (isNew) {
-      setOffices((prev) => [...prev, officeData]);
-      setSelectedOfficeId(officeData.id);
+      const area = computePolygonArea(officeData.vertices);
+      const agents =
+        officeData.agents && officeData.agents.length > 0
+          ? officeData.agents
+          : getDefaultAgentsForOffice(officeData.id, officeData.department);
+      const defaultAcc = getDefaultAccountingForOffice(officeData.id, area, agents);
+      const accounting: OfficeAccounting = officeData.accounting
+        ? {
+            ...defaultAcc,
+            ...officeData.accounting,
+            invoices:
+              officeData.accounting.invoices && officeData.accounting.invoices.length > 0
+                ? officeData.accounting.invoices
+                : defaultAcc.invoices,
+            managedByAgentIds:
+              officeData.accounting.managedByAgentIds && officeData.accounting.managedByAgentIds.length > 0
+                ? officeData.accounting.managedByAgentIds
+                : defaultAcc.managedByAgentIds,
+          }
+        : defaultAcc;
+
+      const completeNewOffice: OfficeSpace = {
+        ...officeData,
+        agents,
+        accounting,
+      };
+      setOffices((prev) => [...prev, completeNewOffice]);
+      setSelectedOfficeId(completeNewOffice.id);
       setViewMode('playground_3d');
       setSelectedFurnitureId(null);
     } else {
       setOffices((prev) =>
-        prev.map((o) => (o.id === officeData.id ? officeData : o))
+        prev.map((o) =>
+          o.id === officeData.id
+            ? {
+                ...o,
+                ...officeData,
+                accounting: officeData.accounting
+                  ? { ...o.accounting, ...officeData.accounting }
+                  : o.accounting,
+              }
+            : o
+        )
       );
     }
   };
@@ -497,6 +533,12 @@ export default function App() {
     const src = offices.find((o) => o.id === officeId);
     if (!src) return;
     const now = Date.now();
+    const duplicatedAgents = (src.agents || []).map((a, idx) => ({
+      ...a,
+      id: `agent-${now}-${idx}`,
+      officeId: `office-${now}`,
+    }));
+
     const duplicated: OfficeSpace = {
       ...src,
       id: `office-${now}`,
@@ -511,6 +553,18 @@ export default function App() {
         ...f,
         id: `item-${now}-${idx}`,
       })),
+      agents: duplicatedAgents,
+      accounting: src.accounting
+        ? {
+            ...src.accounting,
+            officeId: `office-${now}`,
+            managedByAgentIds: duplicatedAgents.slice(0, 1).map((a) => a.id),
+          }
+        : getDefaultAccountingForOffice(
+            `office-${now}`,
+            computePolygonArea(src.vertices),
+            duplicatedAgents
+          ),
       updatedAt: new Date().toISOString(),
     };
     setOffices((prev) => [...prev, duplicated]);

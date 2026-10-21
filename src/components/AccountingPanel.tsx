@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   DollarSign,
   TrendingUp,
@@ -25,6 +25,8 @@ import {
   RefreshCw,
   Edit2,
   Check,
+  Sliders,
+  Settings,
 } from 'lucide-react';
 import {
   AccountingInvoice,
@@ -67,12 +69,36 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
   const [auditReportText, setAuditReportText] = useState<string | null>(null);
   const [isAuditing, setIsAuditing] = useState(false);
 
-  // Quick edit financial inputs
+  // Financial model configuration editor states
   const [isEditingMetrics, setIsEditingMetrics] = useState(false);
-  const [editRevenue, setEditRevenue] = useState(accounting?.monthlyRevenue || 145000);
-  const [editReserves, setEditReserves] = useState(accounting?.cashReserves || 1500000);
-  const [editLeaseRate, setEditLeaseRate] = useState(accounting?.monthlyLeaseRatePerM2 || 28);
-  const [editSalary, setEditSalary] = useState(accounting?.averageSalaryPerAgent || 8500);
+  const [configFocusSection, setConfigFocusSection] = useState<'all' | 'assets' | 'depreciation' | 'amenities'>('all');
+  const [editRevenue, setEditRevenue] = useState(accounting?.monthlyRevenue ?? 145000);
+  const [editReserves, setEditReserves] = useState(accounting?.cashReserves ?? 1500000);
+  const [editLeaseRate, setEditLeaseRate] = useState(accounting?.monthlyLeaseRatePerM2 ?? 28);
+  const [editSalary, setEditSalary] = useState(accounting?.averageSalaryPerAgent ?? 8500);
+  const [editCurrency, setEditCurrency] = useState(accounting?.currency || '$');
+  const [editEquipmentValuePerItem, setEditEquipmentValuePerItem] = useState(accounting?.equipmentValuePerItem ?? 2800);
+  const [editDepreciationMonths, setEditDepreciationMonths] = useState(accounting?.depreciationMonths ?? 36);
+  const [editAmenitiesCostPerAgent, setEditAmenitiesCostPerAgent] = useState(accounting?.amenitiesCostPerAgent ?? 450);
+  const [useCustomAssetOverride, setUseCustomAssetOverride] = useState(accounting?.customAssetValuation != null);
+  const [editCustomAssetValuation, setEditCustomAssetValuation] = useState<number>(accounting?.customAssetValuation ?? 50000);
+
+  useEffect(() => {
+    if (accounting) {
+      setEditRevenue(accounting.monthlyRevenue ?? 145000);
+      setEditReserves(accounting.cashReserves ?? 1500000);
+      setEditLeaseRate(accounting.monthlyLeaseRatePerM2 ?? 28);
+      setEditSalary(accounting.averageSalaryPerAgent ?? 8500);
+      setEditCurrency(accounting.currency || '$');
+      setEditEquipmentValuePerItem(accounting.equipmentValuePerItem ?? 2800);
+      setEditDepreciationMonths(accounting.depreciationMonths ?? 36);
+      setEditAmenitiesCostPerAgent(accounting.amenitiesCostPerAgent ?? 450);
+      setUseCustomAssetOverride(accounting.customAssetValuation != null);
+      if (accounting.customAssetValuation != null) {
+        setEditCustomAssetValuation(accounting.customAssetValuation);
+      }
+    }
+  }, [accounting]);
 
   // New Invoice Form state
   const [newCounterparty, setNewCounterparty] = useState('');
@@ -91,13 +117,21 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
     );
   }
 
-  // Financial Calculations
+  // Financial Calculations using configured variables
   const currency = accounting.currency || '$';
   const monthlyLease = Math.round(areaM2 * accounting.monthlyLeaseRatePerM2);
   const monthlyPayroll = agents.length * accounting.averageSalaryPerAgent;
-  const equipmentAssetValue = office.furniture.length * 2800;
-  const equipmentDepreciation = Math.round(equipmentAssetValue / 36); // 3-year straight line
-  const amenitiesCost = Math.round(agents.length * 450); // coffee, snacks, wifi
+  const equipmentValuePerItem = accounting.equipmentValuePerItem ?? 2800;
+  const depreciationMonths = accounting.depreciationMonths ?? 36;
+  const amenitiesCostPerAgent = accounting.amenitiesCostPerAgent ?? 450;
+  const equipmentAssetValue =
+    accounting.customAssetValuation != null
+      ? accounting.customAssetValuation
+      : office.furniture.length * equipmentValuePerItem;
+  const equipmentDepreciation = Math.round(
+    equipmentAssetValue / Math.max(1, depreciationMonths)
+  ); // straight line
+  const amenitiesCost = Math.round(agents.length * amenitiesCostPerAgent); // hospitality, espresso, snacks, wifi
   const totalMonthlyBurn = monthlyLease + monthlyPayroll + equipmentDepreciation + amenitiesCost;
   const netMonthlyMargin = accounting.monthlyRevenue - totalMonthlyBurn;
   const runwayMonths = (accounting.cashReserves / Math.max(1, totalMonthlyBurn)).toFixed(1);
@@ -152,6 +186,11 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
       cashReserves: Number(editReserves),
       monthlyLeaseRatePerM2: Number(editLeaseRate),
       averageSalaryPerAgent: Number(editSalary),
+      currency: editCurrency,
+      equipmentValuePerItem: Number(editEquipmentValuePerItem),
+      depreciationMonths: Number(editDepreciationMonths),
+      amenitiesCostPerAgent: Number(editAmenitiesCostPerAgent),
+      customAssetValuation: useCustomAssetOverride ? Number(editCustomAssetValuation) : null,
     });
     setIsEditingMetrics(false);
   };
@@ -176,6 +215,9 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
               areaM2,
               monthlyLease,
               monthlyPayroll,
+              equipmentAssetValue,
+              equipmentDepreciation,
+              amenitiesCost,
               totalMonthlyBurn,
               netMonthlyMargin,
               runwayMonths,
@@ -200,7 +242,7 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
       if (!auditText) {
         if (apiKey && apiKey.trim()) {
           // Direct client call with Gemini
-          const prompt = `Perform an executive GAAP financial audit and runway assessment for office suite "${office.name}". Financial metrics: Monthly Revenue: $${accounting.monthlyRevenue.toLocaleString()}, Cash Reserves: $${accounting.cashReserves.toLocaleString()}, Area: ${areaM2.toFixed(1)} m², Monthly Lease: $${monthlyLease.toLocaleString()}, Team Size: ${agents.length} agents, Monthly Payroll: $${monthlyPayroll.toLocaleString()}, Equipment Depreciation: $${equipmentDepreciation.toLocaleString()}/mo, Total Burn: $${totalMonthlyBurn.toLocaleString()}/mo, Net Margin: $${netMonthlyMargin.toLocaleString()}/mo, Runway: ${runwayMonths} months. Provide an executive summary, capital efficiency rating, and 3 strategic recommendations.`;
+          const prompt = `Perform an executive GAAP financial audit and runway assessment for office suite "${office.name}". Financial metrics: Currency: ${currency}, Monthly Revenue: ${currency}${accounting.monthlyRevenue.toLocaleString()}, Cash Reserves: ${currency}${accounting.cashReserves.toLocaleString()}, Area: ${areaM2.toFixed(1)} m², Monthly Lease: ${currency}${monthlyLease.toLocaleString()} (@ ${currency}${accounting.monthlyLeaseRatePerM2}/m²), Team Size: ${agents.length} agents, Monthly Payroll: ${currency}${monthlyPayroll.toLocaleString()} (@ ${currency}${accounting.averageSalaryPerAgent}/mo per agent), Capital Asset Valuation: ${currency}${equipmentAssetValue.toLocaleString()}, Equipment Depreciation: ${currency}${equipmentDepreciation.toLocaleString()}/mo (${depreciationMonths}-month straight-line), Hospitality & Amenities: ${currency}${amenitiesCost.toLocaleString()}/mo (${currency}${amenitiesCostPerAgent}/mo per agent), Total Monthly Burn: ${currency}${totalMonthlyBurn.toLocaleString()}/mo, Net Operating Margin: ${netMonthlyMargin >= 0 ? '+' : ''}${currency}${netMonthlyMargin.toLocaleString()}/mo, Runway Longevity: ${runwayMonths} months. Provide an executive summary, capital efficiency rating, and 3 strategic recommendations.`;
 
           const directRes = await fetch(
             `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey.trim()}`,
@@ -409,87 +451,353 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
         </div>
 
         {/* Capital Asset Valuation */}
-        <div className="bg-slate-900/80 border border-white/10 rounded-xl p-4 flex flex-col justify-between">
+        <div
+          onClick={() => {
+            setIsEditingMetrics(true);
+            setConfigFocusSection('assets');
+          }}
+          className="bg-slate-900/80 hover:bg-slate-800/80 border border-white/10 hover:border-purple-500/50 rounded-xl p-4 flex flex-col justify-between cursor-pointer transition-all group"
+          title="Click to configure Asset Valuation and Equipment values"
+        >
           <div className="text-[11px] font-medium text-slate-400 flex items-center justify-between">
             <span>Asset Valuation</span>
-            <Building className="w-3.5 h-3.5 text-slate-400" />
+            <div className="flex items-center gap-1 text-[10px] text-purple-400 opacity-80 group-hover:opacity-100">
+              <Edit2 className="w-3 h-3" />
+              <span>Configure</span>
+            </div>
           </div>
           <div className="text-lg sm:text-xl font-bold font-mono text-white mt-1.5">
             {currency}{equipmentAssetValue.toLocaleString()}
           </div>
-          <div className="text-[11px] text-slate-400 mt-1">
-            {office.furniture.length} physical items
+          <div className="text-[11px] text-slate-400 mt-1 flex items-center justify-between">
+            <span className="truncate">
+              {accounting.customAssetValuation != null
+                ? 'Manual Fixed Valuation'
+                : `${office.furniture.length} items @ ${currency}${equipmentValuePerItem}`}
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Operational Cost Breakdown Analysis */}
+      {/* Operational Cost Breakdown Analysis & Configurator */}
       <div className="bg-slate-900/70 border border-white/10 rounded-2xl p-5 space-y-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-            <Building className="w-4 h-4 text-sky-400" />
-            <span>Monthly Operational Cost Structure & Amortization</span>
-          </h3>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+              <Building className="w-4 h-4 text-sky-400" />
+              <span>Monthly Operational Cost Structure & Amortization</span>
+            </h3>
+            <p className="text-xs text-slate-400 mt-0.5">
+              GAAP straight-line depreciation, workstation asset valuation, lease amortization, and hospitality
+            </p>
+          </div>
 
           <button
             type="button"
-            onClick={() => setIsEditingMetrics((prev) => !prev)}
-            className="text-xs text-sky-400 hover:text-sky-300 flex items-center gap-1 font-medium"
+            onClick={() => {
+              setIsEditingMetrics((prev) => !prev);
+              setConfigFocusSection('all');
+            }}
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 shadow-sm ${
+              isEditingMetrics
+                ? 'bg-sky-500 text-slate-950 border-sky-400 hover:bg-sky-400'
+                : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-white/10'
+            }`}
           >
-            <Edit2 className="w-3 h-3" />
-            <span>{isEditingMetrics ? 'Close Edit' : 'Edit Base Variables'}</span>
+            <Sliders className="w-3.5 h-3.5" />
+            <span>{isEditingMetrics ? 'Close Configurator' : 'Configure Financial Variables'}</span>
           </button>
         </div>
 
-        {/* Quick Edit Base Variables */}
+        {/* Full Comprehensive Financial Variables Configurator */}
         {isEditingMetrics && (
-          <div className="p-4 bg-slate-950 border border-sky-500/30 rounded-xl grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs animate-in fade-in">
-            <div>
-              <label className="text-slate-400 block mb-1">Monthly Revenue ($)</label>
-              <input
-                type="number"
-                value={editRevenue}
-                onChange={(e) => setEditRevenue(Number(e.target.value))}
-                className="w-full bg-slate-900 border border-white/10 rounded-lg px-2.5 py-1.5 text-white font-mono"
-              />
+          <div className="p-4 bg-slate-950 border border-sky-500/30 rounded-xl space-y-4 text-xs animate-in fade-in">
+            {/* Quick Filter Section Chips */}
+            <div className="flex items-center justify-between border-b border-white/10 pb-3 flex-wrap gap-2">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-[11px] font-semibold text-slate-400 mr-1 flex items-center gap-1">
+                  <Settings className="w-3.5 h-3.5 text-sky-400" />
+                  <span>Config Section:</span>
+                </span>
+                {[
+                  { id: 'all', label: 'All Parameters' },
+                  { id: 'assets', label: 'Asset Valuation' },
+                  { id: 'depreciation', label: 'Equipment Depreciation' },
+                  { id: 'amenities', label: 'Hospitality & Amenities' },
+                ].map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => setConfigFocusSection(s.id as any)}
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors ${
+                      configFocusSection === s.id
+                        ? 'bg-sky-500/20 text-sky-300 border-sky-500/40'
+                        : 'bg-slate-900 text-slate-400 border-white/5 hover:text-white'
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="text-[11px] text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                Changes recalculate runway & balance sheet in real time
+              </div>
             </div>
-            <div>
-              <label className="text-slate-400 block mb-1">Cash Reserves ($)</label>
-              <input
-                type="number"
-                value={editReserves}
-                onChange={(e) => setEditReserves(Number(e.target.value))}
-                className="w-full bg-slate-900 border border-white/10 rounded-lg px-2.5 py-1.5 text-white font-mono"
-              />
-            </div>
-            <div>
-              <label className="text-slate-400 block mb-1">Lease Rate ($/m²)</label>
-              <input
-                type="number"
-                value={editLeaseRate}
-                onChange={(e) => setEditLeaseRate(Number(e.target.value))}
-                className="w-full bg-slate-900 border border-white/10 rounded-lg px-2.5 py-1.5 text-white font-mono"
-              />
-            </div>
-            <div className="flex items-end">
-              <button
-                type="button"
-                onClick={handleSaveMetrics}
-                className="w-full px-3 py-1.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold rounded-lg text-xs transition-colors flex items-center justify-center gap-1"
-              >
-                <Check className="w-3.5 h-3.5" />
-                <span>Save Accounting Variables</span>
-              </button>
+
+            {/* Section 1: Revenue, Cash Reserves & Currency */}
+            {(configFocusSection === 'all') && (
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-slate-900/60 p-3 rounded-lg border border-white/5">
+                <div>
+                  <label className="text-slate-400 block mb-1 font-medium">Monthly Gross Revenue</label>
+                  <div className="relative">
+                    <span className="absolute left-2.5 top-1.5 text-slate-500">{editCurrency}</span>
+                    <input
+                      type="number"
+                      step={1000}
+                      value={editRevenue}
+                      onChange={(e) => setEditRevenue(Number(e.target.value))}
+                      className="w-full bg-slate-950 border border-white/10 rounded-lg pl-6 pr-2.5 py-1.5 text-white font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-slate-400 block mb-1 font-medium">Liquid Cash Reserves</label>
+                  <div className="relative">
+                    <span className="absolute left-2.5 top-1.5 text-slate-500">{editCurrency}</span>
+                    <input
+                      type="number"
+                      step={10000}
+                      value={editReserves}
+                      onChange={(e) => setEditReserves(Number(e.target.value))}
+                      className="w-full bg-slate-950 border border-white/10 rounded-lg pl-6 pr-2.5 py-1.5 text-white font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-slate-400 block mb-1 font-medium">Lease Rate ({editCurrency}/m²)</label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={200}
+                    value={editLeaseRate}
+                    onChange={(e) => setEditLeaseRate(Number(e.target.value))}
+                    className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-white font-mono"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-slate-400 block mb-1 font-medium">Avg Salary / Agent ({editCurrency}/mo)</label>
+                  <input
+                    type="number"
+                    step={250}
+                    value={editSalary}
+                    onChange={(e) => setEditSalary(Number(e.target.value))}
+                    className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-white font-mono"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Section 2: Asset Valuation & Equipment Depreciation Configuration */}
+            {(configFocusSection === 'all' || configFocusSection === 'assets' || configFocusSection === 'depreciation') && (
+              <div className="bg-slate-900/60 p-3.5 rounded-lg border border-purple-500/20 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-white flex items-center gap-1.5 text-xs">
+                    <Cpu className="w-3.5 h-3.5 text-purple-400" />
+                    <span>Asset Valuation & Equipment Straight-Line Depreciation</span>
+                  </span>
+                  <span className="text-[11px] text-purple-300 font-mono">
+                    Current Base: {editCurrency}{(useCustomAssetOverride ? editCustomAssetValuation : office.furniture.length * editEquipmentValuePerItem).toLocaleString()}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-slate-400 block mb-1">
+                      Equipment Value Per Item ({editCurrency})
+                    </label>
+                    <input
+                      type="number"
+                      min={100}
+                      step={100}
+                      value={editEquipmentValuePerItem}
+                      onChange={(e) => setEditEquipmentValuePerItem(Number(e.target.value))}
+                      className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-white font-mono"
+                    />
+                    <p className="text-[10px] text-slate-500 mt-1">
+                      Multiplied by {office.furniture.length} items = {editCurrency}{(office.furniture.length * editEquipmentValuePerItem).toLocaleString()}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="text-slate-400 block mb-1">
+                      Depreciation Horizon (Months)
+                    </label>
+                    <select
+                      value={editDepreciationMonths}
+                      onChange={(e) => setEditDepreciationMonths(Number(e.target.value))}
+                      className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-white font-mono"
+                    >
+                      <option value={12}>12 Months (1 Year Aggressive)</option>
+                      <option value={24}>24 Months (2 Years)</option>
+                      <option value={36}>36 Months (3 Years Standard GAAP)</option>
+                      <option value={48}>48 Months (4 Years)</option>
+                      <option value={60}>60 Months (5 Years Long-term)</option>
+                    </select>
+                    <p className="text-[10px] text-slate-500 mt-1">
+                      Monthly amortization = Asset Value ÷ {editDepreciationMonths} mo
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="text-slate-400 block mb-1">
+                      Currency Symbol
+                    </label>
+                    <select
+                      value={editCurrency}
+                      onChange={(e) => setEditCurrency(e.target.value)}
+                      className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-white font-mono"
+                    >
+                      <option value="$">$ (USD)</option>
+                      <option value="€">€ (EUR)</option>
+                      <option value="£">£ (GBP)</option>
+                      <option value="¥">¥ (JPY/CNY)</option>
+                      <option value="CHF">CHF (Swiss Franc)</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Custom Asset Override Option */}
+                <div className="pt-2 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={useCustomAssetOverride}
+                      onChange={(e) => setUseCustomAssetOverride(e.target.checked)}
+                      className="rounded bg-slate-950 border-white/20 text-purple-500 focus:ring-0"
+                    />
+                    <span className="text-slate-300 font-medium">
+                      Enable Fixed Asset Valuation Override (ignore furniture catalog count)
+                    </span>
+                  </label>
+
+                  {useCustomAssetOverride && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-400 text-[11px]">Fixed Value:</span>
+                      <input
+                        type="number"
+                        min={0}
+                        step={5000}
+                        value={editCustomAssetValuation}
+                        onChange={(e) => setEditCustomAssetValuation(Number(e.target.value))}
+                        className="w-36 bg-slate-950 border border-purple-500/40 rounded-lg px-2 py-1 text-white font-mono text-xs"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Section 3: Hospitality & Amenities Configuration */}
+            {(configFocusSection === 'all' || configFocusSection === 'amenities') && (
+              <div className="bg-slate-900/60 p-3.5 rounded-lg border border-amber-500/20 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-white flex items-center gap-1.5 text-xs">
+                    <Coffee className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Hospitality & Office Amenities Expenditures</span>
+                  </span>
+                  <span className="text-[11px] text-amber-300 font-mono">
+                    Total: {editCurrency}{(agents.length * editAmenitiesCostPerAgent).toLocaleString()}/mo
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-slate-400 block mb-1">
+                      Monthly Amenities Cost per Agent ({editCurrency}/agent/month)
+                    </label>
+                    <input
+                      type="number"
+                      min={50}
+                      step={25}
+                      value={editAmenitiesCostPerAgent}
+                      onChange={(e) => setEditAmenitiesCostPerAgent(Number(e.target.value))}
+                      className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-white font-mono"
+                    />
+                    <p className="text-[10px] text-slate-500 mt-1">
+                      Covers barista coffee beans, pantry snacks, filtered water, and gigabit fiber
+                    </p>
+                  </div>
+
+                  <div className="p-2.5 bg-slate-950/60 rounded-lg border border-white/5 flex flex-col justify-center">
+                    <div className="text-[11px] text-slate-400">Formula Breakdown:</div>
+                    <div className="text-xs text-white font-mono mt-0.5">
+                      {agents.length} active agents × {editCurrency}{editAmenitiesCostPerAgent}/mo = <strong className="text-amber-300">{editCurrency}{(agents.length * editAmenitiesCostPerAgent).toLocaleString()}/mo</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Actions Bar */}
+            <div className="flex items-center justify-between pt-2 border-t border-white/10">
+              <div className="text-[11px] text-slate-400">
+                Preview Net Margin:{' '}
+                <span className="font-mono font-bold text-white">
+                  {editCurrency}{(
+                    editRevenue -
+                    (Math.round(areaM2 * editLeaseRate) +
+                      agents.length * editSalary +
+                      Math.round(
+                        (useCustomAssetOverride
+                          ? editCustomAssetValuation
+                          : office.furniture.length * editEquipmentValuePerItem) /
+                          Math.max(1, editDepreciationMonths)
+                      ) +
+                      Math.round(agents.length * editAmenitiesCostPerAgent))
+                  ).toLocaleString()} / mo
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsEditingMetrics(false)}
+                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveMetrics}
+                  className="px-4 py-1.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold rounded-lg text-xs transition-colors flex items-center justify-center gap-1.5 shadow-md"
+                >
+                  <Check className="w-3.5 h-3.5" />
+                  <span>Save Accounting Configuration</span>
+                </button>
+              </div>
             </div>
           </div>
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {/* Real Estate Lease */}
-          <div className="bg-slate-950/80 border border-white/5 rounded-xl p-3.5">
-            <div className="text-xs text-slate-400 flex items-center gap-1.5 font-medium">
-              <Building className="w-3.5 h-3.5 text-sky-400" />
-              <span>Real Estate Lease</span>
+          <div
+            onClick={() => {
+              setIsEditingMetrics(true);
+              setConfigFocusSection('all');
+            }}
+            className="bg-slate-950/80 hover:bg-slate-900 border border-white/5 hover:border-sky-500/30 rounded-xl p-3.5 cursor-pointer transition-all group"
+          >
+            <div className="text-xs text-slate-400 flex items-center justify-between font-medium">
+              <div className="flex items-center gap-1.5">
+                <Building className="w-3.5 h-3.5 text-sky-400" />
+                <span>Real Estate Lease</span>
+              </div>
+              <Edit2 className="w-3 h-3 text-slate-600 group-hover:text-sky-400 transition-colors" />
             </div>
             <div className="text-base font-bold font-mono text-white mt-1">
               {currency}{monthlyLease.toLocaleString()} / mo
@@ -500,10 +808,19 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
           </div>
 
           {/* Agent Staff Payroll */}
-          <div className="bg-slate-950/80 border border-white/5 rounded-xl p-3.5">
-            <div className="text-xs text-slate-400 flex items-center gap-1.5 font-medium">
-              <Users className="w-3.5 h-3.5 text-purple-400" />
-              <span>Agent Staff Payroll</span>
+          <div
+            onClick={() => {
+              setIsEditingMetrics(true);
+              setConfigFocusSection('all');
+            }}
+            className="bg-slate-950/80 hover:bg-slate-900 border border-white/5 hover:border-purple-500/30 rounded-xl p-3.5 cursor-pointer transition-all group"
+          >
+            <div className="text-xs text-slate-400 flex items-center justify-between font-medium">
+              <div className="flex items-center gap-1.5">
+                <Users className="w-3.5 h-3.5 text-purple-400" />
+                <span>Agent Staff Payroll</span>
+              </div>
+              <Edit2 className="w-3 h-3 text-slate-600 group-hover:text-purple-400 transition-colors" />
             </div>
             <div className="text-base font-bold font-mono text-white mt-1">
               {currency}{monthlyPayroll.toLocaleString()} / mo
@@ -514,30 +831,54 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
           </div>
 
           {/* Hardware & Furniture Depreciation */}
-          <div className="bg-slate-950/80 border border-white/5 rounded-xl p-3.5">
-            <div className="text-xs text-slate-400 flex items-center gap-1.5 font-medium">
-              <Cpu className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Equipment Depreciation</span>
+          <div
+            onClick={() => {
+              setIsEditingMetrics(true);
+              setConfigFocusSection('depreciation');
+            }}
+            className="bg-slate-950/80 hover:bg-slate-900 border border-white/5 hover:border-emerald-500/40 rounded-xl p-3.5 cursor-pointer transition-all group"
+          >
+            <div className="text-xs text-slate-400 flex items-center justify-between font-medium">
+              <div className="flex items-center gap-1.5">
+                <Cpu className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Equipment Depreciation</span>
+              </div>
+              <div className="flex items-center gap-1 text-[10px] text-emerald-400 opacity-80 group-hover:opacity-100">
+                <Edit2 className="w-3 h-3" />
+                <span>Edit</span>
+              </div>
             </div>
-            <div className="text-base font-bold font-mono text-white mt-1">
+            <div className="text-base font-bold font-mono text-emerald-300 mt-1">
               {currency}{equipmentDepreciation.toLocaleString()} / mo
             </div>
-            <div className="text-[11px] text-slate-500 mt-1">
-              36-mo amortization on {currency}{equipmentAssetValue.toLocaleString()} assets
+            <div className="text-[11px] text-slate-400 mt-1">
+              {depreciationMonths}-mo straight-line on {currency}{equipmentAssetValue.toLocaleString()} assets
             </div>
           </div>
 
           {/* Amenities & Breakroom Ops */}
-          <div className="bg-slate-950/80 border border-white/5 rounded-xl p-3.5">
-            <div className="text-xs text-slate-400 flex items-center gap-1.5 font-medium">
-              <Coffee className="w-3.5 h-3.5 text-amber-400" />
-              <span>Hospitality & Amenities</span>
+          <div
+            onClick={() => {
+              setIsEditingMetrics(true);
+              setConfigFocusSection('amenities');
+            }}
+            className="bg-slate-950/80 hover:bg-slate-900 border border-white/5 hover:border-amber-500/40 rounded-xl p-3.5 cursor-pointer transition-all group"
+          >
+            <div className="text-xs text-slate-400 flex items-center justify-between font-medium">
+              <div className="flex items-center gap-1.5">
+                <Coffee className="w-3.5 h-3.5 text-amber-400" />
+                <span>Hospitality & Amenities</span>
+              </div>
+              <div className="flex items-center gap-1 text-[10px] text-amber-400 opacity-80 group-hover:opacity-100">
+                <Edit2 className="w-3 h-3" />
+                <span>Edit</span>
+              </div>
             </div>
-            <div className="text-base font-bold font-mono text-white mt-1">
+            <div className="text-base font-bold font-mono text-amber-300 mt-1">
               {currency}{amenitiesCost.toLocaleString()} / mo
             </div>
-            <div className="text-[11px] text-slate-500 mt-1">
-              Espresso beans, kiosk snacks, gigabit wifi
+            <div className="text-[11px] text-slate-400 mt-1">
+              {agents.length} agents @ {currency}{amenitiesCostPerAgent}/mo (barista beans, kiosk, wifi)
             </div>
           </div>
         </div>
