@@ -1,4 +1,5 @@
 import {
+  Company,
   FloorMaterial,
   FloorShapePreset,
   FurnitureCatalogEntry,
@@ -10,6 +11,32 @@ import {
   getDefaultAgentsForOffice,
   getDefaultAccountingForOffice,
 } from './utils/agentAccountingDefaults';
+
+export const DEFAULT_COMPANIES: Company[] = [
+  {
+    id: 'comp-default-1',
+    name: 'Pacific Mind Spatial Corp',
+    companyType: 'Private Limited',
+    gstDetails: '29ABCDE1234F1Z5',
+    domain: 'pacificmind.io',
+    country: 'India',
+    currency: '$',
+    registrationNumber: 'U72900KA2024PTC189201',
+    panNumber: 'ABCDE1234F',
+    registeredAddress: 'Level 14, Orion Cyber Tower, Tech Hub Corridor, Bengaluru, Karnataka 560103',
+    contactEmail: 'corp@pacificmind.io',
+    phone: '+91 80 4910 2300',
+    officeIds: [
+      'office-hq-100',
+      'office-eng-201',
+      'office-des-202',
+      'office-lab-101',
+      'office-pod-203',
+    ],
+    createdAt: '2026-01-15T09:00:00Z',
+    updatedAt: '2026-10-22T00:00:00Z',
+  },
+];
 
 export const FURNITURE_CATALOG: FurnitureCatalogEntry[] = [
   {
@@ -1282,6 +1309,7 @@ export const INITIAL_OFFICES: OfficeSpace[] = RAW_INITIAL_OFFICES.map((off) => {
   const accounting = getDefaultAccountingForOffice(off.id, area, agents);
   return {
     ...off,
+    companyId: off.companyId || 'comp-default-1',
     agents,
     accounting,
   };

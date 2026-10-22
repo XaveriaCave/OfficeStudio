@@ -158,7 +158,7 @@ export function getDefaultAgentsForOffice(
         activityDescription: 'Reviewing cross-department expansion roadmap',
         isAccountingAgent: false,
         systemPrompt:
-          'You are Alexander Vance, CEO of Office Studio @V. You focus on strategic vision, executive capital allocation, and team organizational hierarchy.',
+          'You are Alexander Vance, CEO of office.studio.v. You focus on strategic vision, executive capital allocation, and team organizational hierarchy.',
         createdAt: '2026-10-10T08:00:00Z',
       },
       {

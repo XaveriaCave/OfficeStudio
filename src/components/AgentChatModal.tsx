@@ -198,7 +198,7 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
       if (!botReply) {
         if (apiKey.trim()) {
           // Direct client call to Gemini with the user-provided API key
-          const systemPrompt = `You are ${agent.name}, ${agent.role} in ${agent.department} department (${agent.hierarchy} level) at Office Studio @V, in office suite ${office.name} (${office.code}). Current status: ${agent.activityDescription}. ${agent.systemPrompt || ''}`;
+          const systemPrompt = `You are ${agent.name}, ${agent.role} in ${agent.department} department (${agent.hierarchy} level) at office.studio.v, in office suite ${office.name} (${office.code}). Current status: ${agent.activityDescription}. ${agent.systemPrompt || ''}`;
           const directRes = await fetch(
             `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey.trim()}`,
             {

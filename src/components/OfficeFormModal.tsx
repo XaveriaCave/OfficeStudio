@@ -20,6 +20,7 @@ import {
   WALL_STYLE_CONFIG,
 } from '../presets';
 import {
+  Company,
   FloorMaterial,
   FurnitureItem,
   OfficeAccounting,
@@ -33,6 +34,9 @@ interface OfficeFormModalProps {
   editingOffice: OfficeSpace | null;
   defaultParentId: string | null;
   allOffices: OfficeSpace[];
+  companies?: Company[];
+  selectedCompanyId?: string;
+  onOpenNewCompanyModal?: () => void;
   onClose: () => void;
   onSaveOffice: (officeData: OfficeSpace, isNew: boolean) => void;
 }
@@ -44,11 +48,15 @@ export const OfficeFormModal: React.FC<OfficeFormModalProps> = ({
   editingOffice,
   defaultParentId,
   allOffices,
+  companies = [],
+  selectedCompanyId,
+  onOpenNewCompanyModal,
   onClose,
   onSaveOffice,
 }) => {
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
+  const [companyId, setCompanyId] = useState<string>('comp-default-1');
   const [department, setDepartment] = useState<OfficeDepartment>('Engineering');
   const [floorLevel, setFloorLevel] = useState(2);
   const [parentOfficeId, setParentOfficeId] = useState<string | null>(null);
@@ -76,6 +84,9 @@ export const OfficeFormModal: React.FC<OfficeFormModalProps> = ({
     if (editingOffice) {
       setName(editingOffice.name);
       setCode(editingOffice.code);
+      setCompanyId(
+        editingOffice.companyId || selectedCompanyId || companies[0]?.id || 'comp-default-1'
+      );
       setDepartment(editingOffice.department);
       setFloorLevel(editingOffice.floorLevel);
       setParentOfficeId(editingOffice.parentOfficeId);
@@ -105,6 +116,7 @@ export const OfficeFormModal: React.FC<OfficeFormModalProps> = ({
       const nextNum = allOffices.length + 1;
       setName(`New Spatial Studio 0${nextNum}`);
       setCode(`STD-${floorLevel}0${nextNum}`);
+      setCompanyId(selectedCompanyId || companies[0]?.id || 'comp-default-1');
       setDepartment('Engineering');
       setFloorLevel(2);
       setParentOfficeId(defaultParentId ?? (allOffices[0]?.id || null));
@@ -330,6 +342,7 @@ export const OfficeFormModal: React.FC<OfficeFormModalProps> = ({
         ...editingOffice,
         name: name.trim(),
         code: code.trim() || editingOffice.code,
+        companyId,
         department,
         floorLevel,
         parentOfficeId,
@@ -369,6 +382,7 @@ export const OfficeFormModal: React.FC<OfficeFormModalProps> = ({
         id: newOfficeId,
         name: name.trim(),
         code: code.trim() || `OFF-${floorLevel}01`,
+        companyId,
         department,
         floorLevel,
         parentOfficeId,
@@ -494,6 +508,42 @@ export const OfficeFormModal: React.FC<OfficeFormModalProps> = ({
                     className="w-full px-3 py-2 text-xs font-mono bg-slate-900 border border-white/10 rounded-lg text-white focus:outline-none focus:border-sky-400"
                   />
                 </div>
+              </div>
+
+              {/* Company Entity Assignment */}
+              <div className="p-3 rounded-xl bg-slate-900/60 border border-white/10">
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-medium text-slate-300">
+                    Assigned Company Entity
+                  </label>
+                  {onOpenNewCompanyModal && (
+                    <button
+                      type="button"
+                      onClick={onOpenNewCompanyModal}
+                      className="text-[11px] text-sky-400 hover:text-sky-300 transition-colors flex items-center gap-1 font-medium"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>Configure New Company</span>
+                    </button>
+                  )}
+                </div>
+                <select
+                  value={companyId}
+                  onChange={(e) => setCompanyId(e.target.value)}
+                  className="w-full px-3 py-2 text-xs bg-slate-950 border border-white/10 rounded-lg text-white focus:outline-none focus:border-sky-400"
+                >
+                  {companies && companies.length > 0 ? (
+                    companies.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name} · [{c.companyType}] · {c.country} ({c.gstDetails || 'No GST ID'})
+                      </option>
+                    ))
+                  ) : (
+                    <option value="comp-default-1">
+                      Pacific Mind Spatial Corp · [Private Limited]
+                    </option>
+                  )}
+                </select>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">

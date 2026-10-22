@@ -15,6 +15,12 @@ import {
   RotateCcw,
   Maximize2,
   Minimize2,
+  Building2,
+  Globe,
+  FileText,
+  Settings2,
+  Briefcase,
+  ChevronDown,
 } from 'lucide-react';
 import {
   FLOOR_MATERIAL_CONFIG,
@@ -23,6 +29,7 @@ import {
   WALL_STYLE_CONFIG,
 } from '../presets';
 import {
+  Company,
   OfficeDepartment,
   OfficeSpace,
   WorkspaceViewMode,
@@ -35,6 +42,11 @@ interface CompanyDashboardProps {
   offices: OfficeSpace[];
   selectedOfficeId: string;
   viewMode: WorkspaceViewMode;
+  companies?: Company[];
+  selectedCompanyId?: string;
+  onSelectCompany?: (companyId: string) => void;
+  onOpenConfigureCompany?: (company?: Company) => void;
+  onDeleteCompany?: (companyId: string) => void;
   onSelectOfficeAndMode: (officeId: string, mode: WorkspaceViewMode) => void;
   onOpenCreateModal: (parentOfficeId?: string | null) => void;
   onOpenEditModal: (office: OfficeSpace) => void;
@@ -420,6 +432,11 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
   offices,
   selectedOfficeId,
   viewMode,
+  companies = [],
+  selectedCompanyId,
+  onSelectCompany,
+  onOpenConfigureCompany,
+  onDeleteCompany,
   onSelectOfficeAndMode,
   onOpenCreateModal,
   onOpenEditModal,
@@ -430,7 +447,12 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState<OfficeDepartment | 'All'>('All');
   const [floorFilter, setFloorFilter] = useState<number | 'All'>('All');
+  const [companyFilter, setCompanyFilter] = useState<string | 'All'>('All');
   const [show3DConstellation, setShow3DConstellation] = useState(true);
+  const [isConfirmingBannerDelete, setIsConfirmingBannerDelete] = useState(false);
+
+  const activeCompany =
+    companies.find((c) => c.id === selectedCompanyId) || companies[0];
 
   // Calculate aggregate company metrics
   const totalAreaSqM = offices.reduce(
@@ -452,12 +474,18 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
   const filteredOffices = offices.filter((o) => {
     const matchesDep = departmentFilter === 'All' || o.department === departmentFilter;
     const matchesFloor = floorFilter === 'All' || o.floorLevel === floorFilter;
+    const matchesCompany =
+      companyFilter === 'All' ||
+      o.companyId === companyFilter ||
+      (activeCompany &&
+        companyFilter === activeCompany.id &&
+        activeCompany.officeIds?.includes(o.id));
     const matchesQuery =
       !searchQuery.trim() ||
       o.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       o.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
       o.department.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesDep && matchesFloor && matchesQuery;
+    return matchesDep && matchesFloor && matchesCompany && matchesQuery;
   });
 
   // Root offices for Hierarchy Tree (those with parentOfficeId === null or pointing to non-existent office)
@@ -639,6 +667,133 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Corporate Company Profile & Branch Allocation Banner */}
+      {activeCompany && (
+        <div className="p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900/95 to-sky-950/40 border border-sky-500/20 shadow-xl space-y-4">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="flex items-start sm:items-center gap-3.5">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-sky-500/20 to-indigo-500/20 border border-sky-400/40 flex items-center justify-center text-sky-400 shrink-0">
+                <Building2 className="w-6 h-6" />
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <h2 className="text-xl font-bold text-white tracking-tight">
+                    {activeCompany.name}
+                  </h2>
+                  <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-sky-500/15 text-sky-300 border border-sky-400/30">
+                    {activeCompany.companyType}
+                  </span>
+                  <span className="px-2 py-0.5 text-xs rounded bg-slate-800 text-slate-300 font-medium">
+                    {activeCompany.country}
+                  </span>
+                </div>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400 mt-1">
+                  {activeCompany.gstDetails && (
+                    <span className="flex items-center gap-1 font-mono text-emerald-400 font-medium">
+                      <FileText className="w-3.5 h-3.5" />
+                      <span>GST/Tax ID: {activeCompany.gstDetails}</span>
+                    </span>
+                  )}
+                  {activeCompany.domain && (
+                    <span className="flex items-center gap-1 text-sky-400">
+                      <Globe className="w-3.5 h-3.5" />
+                      <span>{activeCompany.domain}</span>
+                    </span>
+                  )}
+                  {activeCompany.registrationNumber && (
+                    <span className="font-mono text-slate-400">
+                      Reg: {activeCompany.registrationNumber}
+                    </span>
+                  )}
+                  <span className="text-slate-400">
+                    Currency: <strong className="text-white">{activeCompany.currency}</strong>
+                  </span>
+                  <span className="text-sky-300 font-medium">
+                    {offices.filter((o) => o.companyId === activeCompany.id || activeCompany.officeIds?.includes(o.id)).length} Offices Assigned
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+              {companies.length > 1 && onSelectCompany && (
+                <div className="relative">
+                  <select
+                    value={activeCompany.id}
+                    onChange={(e) => onSelectCompany(e.target.value)}
+                    className="px-3 py-2 text-xs font-medium bg-slate-950/80 text-slate-200 border border-white/15 rounded-lg focus:outline-none focus:border-sky-400"
+                  >
+                    {companies.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name} ({c.companyType})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {onOpenConfigureCompany && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => onOpenConfigureCompany(activeCompany)}
+                    className="px-3.5 py-2 text-xs font-medium bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-400/30 rounded-lg transition-colors flex items-center gap-1.5"
+                    title="Configure company name, type, GST, domain, country, and assigned offices"
+                  >
+                    <Settings2 className="w-3.5 h-3.5" />
+                    <span>Configure Company & Offices</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => onOpenConfigureCompany(undefined)}
+                    className="px-3 py-2 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 rounded-lg transition-colors flex items-center gap-1.5"
+                    title="Register an additional company entity"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>+ New Company</span>
+                  </button>
+
+                  {companies.length > 1 && onDeleteCompany && (
+                    !isConfirmingBannerDelete ? (
+                      <button
+                        type="button"
+                        onClick={() => setIsConfirmingBannerDelete(true)}
+                        className="p-2 text-slate-400 hover:text-rose-400 bg-slate-800/80 hover:bg-rose-500/10 border border-white/10 hover:border-rose-500/30 rounded-lg transition-colors"
+                        title={`Delete "${activeCompany.name}" (unassigns its offices)`}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    ) : (
+                      <div className="flex items-center gap-1.5 p-1 bg-rose-950/80 border border-rose-500/40 rounded-lg">
+                        <span className="text-[11px] text-rose-200 px-1 font-medium">Delete entity?</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onDeleteCompany(activeCompany.id);
+                            setIsConfirmingBannerDelete(false);
+                          }}
+                          className="px-2 py-0.5 text-[11px] font-semibold text-white bg-rose-600 hover:bg-rose-500 rounded transition-colors"
+                        >
+                          Delete
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setIsConfirmingBannerDelete(false)}
+                          className="px-1.5 py-0.5 text-[11px] text-slate-300 hover:text-white bg-slate-800 rounded transition-colors"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    )
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 4-Column Quantitative Spatial Metrics Strip */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

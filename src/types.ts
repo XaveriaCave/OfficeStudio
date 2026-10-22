@@ -173,10 +173,39 @@ export type OfficeDepartment =
   | 'Operations'
   | 'Collaborative';
 
+export type CompanyType =
+  | 'Private Limited'
+  | 'LLP'
+  | 'Partnership'
+  | 'Proprietorship'
+  | 'Public Limited'
+  | 'Corporation'
+  | 'One Person Company'
+  | 'Joint Venture';
+
+export interface Company {
+  id: string;
+  name: string;
+  companyType: CompanyType;
+  gstDetails: string;
+  domain: string;
+  country: string;
+  currency: string;
+  registrationNumber?: string;
+  panNumber?: string;
+  registeredAddress?: string;
+  contactEmail?: string;
+  phone?: string;
+  officeIds: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface OfficeSpace {
   id: string;
   name: string;
   code: string;
+  companyId?: string;
   department: OfficeDepartment;
   floorLevel: number;
   parentOfficeId: string | null;

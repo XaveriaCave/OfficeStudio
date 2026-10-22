@@ -20,8 +20,14 @@ import {
   Bot,
   Sparkles,
   Users,
+  Building2,
+  Settings2,
+  Globe,
+  FileText,
 } from 'lucide-react';
 import {
+  Company,
+  CompanyType,
   FurnitureItem,
   FurnitureType,
   OfficeAccounting,
@@ -33,7 +39,7 @@ import {
   computePolygonArea,
   computePolygonCentroid,
 } from './types';
-import { FURNITURE_CATALOG, INITIAL_OFFICES } from './presets';
+import { DEFAULT_COMPANIES, FURNITURE_CATALOG, INITIAL_OFFICES } from './presets';
 import { Office3DCanvas } from './components/Office3DCanvas';
 import { Office2DCanvas } from './components/Office2DCanvas';
 import { OfficeInspectorPanel } from './components/OfficeInspectorPanel';
@@ -42,6 +48,7 @@ import { OfficeFormModal } from './components/OfficeFormModal';
 import { AgentChatModal } from './components/AgentChatModal';
 import { AgentManagerModal } from './components/AgentManagerModal';
 import { AccountingPanel } from './components/AccountingPanel';
+import { CompanyModal } from './components/CompanyModal';
 import {
   getDefaultAccountingForOffice,
   getDefaultAgentsForOffice,
@@ -49,8 +56,28 @@ import {
 } from './utils/agentAccountingDefaults';
 
 const STORAGE_KEY = 'pacific_mind_spatial_offices_v1';
+const COMPANIES_STORAGE_KEY = 'pacific_mind_spatial_companies_v1';
 
 export default function App() {
+  const [companies, setCompanies] = useState<Company[]>(() => {
+    try {
+      const saved = localStorage.getItem(COMPANIES_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch {
+      // Fallback to presets
+    }
+    return DEFAULT_COMPANIES;
+  });
+
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string>(() => {
+    return companies[0]?.id || DEFAULT_COMPANIES[0].id;
+  });
+
   const [offices, setOffices] = useState<OfficeSpace[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -68,6 +95,7 @@ export default function App() {
               getDefaultAccountingForOffice(off.id, area, agents);
             return {
               ...off,
+              companyId: off.companyId || DEFAULT_COMPANIES[0].id,
               agents,
               accounting,
             };
@@ -102,6 +130,10 @@ export default function App() {
   const [editingOffice, setEditingOffice] = useState<OfficeSpace | null>(null);
   const [defaultParentId, setDefaultParentId] = useState<string | null>(null);
   const [isStudioFullscreen, setIsStudioFullscreen] = useState<boolean>(false);
+
+  // Company Modal state
+  const [isCompanyModalOpen, setIsCompanyModalOpen] = useState<boolean>(false);
+  const [editingCompany, setEditingCompany] = useState<Company | null>(null);
 
   // Agent System & Accounting States
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
@@ -211,6 +243,22 @@ export default function App() {
       // Ignore quota errors
     }
   }, [offices]);
+
+  // Sync companies to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(COMPANIES_STORAGE_KEY, JSON.stringify(companies));
+    } catch {
+      // Ignore quota errors
+    }
+  }, [companies]);
+
+  const activeCompany =
+    companies.find((c) => c.id === selectedCompanyId) || companies[0] || DEFAULT_COMPANIES[0];
+
+  const companyOfficesCount = offices.filter(
+    (o) => o.companyId === activeCompany.id || activeCompany.officeIds?.includes(o.id)
+  ).length;
 
   const activeOffice =
     offices.find((o) => o.id === selectedOfficeId) || offices[0];
@@ -479,6 +527,61 @@ export default function App() {
     [activeOffice]
   );
 
+  // Company CRUD operations
+  const handleSaveCompany = (companyData: Company, isNew: boolean) => {
+    if (isNew) {
+      setCompanies((prev) => [...prev, companyData]);
+      setSelectedCompanyId(companyData.id);
+    } else {
+      setCompanies((prev) =>
+        prev.map((c) => (c.id === companyData.id ? companyData : c))
+      );
+    }
+
+    // Synchronize offices allocation:
+    // Any office in companyData.officeIds gets assigned companyId = companyData.id
+    // Any office that was previously assigned to this company but now unchecked gets unassigned
+    setOffices((prevOffices) =>
+      prevOffices.map((office) => {
+        const isAllocated = companyData.officeIds.includes(office.id);
+        if (isAllocated) {
+          return { ...office, companyId: companyData.id };
+        } else if (office.companyId === companyData.id) {
+          return { ...office, companyId: undefined };
+        }
+        return office;
+      })
+    );
+  };
+
+  const handleDeleteCompany = (companyId: string) => {
+    const remaining = companies.filter((c) => c.id !== companyId);
+    if (remaining.length === 0) {
+      const freshDefault: Company = {
+        id: `comp-${Date.now()}`,
+        name: 'New Enterprise Corp',
+        companyType: 'Private Limited',
+        gstDetails: '',
+        domain: 'enterprise.com',
+        country: 'India',
+        currency: '$',
+        officeIds: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      setCompanies([freshDefault]);
+      setSelectedCompanyId(freshDefault.id);
+    } else {
+      setCompanies(remaining);
+      if (selectedCompanyId === companyId) {
+        setSelectedCompanyId(remaining[0].id);
+      }
+    }
+    setOffices((prev) =>
+      prev.map((o) => (o.companyId === companyId ? { ...o, companyId: undefined } : o))
+    );
+  };
+
   // Office CRUD operations
   const handleSaveOfficeModal = (officeData: OfficeSpace, isNew: boolean) => {
     if (isNew) {
@@ -512,6 +615,23 @@ export default function App() {
       setSelectedOfficeId(completeNewOffice.id);
       setViewMode('playground_3d');
       setSelectedFurnitureId(null);
+
+      // Keep company officeIds in sync
+      if (completeNewOffice.companyId) {
+        setCompanies((prev) =>
+          prev.map((c) =>
+            c.id === completeNewOffice.companyId
+              ? {
+                  ...c,
+                  officeIds: c.officeIds.includes(completeNewOffice.id)
+                    ? c.officeIds
+                    : [...c.officeIds, completeNewOffice.id],
+                  updatedAt: new Date().toISOString(),
+                }
+              : c
+          )
+        );
+      }
     } else {
       setOffices((prev) =>
         prev.map((o) =>
@@ -526,6 +646,30 @@ export default function App() {
             : o
         )
       );
+
+      // Keep company officeIds in sync
+      if (officeData.companyId) {
+        setCompanies((prev) =>
+          prev.map((c) => {
+            if (c.id === officeData.companyId) {
+              return {
+                ...c,
+                officeIds: c.officeIds.includes(officeData.id)
+                  ? c.officeIds
+                  : [...c.officeIds, officeData.id],
+                updatedAt: new Date().toISOString(),
+              };
+            } else if (c.officeIds.includes(officeData.id)) {
+              return {
+                ...c,
+                officeIds: c.officeIds.filter((id) => id !== officeData.id),
+                updatedAt: new Date().toISOString(),
+              };
+            }
+            return c;
+          })
+        );
+      }
     }
   };
 
@@ -569,6 +713,20 @@ export default function App() {
     };
     setOffices((prev) => [...prev, duplicated]);
     setSelectedOfficeId(duplicated.id);
+
+    if (duplicated.companyId) {
+      setCompanies((prev) =>
+        prev.map((c) =>
+          c.id === duplicated.companyId
+            ? {
+                ...c,
+                officeIds: [...c.officeIds, duplicated.id],
+                updatedAt: new Date().toISOString(),
+              }
+            : c
+        )
+      );
+    }
   };
 
   const handleDeleteOffice = (officeId: string) => {
@@ -584,6 +742,15 @@ export default function App() {
           : o
       );
     setOffices(remaining);
+
+    // Remove from company officeIds
+    setCompanies((prev) =>
+      prev.map((c) => ({
+        ...c,
+        officeIds: c.officeIds.filter((id) => id !== officeId),
+      }))
+    );
+
     if (selectedOfficeId === officeId && remaining[0]) {
       setSelectedOfficeId(remaining[0].id);
       setSelectedFurnitureId(null);
@@ -591,6 +758,8 @@ export default function App() {
   };
 
   const handleResetAllToPresets = () => {
+    setCompanies(DEFAULT_COMPANIES);
+    setSelectedCompanyId(DEFAULT_COMPANIES[0].id);
     setOffices(INITIAL_OFFICES);
     setSelectedOfficeId(INITIAL_OFFICES[0].id);
     setSelectedFurnitureId(null);
@@ -615,17 +784,39 @@ export default function App() {
     <div className="min-h-screen md:h-screen w-screen flex flex-col bg-[#0b1120] text-slate-100 overflow-y-auto md:overflow-hidden">
       {/* TOP BAR CONTRACT: Strictly 3 zones separated by gap-8 */}
       <header className="h-14 shrink-0 flex items-center justify-between gap-8 px-4 sm:px-6 bg-[#090e1a] border-b border-white/10 z-30">
-        {/* Zone 1: Single text element wordmark */}
-        <a
-          href="#top"
-          onClick={(e) => {
-            e.preventDefault();
-            setViewMode('dashboard');
-          }}
-          className="text-base sm:text-lg font-bold tracking-tight text-white font-display whitespace-nowrap shrink-0"
-        >
-          Office Studio @V
-        </a>
+        {/* Zone 1: Single text element wordmark + Active Company badge */}
+        <div className="flex items-center gap-3 shrink-0">
+          <a
+            href="#top"
+            onClick={(e) => {
+              e.preventDefault();
+              setViewMode('dashboard');
+            }}
+            className="text-base sm:text-lg font-bold tracking-tight text-white font-display whitespace-nowrap shrink-0"
+          >
+            office.studio.v
+          </a>
+
+          {activeCompany && (
+            <button
+              type="button"
+              onClick={() => {
+                setEditingCompany(activeCompany);
+                setIsCompanyModalOpen(true);
+              }}
+              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-slate-900/90 hover:bg-slate-800 text-xs border border-white/10 rounded-lg text-slate-300 hover:text-white transition-colors"
+              title="Configure Company Legal Profile & Offices"
+            >
+              <Building2 className="w-3.5 h-3.5 text-sky-400" />
+              <span className="font-semibold text-white max-w-[140px] truncate">
+                {activeCompany.name}
+              </span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-sky-500/10 text-sky-300 font-medium">
+                {activeCompany.companyType}
+              </span>
+            </button>
+          )}
+        </div>
 
         {/* Zone 2: 5 concise single-line text navigation links */}
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-400">
@@ -716,8 +907,21 @@ export default function App() {
           </a>
         </nav>
 
-        {/* Zone 3: Primary action button + Agent Manager Quick Trigger */}
+        {/* Zone 3: Primary action button + Company Trigger + Agent Manager Quick Trigger */}
         <div className="flex items-center gap-2.5 shrink-0">
+          <button
+            type="button"
+            onClick={() => {
+              setEditingCompany(activeCompany);
+              setIsCompanyModalOpen(true);
+            }}
+            className="px-2.5 sm:px-3 py-1.5 text-xs font-medium text-slate-200 bg-slate-900 border border-white/10 rounded-lg hover:bg-slate-800 transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5"
+            title="Configure Company Details & Assigned Offices"
+          >
+            <Building2 className="w-3.5 h-3.5 text-sky-400" />
+            <span className="hidden sm:inline">Company</span>
+          </button>
+
           <button
             type="button"
             onClick={() => {
@@ -753,6 +957,67 @@ export default function App() {
         {/* SECTION 1 ON MOBILE / LEFT SIDEBAR ON DESKTOP: Company Spatial Views */}
         {sidebarOpen ? (
           <aside className="w-full md:w-64 shrink-0 bg-[#090e1a] border-b md:border-b-0 md:border-r border-white/10 flex flex-col select-none md:h-full overflow-hidden">
+            {/* Enterprise Company Entity Selector & Config */}
+            <div className="p-3 border-b border-white/10 bg-slate-950/40">
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <Building2 className="w-3.5 h-3.5 text-sky-400" />
+                  <span>Company Entity</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingCompany(activeCompany);
+                      setIsCompanyModalOpen(true);
+                    }}
+                    className="p-1 text-slate-400 hover:text-white rounded hover:bg-white/10 transition-colors"
+                    title="Configure Company Details & Assigned Offices"
+                  >
+                    <Settings2 className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingCompany(null);
+                      setIsCompanyModalOpen(true);
+                    }}
+                    className="p-1 text-slate-400 hover:text-sky-400 rounded hover:bg-white/10 transition-colors"
+                    title="Register New Company"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Company Switcher Dropdown */}
+              <div className="relative">
+                <select
+                  value={selectedCompanyId}
+                  onChange={(e) => setSelectedCompanyId(e.target.value)}
+                  className="w-full px-2.5 py-1.5 text-xs font-semibold bg-slate-900 border border-white/10 rounded-lg text-white focus:outline-none focus:border-sky-400 appearance-none pr-6 cursor-pointer truncate"
+                >
+                  {companies.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name} ({c.companyType})
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-2 top-2.5 pointer-events-none" />
+              </div>
+
+              {activeCompany && (
+                <div className="mt-2 flex items-center justify-between text-[11px] text-slate-400">
+                  <span className="font-mono text-slate-400 truncate max-w-[120px]">
+                    {activeCompany.gstDetails || activeCompany.country}
+                  </span>
+                  <span className="text-sky-400 font-semibold font-mono">
+                    {companyOfficesCount} Offices
+                  </span>
+                </div>
+              )}
+            </div>
+
             {/* Overview & Hierarchy Links (Collapsible Section) */}
             <div className="p-3 border-b border-white/10">
               <button
@@ -977,6 +1242,14 @@ export default function App() {
                 offices={offices}
                 selectedOfficeId={activeOffice.id}
                 viewMode={viewMode}
+                companies={companies}
+                selectedCompanyId={selectedCompanyId}
+                onSelectCompany={setSelectedCompanyId}
+                onOpenConfigureCompany={(comp) => {
+                  setEditingCompany(comp || null);
+                  setIsCompanyModalOpen(true);
+                }}
+                onDeleteCompany={handleDeleteCompany}
                 onSelectOfficeAndMode={handleSelectOfficeAndMode}
                 onOpenCreateModal={(parentId) => {
                   setEditingOffice(null);
@@ -1363,8 +1636,28 @@ export default function App() {
         editingOffice={editingOffice}
         defaultParentId={defaultParentId}
         allOffices={offices}
+        companies={companies}
+        selectedCompanyId={selectedCompanyId}
+        onOpenNewCompanyModal={() => {
+          setEditingCompany(null);
+          setIsCompanyModalOpen(true);
+        }}
         onClose={() => setModalOpen(false)}
         onSaveOffice={handleSaveOfficeModal}
+      />
+
+      {/* Company Configuration Modal (Name, Type, GST, Domain, Country, Assigned Offices) */}
+      <CompanyModal
+        isOpen={isCompanyModalOpen}
+        company={editingCompany}
+        allCompanies={companies}
+        allOffices={offices}
+        onClose={() => {
+          setIsCompanyModalOpen(false);
+          setEditingCompany(null);
+        }}
+        onSaveCompany={handleSaveCompany}
+        onDeleteCompany={handleDeleteCompany}
       />
 
       {/* Interactive Agent Chat Modal with individual API keys */}

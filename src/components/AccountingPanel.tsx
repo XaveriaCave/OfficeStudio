@@ -265,7 +265,7 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
           auditText =
             `========================================================\n` +
             `OFFICE FINANCIAL & RUNWAY AUDIT REPORT\n` +
-            `OFFICE STUDIO @V — ${office.name.toUpperCase()}\n` +
+            `OFFICE.STUDIO.V — ${office.name.toUpperCase()}\n` +
             `Audited by: ${defaultAgent ? defaultAgent.name : 'Corporate Accounting'} (${defaultAgent?.role || 'Financial Controller'})\n` +
             `Date: ${new Date().toLocaleDateString()} · Status: VERIFIED\n` +
             `========================================================\n\n` +
