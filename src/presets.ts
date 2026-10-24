@@ -32,6 +32,7 @@ export const DEFAULT_COMPANIES: Company[] = [
       'office-des-202',
       'office-lab-101',
       'office-pod-203',
+      'office-ops-100',
     ],
     createdAt: '2026-01-15T09:00:00Z',
     updatedAt: '2026-10-22T00:00:00Z',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Box,
   Compass,
@@ -120,6 +120,7 @@ export default function App() {
   const [showFullscreenDrawer, setShowFullscreenDrawer] = useState<boolean>(false);
   const [spatialViewsOpen, setSpatialViewsOpen] = useState<boolean>(true);
   const [collapsedFloors, setCollapsedFloors] = useState<Record<number, boolean>>({});
+  const [sidebarFilterMode, setSidebarFilterMode] = useState<'company' | 'all'>('company');
 
   const toggleFloorCollapse = (floor: number) => {
     setCollapsedFloors((prev) => ({ ...prev, [floor]: !prev[floor] }));
@@ -256,12 +257,31 @@ export default function App() {
   const activeCompany =
     companies.find((c) => c.id === selectedCompanyId) || companies[0] || DEFAULT_COMPANIES[0];
 
-  const companyOfficesCount = offices.filter(
-    (o) => o.companyId === activeCompany.id || activeCompany.officeIds?.includes(o.id)
-  ).length;
+  const companySelectedOffices = useMemo(() => {
+    if (!activeCompany) return offices;
+    const assignedIds = new Set(activeCompany.officeIds || []);
+    return offices.filter(
+      (o) => assignedIds.has(o.id) || o.companyId === activeCompany.id
+    );
+  }, [offices, activeCompany]);
+
+  const companyOfficesCount = companySelectedOffices.length;
+
+  const displayedOffices = sidebarFilterMode === 'company' ? companySelectedOffices : offices;
 
   const activeOffice =
-    offices.find((o) => o.id === selectedOfficeId) || offices[0];
+    offices.find((o) => o.id === selectedOfficeId) || displayedOffices[0] || offices[0];
+
+  // Auto-sync selected office when switching companies in company filter mode
+  useEffect(() => {
+    if (sidebarFilterMode === 'company' && companySelectedOffices.length > 0) {
+      const isCurrentInCompany = companySelectedOffices.some((o) => o.id === selectedOfficeId);
+      if (!isCurrentInCompany) {
+        setSelectedOfficeId(companySelectedOffices[0].id);
+        setSelectedFurnitureId(null);
+      }
+    }
+  }, [selectedCompanyId, companySelectedOffices, sidebarFilterMode, selectedOfficeId]);
 
   const handleSelectOffice = useCallback((officeId: string) => {
     setSelectedOfficeId(officeId);
@@ -765,10 +785,12 @@ export default function App() {
     setSelectedFurnitureId(null);
   };
 
-  // Group offices by floor level descending for sidebar navigation
-  const floorLevels = Array.from(new Set(offices.map((o) => o.floorLevel))).sort(
-    (a, b) => b - a
-  );
+  // Group displayed offices by floor level descending for sidebar navigation
+  const floorLevels = useMemo(() => {
+    return Array.from(new Set(displayedOffices.map((o) => o.floorLevel))).sort(
+      (a, b) => b - a
+    );
+  }, [displayedOffices]);
 
   const activeOfficeArea = activeOffice
     ? computePolygonArea(activeOffice.vertices)
@@ -785,7 +807,25 @@ export default function App() {
       {/* TOP BAR CONTRACT: Strictly 3 zones separated by gap-8 */}
       <header className="h-14 shrink-0 flex items-center justify-between gap-8 px-4 sm:px-6 bg-white/95 backdrop-blur-md border-b border-orange-200/80 shadow-[0_2px_12px_rgba(255,120,40,0.06)] z-30">
         {/* Zone 1: Single text element wordmark + Active Company badge */}
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex items-center gap-2.5 shrink-0">
+          <button
+            type="button"
+            onClick={() => setSidebarOpen((prev) => !prev)}
+            className={`p-1.5 rounded-lg border transition-colors flex items-center justify-center shrink-0 ${
+              sidebarOpen
+                ? 'text-slate-500 hover:text-orange-600 hover:bg-orange-50 border-orange-200/50 hover:border-orange-200'
+                : 'text-orange-600 bg-orange-50 hover:bg-orange-100 border-orange-200 shadow-2xs'
+            }`}
+            title={sidebarOpen ? 'Collapse Left Sidebar' : 'Expand Left Sidebar'}
+            aria-label={sidebarOpen ? 'Collapse Left Sidebar' : 'Expand Left Sidebar'}
+          >
+            {sidebarOpen ? (
+              <PanelLeftClose className="w-4 h-4 text-slate-500 hover:text-orange-600" />
+            ) : (
+              <PanelLeftOpen className="w-4 h-4 text-orange-500" />
+            )}
+          </button>
+
           <a
             href="#top"
             onClick={(e) => {
@@ -1059,7 +1099,7 @@ export default function App() {
                       <span>Whole Layout Dashboard</span>
                     </span>
                     <span className={`text-[11px] font-mono tabular-nums ${viewMode === 'dashboard' ? 'text-orange-100' : 'text-slate-400'}`}>
-                      {offices.length}
+                      {companySelectedOffices.length}
                     </span>
                   </button>
 
@@ -1102,116 +1142,211 @@ export default function App() {
               )}
             </div>
 
+            {/* Company Office Allocation Selector / Toggle */}
+            <div className="px-3 pt-2.5 pb-2 border-b border-orange-100 bg-orange-50/20">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[11px] font-semibold text-slate-700 tracking-tight flex items-center gap-1.5 truncate">
+                  <Building2 className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                  <span className="truncate">{activeCompany.name}</span>
+                </span>
+                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700 font-medium shrink-0">
+                  {companySelectedOffices.length} {companySelectedOffices.length === 1 ? 'Suite' : 'Suites'}
+                </span>
+              </div>
+              <div className="flex items-center bg-white p-0.5 rounded-lg border border-orange-200 text-[11px] shadow-2xs">
+                <button
+                  type="button"
+                  onClick={() => setSidebarFilterMode('company')}
+                  className={`flex-1 py-1 px-1.5 rounded-md transition-all font-medium text-center truncate ${
+                    sidebarFilterMode === 'company'
+                      ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                  title={`Show offices allocated to ${activeCompany.name}`}
+                >
+                  🏢 Company ({companySelectedOffices.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSidebarFilterMode('all')}
+                  className={`flex-1 py-1 px-1.5 rounded-md transition-all font-medium text-center truncate ${
+                    sidebarFilterMode === 'all'
+                      ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                  title="Show all campus offices across all companies"
+                >
+                  🌐 Campus ({offices.length})
+                </button>
+              </div>
+            </div>
+
             {/* Seamless Office Switcher Grouped by Floor Level (Collapsible Floors) */}
             <div className="max-h-56 md:max-h-none md:flex-1 overflow-y-auto p-3 space-y-3 bg-white">
-              {floorLevels.map((floor) => {
-                const floorOffices = offices.filter((o) => o.floorLevel === floor);
-                const isFloorCollapsed = Boolean(collapsedFloors[floor]);
-                return (
-                  <div key={floor} className="space-y-1">
+              {displayedOffices.length === 0 ? (
+                <div className="p-4 text-center space-y-3 bg-orange-50/30 rounded-xl border border-dashed border-orange-200">
+                  <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center mx-auto shadow-xs">
+                    <Building2 className="w-5 h-5" />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-xs font-semibold text-slate-800">
+                      No Suites Allocated
+                    </div>
+                    <div className="text-[11px] text-slate-500 leading-relaxed">
+                      {activeCompany.name} has no office suites assigned yet.
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1.5 pt-1">
                     <button
                       type="button"
-                      onClick={() => toggleFloorCollapse(floor)}
-                      className="w-full px-2 py-0.5 flex items-center justify-between text-[11px] font-medium text-slate-500 hover:text-slate-800 transition-colors group"
-                      title={isFloorCollapsed ? `Expand Floor 0${floor}` : `Collapse Floor 0${floor}`}
+                      onClick={() => {
+                        setEditingCompany(activeCompany);
+                        setIsCompanyModalOpen(true);
+                      }}
+                      className="px-3 py-1.5 text-xs font-semibold bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-lg transition-all shadow-xs"
                     >
-                      <span className="flex items-center gap-1.5">
-                        <ChevronDown
-                          className={`w-3 h-3 text-slate-400 group-hover:text-slate-600 transition-transform duration-200 ${
-                            isFloorCollapsed ? '-rotate-90' : ''
-                          }`}
-                        />
-                        <span>Floor 0{floor}</span>
-                      </span>
-                      <span className="font-mono tabular-nums text-slate-400">
-                        {floorOffices.length} {floorOffices.length === 1 ? 'suite' : 'suites'}
-                      </span>
+                      Allocate Suites in Matrix
                     </button>
-
-                    {!isFloorCollapsed && (
-                      <div className="space-y-1 pt-0.5">
-
-                    {floorOffices.map((off) => {
-                      const isSel = off.id === activeOffice?.id;
-                      const isStudioMode =
-                        viewMode === 'playground_3d' ||
-                        viewMode === 'editor_2d' ||
-                        viewMode === 'split_studio';
-                      const sqM = computePolygonArea(off.vertices);
-
-                      return (
-                        <div
-                          key={off.id}
-                          onClick={() => {
-                            handleSelectOffice(off.id);
-                            if (!isStudioMode) {
-                              setViewMode('playground_3d');
-                            }
-                          }}
-                          className={`group px-2.5 py-2 rounded-lg cursor-pointer transition-colors flex items-center justify-between gap-2 ${
-                            isSel && isStudioMode
-                              ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_12px_rgba(255,120,40,0.35)]'
-                              : isSel
-                              ? 'bg-orange-50 text-orange-950 font-medium border border-orange-200'
-                              : 'text-slate-700 hover:bg-orange-50/60 hover:text-slate-900'
-                          }`}
-                        >
-                          <div className="min-w-0">
-                            <div className="text-xs truncate">{off.name}</div>
-                            <div
-                              className={`text-[11px] font-mono tabular-nums truncate ${
-                                isSel && isStudioMode
-                                  ? 'text-orange-100'
-                                  : 'text-slate-400'
-                              }`}
-                            >
-                              {off.code} · {sqM.toFixed(0)}m² · {off.furniture.length} items
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setEditingOffice(off);
-                                setModalOpen(true);
-                              }}
-                              className={`p-1 rounded ${
-                                isSel && isStudioMode
-                                  ? 'hover:bg-black/10 text-white'
-                                  : 'hover:bg-orange-100 text-slate-500 hover:text-slate-800'
-                              }`}
-                              title="Edit Office"
-                            >
-                              <Edit3 className="w-3 h-3" />
-                            </button>
-                            {offices.length > 1 && (
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleDeleteOffice(off.id);
-                                }}
-                                className={`p-1 rounded ${
-                                  isSel && isStudioMode
-                                    ? 'hover:bg-rose-700 text-white'
-                                    : 'hover:bg-rose-50 text-slate-400 hover:text-rose-600'
-                                }`}
-                                title="Delete Office"
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      );
-                    })}
-                      </div>
-                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingOffice(null);
+                        setDefaultParentId(null);
+                        setModalOpen(true);
+                      }}
+                      className="px-3 py-1.5 text-xs font-medium bg-white hover:bg-orange-50 text-slate-700 border border-orange-200 rounded-lg transition-colors"
+                    >
+                      + Create Suite for Company
+                    </button>
                   </div>
-                );
-              })}
+                </div>
+              ) : (
+                floorLevels.map((floor) => {
+                  const floorOffices = displayedOffices.filter((o) => o.floorLevel === floor);
+                  const isFloorCollapsed = Boolean(collapsedFloors[floor]);
+                  return (
+                    <div key={floor} className="space-y-1">
+                      <button
+                        type="button"
+                        onClick={() => toggleFloorCollapse(floor)}
+                        className="w-full px-2 py-0.5 flex items-center justify-between text-[11px] font-medium text-slate-500 hover:text-slate-800 transition-colors group"
+                        title={isFloorCollapsed ? `Expand Floor 0${floor}` : `Collapse Floor 0${floor}`}
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <ChevronDown
+                            className={`w-3 h-3 text-slate-400 group-hover:text-slate-600 transition-transform duration-200 ${
+                              isFloorCollapsed ? '-rotate-90' : ''
+                            }`}
+                          />
+                          <span>Floor 0{floor}</span>
+                        </span>
+                        <span className="font-mono tabular-nums text-slate-400">
+                          {floorOffices.length} {floorOffices.length === 1 ? 'suite' : 'suites'}
+                        </span>
+                      </button>
+
+                      {!isFloorCollapsed && (
+                        <div className="space-y-1 pt-0.5">
+                          {floorOffices.map((off) => {
+                            const isSel = off.id === activeOffice?.id;
+                            const isStudioMode =
+                              viewMode === 'playground_3d' ||
+                              viewMode === 'editor_2d' ||
+                              viewMode === 'split_studio';
+                            const sqM = computePolygonArea(off.vertices);
+
+                            return (
+                              <div
+                                key={off.id}
+                                onClick={() => {
+                                  handleSelectOffice(off.id);
+                                  if (!isStudioMode) {
+                                    setViewMode('playground_3d');
+                                  }
+                                }}
+                                className={`group px-2.5 py-2 rounded-lg cursor-pointer transition-colors flex items-center justify-between gap-2 ${
+                                  isSel && isStudioMode
+                                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_12px_rgba(255,120,40,0.35)]'
+                                    : isSel
+                                    ? 'bg-orange-50 text-orange-950 font-medium border border-orange-200'
+                                    : 'text-slate-700 hover:bg-orange-50/60 hover:text-slate-900'
+                                }`}
+                              >
+                                <div className="min-w-0">
+                                  <div className="text-xs truncate flex items-center gap-1.5">
+                                    <span className="truncate">{off.name}</span>
+                                    {sidebarFilterMode === 'all' && (
+                                      <span
+                                        className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                                          off.companyId === activeCompany.id ||
+                                          activeCompany.officeIds?.includes(off.id)
+                                            ? 'bg-orange-500'
+                                            : 'bg-slate-300'
+                                        }`}
+                                        title={
+                                          off.companyId === activeCompany.id ||
+                                          activeCompany.officeIds?.includes(off.id)
+                                            ? `Assigned to ${activeCompany.name}`
+                                            : 'Other / Unassigned'
+                                        }
+                                      />
+                                    )}
+                                  </div>
+                                  <div
+                                    className={`text-[11px] font-mono tabular-nums truncate ${
+                                      isSel && isStudioMode
+                                        ? 'text-orange-100'
+                                        : 'text-slate-400'
+                                    }`}
+                                  >
+                                    {off.code} · {sqM.toFixed(0)}m² · {off.furniture.length} items
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setEditingOffice(off);
+                                      setModalOpen(true);
+                                    }}
+                                    className={`p-1 rounded ${
+                                      isSel && isStudioMode
+                                        ? 'hover:bg-black/10 text-white'
+                                        : 'hover:bg-orange-100 text-slate-500 hover:text-slate-800'
+                                    }`}
+                                    title="Edit Office"
+                                  >
+                                    <Edit3 className="w-3 h-3" />
+                                  </button>
+                                  {offices.length > 1 && (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDeleteOffice(off.id);
+                                      }}
+                                      className={`p-1 rounded ${
+                                        isSel && isStudioMode
+                                          ? 'hover:bg-rose-700 text-white'
+                                          : 'hover:bg-rose-50 text-slate-400 hover:text-rose-600'
+                                      }`}
+                                      title="Delete Office"
+                                    >
+                                      <Trash2 className="w-3 h-3" />
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
             </div>
 
             {/* Sidebar Footer Action */}
@@ -1230,21 +1365,24 @@ export default function App() {
               </button>
             </div>
           </aside>
-        ) : (
-          <div className="w-full md:w-auto px-4 py-2 bg-white border-b md:border-b-0 md:border-r border-orange-200/80 flex items-center justify-between text-xs shrink-0 shadow-sm">
-            <button
-              type="button"
-              onClick={() => setSidebarOpen(true)}
-              className="text-slate-600 hover:text-orange-600 flex items-center gap-1.5 text-xs font-medium transition-colors"
-            >
-              <PanelLeftOpen className="w-4 h-4 text-orange-500" />
-              <span>Show Company Spatial Views</span>
-            </button>
-          </div>
-        )}
+        ) : null}
 
         {/* CENTER WORKSPACE VIEWPORT (Sections 2 and 3 on Mobile) */}
-        <main className="flex-1 flex flex-col min-w-0 md:h-full md:overflow-hidden">
+        <main className="flex-1 flex flex-col min-w-0 md:h-full md:overflow-hidden relative">
+          {!sidebarOpen &&
+            (viewMode === 'dashboard' ||
+              viewMode === 'hierarchy' ||
+              viewMode === 'accounting') && (
+              <button
+                type="button"
+                onClick={() => setSidebarOpen(true)}
+                className="absolute left-3 top-3 z-30 px-2.5 py-1.5 bg-white/95 backdrop-blur-md hover:bg-orange-50 text-slate-700 hover:text-orange-600 border border-orange-200/90 rounded-lg shadow-sm transition-all flex items-center gap-1.5 text-xs font-semibold"
+                title="Show Offices Sidebar"
+              >
+                <PanelLeftOpen className="w-4 h-4 text-orange-500" />
+                <span>Show Sidebar</span>
+              </button>
+            )}
           {viewMode === 'dashboard' || viewMode === 'hierarchy' ? (
             <div className="flex-1 flex flex-col h-full overflow-hidden bg-white">
               <CompanyDashboard
@@ -1306,13 +1444,20 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => setSidebarOpen((prev) => !prev)}
-                      className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-orange-50 rounded-lg transition-colors shrink-0"
-                      title={sidebarOpen ? 'Collapse Company Views' : 'Expand Company Views'}
+                      className={`p-1.5 rounded-lg transition-colors shrink-0 flex items-center gap-1.5 ${
+                        sidebarOpen
+                          ? 'text-slate-500 hover:text-slate-800 hover:bg-orange-50'
+                          : 'text-orange-600 bg-orange-50 hover:bg-orange-100 border border-orange-200/90 shadow-2xs'
+                      }`}
+                      title={sidebarOpen ? 'Collapse Left Sidebar' : 'Show Offices Sidebar'}
                     >
                       {sidebarOpen ? (
                         <PanelLeftClose className="w-4 h-4 text-orange-500" />
                       ) : (
-                        <PanelLeftOpen className="w-4 h-4 text-orange-500" />
+                        <>
+                          <PanelLeftOpen className="w-4 h-4 text-orange-500" />
+                          <span className="text-[11px] font-semibold text-orange-700 hidden sm:inline">Offices</span>
+                        </>
                       )}
                     </button>
                   )}
