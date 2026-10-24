@@ -781,9 +781,9 @@ export default function App() {
     : 0;
 
   return (
-    <div className="min-h-screen md:h-screen w-screen flex flex-col bg-[#0b1120] text-slate-100 overflow-y-auto md:overflow-hidden">
+    <div className="min-h-screen md:h-screen w-screen flex flex-col bg-white text-slate-900 overflow-y-auto md:overflow-hidden">
       {/* TOP BAR CONTRACT: Strictly 3 zones separated by gap-8 */}
-      <header className="h-14 shrink-0 flex items-center justify-between gap-8 px-4 sm:px-6 bg-[#090e1a] border-b border-white/10 z-30">
+      <header className="h-14 shrink-0 flex items-center justify-between gap-8 px-4 sm:px-6 bg-white/95 backdrop-blur-md border-b border-orange-200/80 shadow-[0_2px_12px_rgba(255,120,40,0.06)] z-30">
         {/* Zone 1: Single text element wordmark + Active Company badge */}
         <div className="flex items-center gap-3 shrink-0">
           <a
@@ -792,9 +792,10 @@ export default function App() {
               e.preventDefault();
               setViewMode('dashboard');
             }}
-            className="text-base sm:text-lg font-bold tracking-tight text-white font-display whitespace-nowrap shrink-0"
+            className="text-base sm:text-lg font-bold tracking-tight text-slate-900 hover:text-orange-600 font-display whitespace-nowrap shrink-0 transition-colors flex items-center gap-2"
           >
-            office.studio.v
+            <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-tr from-orange-500 to-amber-400 shadow-[0_0_8px_rgba(255,120,40,0.7)] shrink-0" />
+            <span>office.studio.v</span>
           </a>
 
           {activeCompany && (
@@ -804,14 +805,14 @@ export default function App() {
                 setEditingCompany(activeCompany);
                 setIsCompanyModalOpen(true);
               }}
-              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-slate-900/90 hover:bg-slate-800 text-xs border border-white/10 rounded-lg text-slate-300 hover:text-white transition-colors"
+              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-orange-50/70 hover:bg-orange-100/70 text-xs border border-orange-200/80 rounded-lg text-slate-700 hover:text-slate-900 transition-colors shadow-sm"
               title="Configure Company Legal Profile & Offices"
             >
-              <Building2 className="w-3.5 h-3.5 text-sky-400" />
-              <span className="font-semibold text-white max-w-[140px] truncate">
+              <Building2 className="w-3.5 h-3.5 text-orange-500" />
+              <span className="font-semibold text-slate-900 max-w-[140px] truncate">
                 {activeCompany.name}
               </span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded bg-sky-500/10 text-sky-300 font-medium">
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-orange-100 text-orange-700 font-medium">
                 {activeCompany.companyType}
               </span>
             </button>
@@ -819,17 +820,17 @@ export default function App() {
         </div>
 
         {/* Zone 2: 5 concise single-line text navigation links */}
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-400">
+        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
           <a
             href="#dashboard"
             onClick={(e) => {
               e.preventDefault();
               setViewMode('dashboard');
             }}
-            className={`hover:text-white transition-colors whitespace-nowrap shrink-0 ${
+            className={`transition-colors whitespace-nowrap shrink-0 ${
               viewMode === 'dashboard'
-                ? 'text-white underline underline-offset-8 decoration-sky-400 decoration-2'
-                : ''
+                ? 'text-orange-600 font-semibold underline underline-offset-8 decoration-orange-500 decoration-2 drop-shadow-[0_0_8px_rgba(255,120,40,0.25)]'
+                : 'hover:text-slate-900'
             }`}
           >
             Dashboard
@@ -840,10 +841,10 @@ export default function App() {
               e.preventDefault();
               setViewMode('hierarchy');
             }}
-            className={`hover:text-white transition-colors whitespace-nowrap shrink-0 ${
+            className={`transition-colors whitespace-nowrap shrink-0 ${
               viewMode === 'hierarchy'
-                ? 'text-white underline underline-offset-8 decoration-sky-400 decoration-2'
-                : ''
+                ? 'text-orange-600 font-semibold underline underline-offset-8 decoration-orange-500 decoration-2 drop-shadow-[0_0_8px_rgba(255,120,40,0.25)]'
+                : 'hover:text-slate-900'
             }`}
           >
             Hierarchy
@@ -854,10 +855,10 @@ export default function App() {
               e.preventDefault();
               setViewMode('playground_3d');
             }}
-            className={`hover:text-white transition-colors whitespace-nowrap shrink-0 ${
+            className={`transition-colors whitespace-nowrap shrink-0 ${
               viewMode === 'playground_3d'
-                ? 'text-white underline underline-offset-8 decoration-sky-400 decoration-2'
-                : ''
+                ? 'text-orange-600 font-semibold underline underline-offset-8 decoration-orange-500 decoration-2 drop-shadow-[0_0_8px_rgba(255,120,40,0.25)]'
+                : 'hover:text-slate-900'
             }`}
           >
             3D Playground
@@ -868,10 +869,10 @@ export default function App() {
               e.preventDefault();
               setViewMode('editor_2d');
             }}
-            className={`hover:text-white transition-colors whitespace-nowrap shrink-0 ${
+            className={`transition-colors whitespace-nowrap shrink-0 ${
               viewMode === 'editor_2d'
-                ? 'text-white underline underline-offset-8 decoration-sky-400 decoration-2'
-                : ''
+                ? 'text-orange-600 font-semibold underline underline-offset-8 decoration-orange-500 decoration-2 drop-shadow-[0_0_8px_rgba(255,120,40,0.25)]'
+                : 'hover:text-slate-900'
             }`}
           >
             2D Floor CAD
@@ -882,10 +883,10 @@ export default function App() {
               e.preventDefault();
               setViewMode('split_studio');
             }}
-            className={`hover:text-white transition-colors whitespace-nowrap shrink-0 ${
+            className={`transition-colors whitespace-nowrap shrink-0 ${
               viewMode === 'split_studio'
-                ? 'text-white underline underline-offset-8 decoration-sky-400 decoration-2'
-                : ''
+                ? 'text-orange-600 font-semibold underline underline-offset-8 decoration-orange-500 decoration-2 drop-shadow-[0_0_8px_rgba(255,120,40,0.25)]'
+                : 'hover:text-slate-900'
             }`}
           >
             Split Studio
@@ -896,13 +897,13 @@ export default function App() {
               e.preventDefault();
               setViewMode('accounting');
             }}
-            className={`hover:text-white transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
+            className={`transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
               viewMode === 'accounting'
-                ? 'text-white underline underline-offset-8 decoration-emerald-400 decoration-2'
-                : ''
+                ? 'text-orange-600 font-semibold underline underline-offset-8 decoration-orange-500 decoration-2 drop-shadow-[0_0_8px_rgba(255,120,40,0.25)]'
+                : 'hover:text-slate-900'
             }`}
           >
-            <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
+            <DollarSign className="w-3.5 h-3.5 text-orange-500" />
             <span>Accounting & Finance</span>
           </a>
         </nav>
@@ -915,10 +916,10 @@ export default function App() {
               setEditingCompany(activeCompany);
               setIsCompanyModalOpen(true);
             }}
-            className="px-2.5 sm:px-3 py-1.5 text-xs font-medium text-slate-200 bg-slate-900 border border-white/10 rounded-lg hover:bg-slate-800 transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5"
+            className="px-2.5 sm:px-3 py-1.5 text-xs font-medium text-slate-700 bg-white border border-orange-200/90 rounded-lg hover:bg-orange-50 hover:border-orange-300 transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 shadow-sm"
             title="Configure Company Details & Assigned Offices"
           >
-            <Building2 className="w-3.5 h-3.5 text-sky-400" />
+            <Building2 className="w-3.5 h-3.5 text-orange-500" />
             <span className="hidden sm:inline">Company</span>
           </button>
 
@@ -928,12 +929,12 @@ export default function App() {
               setEditingAgent(null);
               setIsAgentManagerOpen(true);
             }}
-            className="px-2.5 sm:px-3 py-1.5 text-xs font-medium text-slate-200 bg-slate-900 border border-white/10 rounded-lg hover:bg-slate-800 transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5"
+            className="px-2.5 sm:px-3 py-1.5 text-xs font-medium text-slate-700 bg-white border border-orange-200/90 rounded-lg hover:bg-orange-50 hover:border-orange-300 transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 shadow-sm"
             title="Configure Agents & Hierarchy"
           >
-            <Bot className="w-3.5 h-3.5 text-sky-400" />
+            <Bot className="w-3.5 h-3.5 text-orange-500" />
             <span className="hidden sm:inline">Agents</span>
-            <span className="text-[10px] font-mono px-1.5 py-0.2 bg-white/10 rounded-full text-slate-300">
+            <span className="text-[10px] font-mono px-1.5 py-0.2 bg-orange-100 rounded-full text-orange-700 font-semibold">
               {activeOffice?.agents?.length || 0}
             </span>
           </button>
@@ -945,7 +946,7 @@ export default function App() {
               setDefaultParentId(activeOffice?.id || null);
               setModalOpen(true);
             }}
-            className="px-3 sm:px-4 py-2 text-xs font-semibold text-slate-950 bg-sky-400 rounded-lg hover:bg-sky-300 transition-colors whitespace-nowrap shrink-0"
+            className="px-3 sm:px-4 py-2 text-xs font-semibold text-white bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 rounded-lg shadow-[0_0_15px_rgba(255,107,0,0.35)] transition-all whitespace-nowrap shrink-0"
           >
             New Office
           </button>
@@ -956,12 +957,12 @@ export default function App() {
       <div className="flex-1 flex flex-col md:flex-row min-h-0 overflow-y-auto md:overflow-hidden">
         {/* SECTION 1 ON MOBILE / LEFT SIDEBAR ON DESKTOP: Company Spatial Views */}
         {sidebarOpen ? (
-          <aside className="w-full md:w-64 shrink-0 bg-[#090e1a] border-b md:border-b-0 md:border-r border-white/10 flex flex-col select-none md:h-full overflow-hidden">
+          <aside className="w-full md:w-64 shrink-0 bg-white border-b md:border-b-0 md:border-r border-orange-200/80 flex flex-col select-none md:h-full overflow-hidden shadow-sm">
             {/* Enterprise Company Entity Selector & Config */}
-            <div className="p-3 border-b border-white/10 bg-slate-950/40">
+            <div className="p-3 border-b border-orange-100 bg-orange-50/40">
               <div className="flex items-center justify-between mb-1.5">
-                <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <Building2 className="w-3.5 h-3.5 text-sky-400" />
+                <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <Building2 className="w-3.5 h-3.5 text-orange-500" />
                   <span>Company Entity</span>
                 </div>
                 <div className="flex items-center gap-1">
@@ -971,7 +972,7 @@ export default function App() {
                       setEditingCompany(activeCompany);
                       setIsCompanyModalOpen(true);
                     }}
-                    className="p-1 text-slate-400 hover:text-white rounded hover:bg-white/10 transition-colors"
+                    className="p-1 text-slate-400 hover:text-slate-700 rounded hover:bg-orange-100/60 transition-colors"
                     title="Configure Company Details & Assigned Offices"
                   >
                     <Settings2 className="w-3.5 h-3.5" />
@@ -982,10 +983,18 @@ export default function App() {
                       setEditingCompany(null);
                       setIsCompanyModalOpen(true);
                     }}
-                    className="p-1 text-slate-400 hover:text-sky-400 rounded hover:bg-white/10 transition-colors"
+                    className="p-1 text-slate-400 hover:text-orange-600 rounded hover:bg-orange-100/60 transition-colors"
                     title="Register New Company"
                   >
                     <Plus className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSidebarOpen(false)}
+                    className="p-1 text-slate-400 hover:text-orange-600 rounded hover:bg-orange-100/60 transition-colors"
+                    title="Collapse Sidebar"
+                  >
+                    <PanelLeftClose className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
@@ -995,7 +1004,7 @@ export default function App() {
                 <select
                   value={selectedCompanyId}
                   onChange={(e) => setSelectedCompanyId(e.target.value)}
-                  className="w-full px-2.5 py-1.5 text-xs font-semibold bg-slate-900 border border-white/10 rounded-lg text-white focus:outline-none focus:border-sky-400 appearance-none pr-6 cursor-pointer truncate"
+                  className="w-full px-2.5 py-1.5 text-xs font-semibold bg-white border border-orange-200/90 rounded-lg text-slate-900 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 appearance-none pr-6 cursor-pointer truncate shadow-sm"
                 >
                   {companies.map((c) => (
                     <option key={c.id} value={c.id}>
@@ -1007,11 +1016,11 @@ export default function App() {
               </div>
 
               {activeCompany && (
-                <div className="mt-2 flex items-center justify-between text-[11px] text-slate-400">
-                  <span className="font-mono text-slate-400 truncate max-w-[120px]">
+                <div className="mt-2 flex items-center justify-between text-[11px] text-slate-500">
+                  <span className="font-mono text-slate-500 truncate max-w-[120px]">
                     {activeCompany.gstDetails || activeCompany.country}
                   </span>
-                  <span className="text-sky-400 font-semibold font-mono">
+                  <span className="text-orange-600 font-semibold font-mono">
                     {companyOfficesCount} Offices
                   </span>
                 </div>
@@ -1019,16 +1028,16 @@ export default function App() {
             </div>
 
             {/* Overview & Hierarchy Links (Collapsible Section) */}
-            <div className="p-3 border-b border-white/10">
+            <div className="p-3 border-b border-orange-100 bg-white">
               <button
                 type="button"
                 onClick={() => setSpatialViewsOpen((prev) => !prev)}
-                className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-medium text-slate-400 hover:text-slate-200 transition-colors group"
+                className="w-full px-2 py-1 flex items-center justify-between text-[11px] font-medium text-slate-500 hover:text-slate-800 transition-colors group"
                 title={spatialViewsOpen ? 'Collapse Company Spatial Views' : 'Expand Company Spatial Views'}
               >
                 <span>Company Spatial Views</span>
                 <ChevronDown
-                  className={`w-3.5 h-3.5 text-slate-500 group-hover:text-slate-300 transition-transform duration-200 ${
+                  className={`w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 transition-transform duration-200 ${
                     spatialViewsOpen ? '' : '-rotate-90'
                   }`}
                 />
@@ -1041,15 +1050,15 @@ export default function App() {
                     onClick={() => setViewMode('dashboard')}
                     className={`w-full px-2.5 py-2 text-xs font-medium rounded-lg transition-colors flex items-center justify-between ${
                       viewMode === 'dashboard'
-                        ? 'bg-sky-500/15 text-sky-300'
-                        : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                        ? 'bg-orange-500 text-white font-medium shadow-[0_0_10px_rgba(255,120,40,0.35)]'
+                        : 'text-slate-700 hover:bg-orange-50/60 hover:text-slate-900'
                     }`}
                   >
                     <span className="flex items-center gap-2 whitespace-nowrap">
-                      <LayoutGrid className="w-4 h-4 text-sky-400" />
+                      <LayoutGrid className={`w-4 h-4 ${viewMode === 'dashboard' ? 'text-white' : 'text-orange-500'}`} />
                       <span>Whole Layout Dashboard</span>
                     </span>
-                    <span className="text-[11px] font-mono tabular-nums text-slate-500">
+                    <span className={`text-[11px] font-mono tabular-nums ${viewMode === 'dashboard' ? 'text-orange-100' : 'text-slate-400'}`}>
                       {offices.length}
                     </span>
                   </button>
@@ -1059,15 +1068,15 @@ export default function App() {
                     onClick={() => setViewMode('hierarchy')}
                     className={`w-full px-2.5 py-2 text-xs font-medium rounded-lg transition-colors flex items-center justify-between ${
                       viewMode === 'hierarchy'
-                        ? 'bg-sky-500/15 text-sky-300'
-                        : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                        ? 'bg-orange-500 text-white font-medium shadow-[0_0_10px_rgba(255,120,40,0.35)]'
+                        : 'text-slate-700 hover:bg-orange-50/60 hover:text-slate-900'
                     }`}
                   >
                     <span className="flex items-center gap-2 whitespace-nowrap">
-                      <GitBranch className="w-4 h-4 text-sky-400" />
+                      <GitBranch className={`w-4 h-4 ${viewMode === 'hierarchy' ? 'text-white' : 'text-orange-500'}`} />
                       <span>Office Hierarchy Tree</span>
                     </span>
-                    <span className="text-[11px] font-mono tabular-nums text-slate-500">
+                    <span className={`text-[11px] font-mono tabular-nums ${viewMode === 'hierarchy' ? 'text-orange-100' : 'text-slate-400'}`}>
                       Org
                     </span>
                   </button>
@@ -1077,15 +1086,15 @@ export default function App() {
                     onClick={() => setViewMode('accounting')}
                     className={`w-full px-2.5 py-2 text-xs font-medium rounded-lg transition-colors flex items-center justify-between ${
                       viewMode === 'accounting'
-                        ? 'bg-emerald-500/15 text-emerald-300 font-medium'
-                        : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                        ? 'bg-orange-500 text-white font-medium shadow-[0_0_10px_rgba(255,120,40,0.35)]'
+                        : 'text-slate-700 hover:bg-orange-50/60 hover:text-slate-900'
                     }`}
                   >
                     <span className="flex items-center gap-2 whitespace-nowrap">
-                      <DollarSign className="w-4 h-4 text-emerald-400" />
+                      <DollarSign className={`w-4 h-4 ${viewMode === 'accounting' ? 'text-white' : 'text-orange-500'}`} />
                       <span>Accounting & Finance</span>
                     </span>
-                    <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${viewMode === 'accounting' ? 'bg-orange-600 text-white' : 'text-orange-700 bg-orange-100'}`}>
                       Live
                     </span>
                   </button>
@@ -1094,7 +1103,7 @@ export default function App() {
             </div>
 
             {/* Seamless Office Switcher Grouped by Floor Level (Collapsible Floors) */}
-            <div className="max-h-56 md:max-h-none md:flex-1 overflow-y-auto p-3 space-y-3">
+            <div className="max-h-56 md:max-h-none md:flex-1 overflow-y-auto p-3 space-y-3 bg-white">
               {floorLevels.map((floor) => {
                 const floorOffices = offices.filter((o) => o.floorLevel === floor);
                 const isFloorCollapsed = Boolean(collapsedFloors[floor]);
@@ -1103,18 +1112,18 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => toggleFloorCollapse(floor)}
-                      className="w-full px-2 py-0.5 flex items-center justify-between text-[11px] font-medium text-slate-400 hover:text-slate-200 transition-colors group"
+                      className="w-full px-2 py-0.5 flex items-center justify-between text-[11px] font-medium text-slate-500 hover:text-slate-800 transition-colors group"
                       title={isFloorCollapsed ? `Expand Floor 0${floor}` : `Collapse Floor 0${floor}`}
                     >
                       <span className="flex items-center gap-1.5">
                         <ChevronDown
-                          className={`w-3 h-3 text-slate-500 group-hover:text-slate-300 transition-transform duration-200 ${
+                          className={`w-3 h-3 text-slate-400 group-hover:text-slate-600 transition-transform duration-200 ${
                             isFloorCollapsed ? '-rotate-90' : ''
                           }`}
                         />
                         <span>Floor 0{floor}</span>
                       </span>
-                      <span className="font-mono tabular-nums text-slate-500">
+                      <span className="font-mono tabular-nums text-slate-400">
                         {floorOffices.length} {floorOffices.length === 1 ? 'suite' : 'suites'}
                       </span>
                     </button>
@@ -1141,10 +1150,10 @@ export default function App() {
                           }}
                           className={`group px-2.5 py-2 rounded-lg cursor-pointer transition-colors flex items-center justify-between gap-2 ${
                             isSel && isStudioMode
-                              ? 'bg-sky-500 text-slate-950 font-semibold'
+                              ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_12px_rgba(255,120,40,0.35)]'
                               : isSel
-                              ? 'bg-white/10 text-white font-medium'
-                              : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                              ? 'bg-orange-50 text-orange-950 font-medium border border-orange-200'
+                              : 'text-slate-700 hover:bg-orange-50/60 hover:text-slate-900'
                           }`}
                         >
                           <div className="min-w-0">
@@ -1152,8 +1161,8 @@ export default function App() {
                             <div
                               className={`text-[11px] font-mono tabular-nums truncate ${
                                 isSel && isStudioMode
-                                  ? 'text-slate-900/80'
-                                  : 'text-slate-500'
+                                  ? 'text-orange-100'
+                                  : 'text-slate-400'
                               }`}
                             >
                               {off.code} · {sqM.toFixed(0)}m² · {off.furniture.length} items
@@ -1170,8 +1179,8 @@ export default function App() {
                               }}
                               className={`p-1 rounded ${
                                 isSel && isStudioMode
-                                  ? 'hover:bg-slate-900/15 text-slate-900'
-                                  : 'hover:bg-white/10 text-slate-400 hover:text-white'
+                                  ? 'hover:bg-black/10 text-white'
+                                  : 'hover:bg-orange-100 text-slate-500 hover:text-slate-800'
                               }`}
                               title="Edit Office"
                             >
@@ -1186,8 +1195,8 @@ export default function App() {
                                 }}
                                 className={`p-1 rounded ${
                                   isSel && isStudioMode
-                                    ? 'hover:bg-slate-900/15 text-slate-900'
-                                    : 'hover:bg-rose-500/20 text-slate-400 hover:text-rose-400'
+                                    ? 'hover:bg-rose-700 text-white'
+                                    : 'hover:bg-rose-50 text-slate-400 hover:text-rose-600'
                                 }`}
                                 title="Delete Office"
                               >
@@ -1206,7 +1215,7 @@ export default function App() {
             </div>
 
             {/* Sidebar Footer Action */}
-            <div className="p-2.5 md:p-3 border-t border-white/10 bg-slate-950/50">
+            <div className="p-2.5 md:p-3 border-t border-orange-100 bg-orange-50/30">
               <button
                 type="button"
                 onClick={() => {
@@ -1214,21 +1223,21 @@ export default function App() {
                   setDefaultParentId(activeOffice?.id || null);
                   setModalOpen(true);
                 }}
-                className="w-full py-1.5 md:py-2 px-3 text-xs font-medium bg-slate-900 hover:bg-slate-800 text-slate-200 border border-white/10 rounded-lg transition-colors flex items-center justify-center gap-1.5"
+                className="w-full py-1.5 md:py-2 px-3 text-xs font-medium bg-white hover:bg-orange-50 text-slate-800 border border-orange-200/90 rounded-lg transition-colors flex items-center justify-center gap-1.5 shadow-sm hover:border-orange-300"
               >
-                <Plus className="w-3.5 h-3.5 text-sky-400" />
+                <Plus className="w-3.5 h-3.5 text-orange-500" />
                 <span>Add Office Suite</span>
               </button>
             </div>
           </aside>
         ) : (
-          <div className="w-full md:w-auto px-4 py-2 bg-slate-950/80 border-b md:border-b-0 md:border-r border-white/10 flex items-center justify-between text-xs shrink-0">
+          <div className="w-full md:w-auto px-4 py-2 bg-white border-b md:border-b-0 md:border-r border-orange-200/80 flex items-center justify-between text-xs shrink-0 shadow-sm">
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
-              className="text-slate-400 hover:text-white flex items-center gap-1.5 text-xs font-medium"
+              className="text-slate-600 hover:text-orange-600 flex items-center gap-1.5 text-xs font-medium transition-colors"
             >
-              <PanelLeftOpen className="w-4 h-4 text-sky-400" />
+              <PanelLeftOpen className="w-4 h-4 text-orange-500" />
               <span>Show Company Spatial Views</span>
             </button>
           </div>
@@ -1237,7 +1246,7 @@ export default function App() {
         {/* CENTER WORKSPACE VIEWPORT (Sections 2 and 3 on Mobile) */}
         <main className="flex-1 flex flex-col min-w-0 md:h-full md:overflow-hidden">
           {viewMode === 'dashboard' || viewMode === 'hierarchy' ? (
-            <div className="flex-1 flex flex-col h-full overflow-hidden">
+            <div className="flex-1 flex flex-col h-full overflow-hidden bg-white">
               <CompanyDashboard
                 offices={offices}
                 selectedOfficeId={activeOffice.id}
@@ -1266,7 +1275,7 @@ export default function App() {
               />
             </div>
           ) : viewMode === 'accounting' ? (
-            <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#090e1a]">
+            <div className="flex-1 flex flex-col h-full overflow-hidden bg-white">
               <AccountingPanel
                 office={activeOffice}
                 onUpdateAccounting={handleUpdateAccounting}
@@ -1282,14 +1291,14 @@ export default function App() {
             <div
               className={
                 isStudioFullscreen
-                  ? 'fixed inset-0 z-50 w-screen h-screen bg-[#090e1a] flex flex-col overflow-hidden'
+                  ? 'fixed inset-0 z-50 w-screen h-screen bg-white flex flex-col overflow-hidden'
                   : 'flex-1 flex flex-col min-w-0 md:h-full md:overflow-hidden'
               }
             >
               {/* Contextual Studio Sub-Toolbar */}
               <div
-                className={`shrink-0 px-3 sm:px-4 bg-[#0f172a] border-b border-white/10 flex flex-wrap md:flex-nowrap items-center justify-between gap-2.5 py-2 ${
-                  isStudioFullscreen ? 'h-14 bg-slate-950/95 backdrop-blur-md' : 'md:h-12'
+                className={`shrink-0 px-3 sm:px-4 bg-white/95 backdrop-blur-md border-b border-orange-200/80 flex flex-wrap md:flex-nowrap items-center justify-between gap-2.5 py-2 shadow-sm ${
+                  isStudioFullscreen ? 'h-14 bg-white/95 backdrop-blur-md' : 'md:h-12'
                 }`}
               >
                 <div className="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -1297,31 +1306,31 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => setSidebarOpen((prev) => !prev)}
-                      className="p-1.5 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors shrink-0"
+                      className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-orange-50 rounded-lg transition-colors shrink-0"
                       title={sidebarOpen ? 'Collapse Company Views' : 'Expand Company Views'}
                     >
                       {sidebarOpen ? (
-                        <PanelLeftClose className="w-4 h-4" />
+                        <PanelLeftClose className="w-4 h-4 text-orange-500" />
                       ) : (
-                        <PanelLeftOpen className="w-4 h-4" />
+                        <PanelLeftOpen className="w-4 h-4 text-orange-500" />
                       )}
                     </button>
                   )}
 
                   <div className="flex items-center gap-2 text-xs min-w-0">
-                    <span className="font-mono text-sky-400 font-semibold shrink-0">
+                    <span className="font-mono text-orange-600 font-semibold shrink-0">
                       {activeOffice.code}
                     </span>
-                    <span className="text-slate-600" aria-hidden="true">/</span>
-                    <span className="font-semibold text-white truncate max-w-[130px] sm:max-w-none">
+                    <span className="text-slate-300" aria-hidden="true">/</span>
+                    <span className="font-semibold text-slate-900 truncate max-w-[130px] sm:max-w-none">
                       {activeOffice.name}
                     </span>
-                    <span className="text-slate-600 hidden lg:inline" aria-hidden="true">·</span>
-                    <span className="text-slate-400 hidden lg:inline whitespace-nowrap">
+                    <span className="text-slate-300 hidden lg:inline" aria-hidden="true">·</span>
+                    <span className="text-slate-500 hidden lg:inline whitespace-nowrap">
                       Floor 0{activeOffice.floorLevel} · {activeOffice.department}
                     </span>
-                    <span className="text-slate-600 hidden xl:inline" aria-hidden="true">·</span>
-                    <span className="font-mono tabular-nums text-slate-300 hidden xl:inline whitespace-nowrap">
+                    <span className="text-slate-300 hidden xl:inline" aria-hidden="true">·</span>
+                    <span className="font-mono tabular-nums text-slate-600 hidden xl:inline whitespace-nowrap">
                       {activeOfficeArea.toFixed(1)} m² · {activeOfficeSeats} Seats
                     </span>
                   </div>
@@ -1329,14 +1338,14 @@ export default function App() {
 
                 {/* Studio Controls: Mode Switcher + Fullscreen / Drawer Toggles */}
                 <div className="flex items-center gap-2 shrink-0">
-                  <div className="flex items-center gap-1 p-0.5 sm:p-1 bg-slate-950 border border-white/10 rounded-lg">
+                  <div className="flex items-center gap-1 p-0.5 sm:p-1 bg-orange-50/70 border border-orange-200/80 rounded-lg">
                     <button
                       type="button"
                       onClick={() => setViewMode('playground_3d')}
                       className={`px-2 sm:px-3 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 sm:gap-1.5 ${
                         viewMode === 'playground_3d'
-                          ? 'bg-sky-500 text-slate-950 font-semibold'
-                          : 'text-slate-400 hover:text-white'
+                          ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_12px_rgba(255,120,40,0.35)]'
+                          : 'text-slate-600 hover:text-slate-900'
                       }`}
                     >
                       <Box className="w-3.5 h-3.5" />
@@ -1349,8 +1358,8 @@ export default function App() {
                       onClick={() => setViewMode('editor_2d')}
                       className={`px-2 sm:px-3 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 sm:gap-1.5 ${
                         viewMode === 'editor_2d'
-                          ? 'bg-sky-500 text-slate-950 font-semibold'
-                          : 'text-slate-400 hover:text-white'
+                          ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_12px_rgba(255,120,40,0.35)]'
+                          : 'text-slate-600 hover:text-slate-900'
                       }`}
                     >
                       <Compass className="w-3.5 h-3.5" />
@@ -1363,8 +1372,8 @@ export default function App() {
                       onClick={() => setViewMode('split_studio')}
                       className={`px-2 sm:px-3 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 sm:gap-1.5 ${
                         viewMode === 'split_studio'
-                          ? 'bg-sky-500 text-slate-950 font-semibold'
-                          : 'text-slate-400 hover:text-white'
+                          ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_12px_rgba(255,120,40,0.35)]'
+                          : 'text-slate-600 hover:text-slate-900'
                       }`}
                     >
                       <Columns className="w-3.5 h-3.5" />
@@ -1378,12 +1387,12 @@ export default function App() {
                         setEditingAgent(null);
                         setIsAgentManagerOpen(true);
                       }}
-                      className="px-2 sm:px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 text-slate-300 hover:text-white hover:bg-white/5"
+                      className="px-2 sm:px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 text-slate-700 hover:text-slate-900 hover:bg-orange-100/60"
                       title="Manage Office Agents & Hierarchy"
                     >
-                      <Bot className="w-3.5 h-3.5 text-sky-400" />
+                      <Bot className="w-3.5 h-3.5 text-orange-500" />
                       <span className="hidden sm:inline">Agents</span>
-                      <span className="text-[10px] font-mono text-sky-400 bg-sky-500/10 px-1 rounded">
+                      <span className="text-[10px] font-mono text-orange-700 bg-orange-100 font-semibold px-1 rounded">
                         {activeOffice.agents?.length || 0}
                       </span>
                     </button>
@@ -1391,10 +1400,10 @@ export default function App() {
                     <button
                       type="button"
                       onClick={() => setViewMode('accounting')}
-                      className="px-2 sm:px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 text-slate-300 hover:text-white hover:bg-white/5"
+                      className="px-2 sm:px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 text-slate-700 hover:text-slate-900 hover:bg-orange-100/60"
                       title="Open Accounting & Finance Panel"
                     >
-                      <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
+                      <DollarSign className="w-3.5 h-3.5 text-orange-500" />
                       <span className="hidden sm:inline">Accounting</span>
                     </button>
                   </div>
@@ -1404,21 +1413,21 @@ export default function App() {
                       <button
                         type="button"
                         onClick={() => setShowFullscreenDrawer((prev) => !prev)}
-                        className={`px-3 py-1.5 text-xs font-medium rounded-lg border backdrop-blur-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
+                        className={`px-3 py-1.5 text-xs font-medium rounded-lg border backdrop-blur-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 shadow-sm ${
                           showFullscreenDrawer
-                            ? 'bg-sky-500/20 border-sky-400/50 text-sky-200'
-                            : 'bg-slate-900 border-white/10 text-slate-300 hover:text-white'
+                            ? 'bg-orange-100 border-orange-400 text-orange-800'
+                            : 'bg-white border-orange-200 text-slate-700 hover:text-slate-900'
                         }`}
                         title="Toggle Furniture Catalog & Specs Panel"
                       >
-                        <Package className="w-3.5 h-3.5" />
+                        <Package className="w-3.5 h-3.5 text-orange-500" />
                         <span className="hidden sm:inline">Catalog & Specs</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={toggleStudioFullscreen}
-                        className="px-3 py-1.5 text-xs font-semibold bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-lg transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5"
+                        className="px-3 py-1.5 text-xs font-semibold bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-lg shadow-[0_0_15px_rgba(255,107,0,0.35)] transition-all whitespace-nowrap shrink-0 flex items-center gap-1.5"
                         title="Exit Fullscreen Mode (Esc or F)"
                       >
                         <Minimize2 className="w-3.5 h-3.5" />
@@ -1430,22 +1439,22 @@ export default function App() {
                       <button
                         type="button"
                         onClick={() => setCatalogOpen((prev) => !prev)}
-                        className={`px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
+                        className={`px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 shadow-sm ${
                           catalogOpen
-                            ? 'bg-slate-900 border-white/10 text-slate-300 hover:text-white hover:bg-slate-800'
-                            : 'bg-sky-500/20 border-sky-400/40 text-sky-200 hover:bg-sky-500/30'
+                            ? 'bg-white border-orange-200 text-slate-700 hover:text-slate-900 hover:bg-orange-50'
+                            : 'bg-orange-50 border-orange-300 text-orange-700 hover:bg-orange-100'
                         }`}
                         title={catalogOpen ? 'Collapse Catalog Panel (C)' : 'Expand Catalog Panel (C)'}
                       >
                         {catalogOpen ? (
                           <>
-                            <PanelRightClose className="w-3.5 h-3.5 text-slate-400" />
+                            <PanelRightClose className="w-3.5 h-3.5 text-slate-500" />
                             <span className="hidden sm:inline">Collapse Catalog</span>
                             <span className="sm:hidden">Catalog</span>
                           </>
                         ) : (
                           <>
-                            <PanelRightOpen className="w-3.5 h-3.5 text-sky-400" />
+                            <PanelRightOpen className="w-3.5 h-3.5 text-orange-500" />
                             <span>Catalog</span>
                           </>
                         )}
@@ -1454,10 +1463,10 @@ export default function App() {
                       <button
                         type="button"
                         onClick={toggleStudioFullscreen}
-                        className="px-2.5 sm:px-3 py-1.5 text-xs font-medium bg-slate-950 hover:bg-slate-900 text-slate-300 hover:text-white border border-white/10 rounded-lg transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5"
+                        className="px-2.5 sm:px-3 py-1.5 text-xs font-medium bg-white hover:bg-orange-50 text-slate-700 hover:text-slate-900 border border-orange-200/90 rounded-lg transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 shadow-sm hover:border-orange-300"
                         title="Enter Fullscreen Mode (F)"
                       >
-                        <Maximize2 className="w-3.5 h-3.5 text-sky-400" />
+                        <Maximize2 className="w-3.5 h-3.5 text-orange-500" />
                         <span className="hidden sm:inline">Fullscreen</span>
                       </button>
                     </>
@@ -1525,7 +1534,7 @@ export default function App() {
                   )}
 
                   {viewMode === 'split_studio' && (
-                    <div className="w-full h-full grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-white/10">
+                    <div className="w-full h-full grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-orange-200/80">
                       <div className="w-full h-full min-h-0 overflow-hidden">
                         <Office2DCanvas
                           office={activeOffice}
@@ -1616,12 +1625,12 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => setCatalogOpen(true)}
-                    className="absolute top-4 right-4 z-20 px-3 py-2 bg-slate-900/95 hover:bg-slate-800 text-slate-200 hover:text-white border border-white/15 rounded-lg shadow-xl backdrop-blur-md flex items-center gap-2 text-xs font-medium transition-all hover:scale-105 group"
+                    className="absolute top-4 right-4 z-20 px-3 py-2 bg-white/95 hover:bg-orange-50 text-slate-800 hover:text-slate-950 border border-orange-200 rounded-lg shadow-xl hover:shadow-[0_0_15px_rgba(255,120,40,0.25)] backdrop-blur-md flex items-center gap-2 text-xs font-medium transition-all hover:scale-105 group"
                     title="Expand Furniture Catalog & Room Specs (C)"
                   >
-                    <Package className="w-4 h-4 text-sky-400 group-hover:scale-110 transition-transform" />
+                    <Package className="w-4 h-4 text-orange-500 group-hover:scale-110 transition-transform" />
                     <span>Expand Catalog</span>
-                    <PanelRightOpen className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-200" />
+                    <PanelRightOpen className="w-3.5 h-3.5 text-slate-400 group-hover:text-orange-500" />
                   </button>
                 )}
               </div>

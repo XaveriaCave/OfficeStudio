@@ -298,20 +298,20 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 max-w-7xl mx-auto w-full">
+    <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 max-w-7xl mx-auto w-full bg-white">
       {/* Top Banner: Accounting Management Status & Designated Agent */}
-      <div className="bg-slate-900/90 border border-white/10 rounded-2xl p-5 shadow-xl flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+      <div className="bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-white border border-orange-300 rounded-2xl p-5 shadow-xs flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-mono text-xs px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/30">
+            <span className="font-mono text-xs px-2 py-0.5 rounded bg-orange-100 text-orange-800 font-bold border border-orange-300">
               GAAP Ledger & Runway
             </span>
-            <span className="text-slate-500">·</span>
-            <h2 className="text-lg font-bold text-white tracking-tight">
+            <span className="text-slate-400">·</span>
+            <h2 className="text-lg font-bold text-slate-900 tracking-tight">
               {office.name} — Financial Operations
             </h2>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-600 mt-1">
             Real-time balance sheet, automated lease amortizations, and runway projections managed by office agents.
           </p>
         </div>
@@ -319,39 +319,39 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
         {/* Accounting Controller Agent Card(s) */}
         <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-end flex-wrap">
           {currentAccountingAgents.length > 0 ? (
-            <div className="flex items-center gap-2 bg-slate-950 border border-white/10 p-2 rounded-xl">
+            <div className="flex items-center gap-2 bg-white border border-orange-200 p-2 rounded-xl shadow-xs">
               {currentAccountingAgents.map((ag) => (
                 <div key={ag.id} className="flex items-center gap-2.5 pr-2">
                   <div
-                    className="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-xs ring-1 ring-white/20 shadow"
+                    className="w-9 h-9 rounded-lg flex items-center justify-center text-white font-bold text-xs ring-1 ring-orange-200 shadow-xs"
                     style={{ backgroundColor: ag.color }}
                   >
                     {ag.avatarInitial}
                   </div>
                   <div>
-                    <div className="text-xs font-semibold text-white flex items-center gap-1.5">
+                    <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                       <span>{ag.name}</span>
-                      <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300">
+                      <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-orange-100 text-orange-800 font-semibold border border-orange-200">
                         Controller
                       </span>
                     </div>
-                    <div className="text-[11px] text-slate-400">{ag.role}</div>
+                    <div className="text-[11px] text-slate-500 font-medium">{ag.role}</div>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => onOpenAgentChat(ag)}
-                    className="ml-2 px-2.5 py-1 bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 border border-sky-500/30 rounded-lg text-xs font-medium transition-colors flex items-center gap-1"
+                    className="ml-2 px-2.5 py-1 bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1 shadow-2xs"
                   >
-                    <Bot className="w-3.5 h-3.5" />
+                    <Bot className="w-3.5 h-3.5 text-orange-600" />
                     <span>Chat</span>
                   </button>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-300 text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
+            <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-xs flex items-center gap-2 font-medium">
+              <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
               <span>No agent assigned. Accounting is currently unmanaged.</span>
             </div>
           )}
@@ -360,16 +360,16 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
             <button
               type="button"
               onClick={() => setShowConfigAgentsModal(true)}
-              className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 rounded-xl text-xs font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap"
+              className="px-3 py-2 bg-white hover:bg-orange-50 text-slate-700 border border-orange-200 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap shadow-xs"
             >
-              <UserCheck className="w-3.5 h-3.5 text-sky-400" />
+              <UserCheck className="w-3.5 h-3.5 text-orange-600" />
               <span>Configure Agents</span>
             </button>
 
             <button
               type="button"
               onClick={handleTriggerAiAudit}
-              className="px-3.5 py-2 bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-md whitespace-nowrap"
+              className="px-3.5 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 shadow-[0_2px_12px_rgba(255,107,0,0.3)] whitespace-nowrap"
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span>Run AI Audit</span>
@@ -381,73 +381,73 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
       {/* Primary KPI Metric Cards Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
         {/* Cash Reserves */}
-        <div className="bg-slate-900/80 border border-white/10 rounded-xl p-4 flex flex-col justify-between">
-          <div className="text-[11px] font-medium text-slate-400 flex items-center justify-between">
+        <div className="bg-white border border-orange-200/90 rounded-xl p-4 flex flex-col justify-between shadow-xs hover:border-orange-300 transition-all">
+          <div className="text-[11px] font-semibold text-slate-500 flex items-center justify-between">
             <span>Cash Reserves</span>
-            <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
+            <DollarSign className="w-3.5 h-3.5 text-emerald-600" />
           </div>
-          <div className="text-lg sm:text-xl font-bold font-mono text-white mt-1.5">
+          <div className="text-lg sm:text-xl font-bold font-mono text-slate-900 mt-1.5">
             {currency}{accounting.cashReserves.toLocaleString()}
           </div>
-          <div className="text-[11px] text-emerald-400 mt-1 font-medium flex items-center gap-1">
-            <CheckCircle2 className="w-3 h-3" />
+          <div className="text-[11px] text-emerald-700 mt-1 font-semibold flex items-center gap-1">
+            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
             <span>Treasury Liquid</span>
           </div>
         </div>
 
         {/* Monthly Revenue */}
-        <div className="bg-slate-900/80 border border-white/10 rounded-xl p-4 flex flex-col justify-between">
-          <div className="text-[11px] font-medium text-slate-400 flex items-center justify-between">
+        <div className="bg-white border border-orange-200/90 rounded-xl p-4 flex flex-col justify-between shadow-xs hover:border-orange-300 transition-all">
+          <div className="text-[11px] font-semibold text-slate-500 flex items-center justify-between">
             <span>Monthly Revenue</span>
-            <TrendingUp className="w-3.5 h-3.5 text-sky-400" />
+            <TrendingUp className="w-3.5 h-3.5 text-orange-600" />
           </div>
-          <div className="text-lg sm:text-xl font-bold font-mono text-sky-300 mt-1.5">
+          <div className="text-lg sm:text-xl font-bold font-mono text-orange-600 mt-1.5">
             {currency}{accounting.monthlyRevenue.toLocaleString()}
           </div>
-          <div className="text-[11px] text-slate-400 mt-1">Enterprise retainers</div>
+          <div className="text-[11px] text-slate-500 mt-1 font-medium">Enterprise retainers</div>
         </div>
 
         {/* Monthly Burn Rate */}
-        <div className="bg-slate-900/80 border border-white/10 rounded-xl p-4 flex flex-col justify-between">
-          <div className="text-[11px] font-medium text-slate-400 flex items-center justify-between">
+        <div className="bg-white border border-orange-200/90 rounded-xl p-4 flex flex-col justify-between shadow-xs hover:border-orange-300 transition-all">
+          <div className="text-[11px] font-semibold text-slate-500 flex items-center justify-between">
             <span>Monthly Burn</span>
-            <TrendingDown className="w-3.5 h-3.5 text-amber-400" />
+            <TrendingDown className="w-3.5 h-3.5 text-amber-600" />
           </div>
-          <div className="text-lg sm:text-xl font-bold font-mono text-amber-300 mt-1.5">
+          <div className="text-lg sm:text-xl font-bold font-mono text-amber-700 mt-1.5">
             {currency}{totalMonthlyBurn.toLocaleString()}
           </div>
-          <div className="text-[11px] text-slate-400 mt-1">Lease + Payroll + Ops</div>
+          <div className="text-[11px] text-slate-500 mt-1 font-medium">Lease + Payroll + Ops</div>
         </div>
 
         {/* Net Monthly Margin */}
-        <div className="bg-slate-900/80 border border-white/10 rounded-xl p-4 flex flex-col justify-between">
-          <div className="text-[11px] font-medium text-slate-400 flex items-center justify-between">
+        <div className="bg-white border border-orange-200/90 rounded-xl p-4 flex flex-col justify-between shadow-xs hover:border-orange-300 transition-all">
+          <div className="text-[11px] font-semibold text-slate-500 flex items-center justify-between">
             <span>Net Monthly Margin</span>
-            <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400" />
+            <ArrowUpRight className="w-3.5 h-3.5 text-emerald-600" />
           </div>
           <div
             className={`text-lg sm:text-xl font-bold font-mono mt-1.5 ${
-              netMonthlyMargin >= 0 ? 'text-emerald-400' : 'text-rose-400'
+              netMonthlyMargin >= 0 ? 'text-emerald-700' : 'text-rose-600'
             }`}
           >
             {netMonthlyMargin >= 0 ? '+' : ''}
             {currency}{netMonthlyMargin.toLocaleString()}
           </div>
-          <div className="text-[11px] text-slate-400 mt-1">
+          <div className="text-[11px] text-slate-500 mt-1 font-medium">
             {((netMonthlyMargin / Math.max(1, accounting.monthlyRevenue)) * 100).toFixed(0)}% Margin
           </div>
         </div>
 
         {/* Net Runway */}
-        <div className="bg-slate-900/80 border border-white/10 rounded-xl p-4 flex flex-col justify-between">
-          <div className="text-[11px] font-medium text-slate-400 flex items-center justify-between">
+        <div className="bg-white border border-orange-200/90 rounded-xl p-4 flex flex-col justify-between shadow-xs hover:border-orange-300 transition-all">
+          <div className="text-[11px] font-semibold text-slate-500 flex items-center justify-between">
             <span>Net Runway</span>
-            <Clock className="w-3.5 h-3.5 text-purple-400" />
+            <Clock className="w-3.5 h-3.5 text-orange-600" />
           </div>
-          <div className="text-lg sm:text-xl font-bold font-mono text-purple-300 mt-1.5">
+          <div className="text-lg sm:text-xl font-bold font-mono text-orange-700 mt-1.5">
             {runwayMonths} mo
           </div>
-          <div className="text-[11px] text-emerald-400 mt-1 font-medium">Extremely Stable</div>
+          <div className="text-[11px] text-emerald-700 mt-1 font-semibold">Extremely Stable</div>
         </div>
 
         {/* Capital Asset Valuation */}
@@ -456,20 +456,20 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
             setIsEditingMetrics(true);
             setConfigFocusSection('assets');
           }}
-          className="bg-slate-900/80 hover:bg-slate-800/80 border border-white/10 hover:border-purple-500/50 rounded-xl p-4 flex flex-col justify-between cursor-pointer transition-all group"
+          className="bg-white hover:bg-orange-50/50 border border-orange-200/90 hover:border-orange-300 rounded-xl p-4 flex flex-col justify-between cursor-pointer transition-all group shadow-xs"
           title="Click to configure Asset Valuation and Equipment values"
         >
-          <div className="text-[11px] font-medium text-slate-400 flex items-center justify-between">
+          <div className="text-[11px] font-semibold text-slate-500 flex items-center justify-between">
             <span>Asset Valuation</span>
-            <div className="flex items-center gap-1 text-[10px] text-purple-400 opacity-80 group-hover:opacity-100">
+            <div className="flex items-center gap-1 text-[10px] text-orange-600 opacity-80 group-hover:opacity-100 font-bold">
               <Edit2 className="w-3 h-3" />
               <span>Configure</span>
             </div>
           </div>
-          <div className="text-lg sm:text-xl font-bold font-mono text-white mt-1.5">
+          <div className="text-lg sm:text-xl font-bold font-mono text-slate-900 mt-1.5">
             {currency}{equipmentAssetValue.toLocaleString()}
           </div>
-          <div className="text-[11px] text-slate-400 mt-1 flex items-center justify-between">
+          <div className="text-[11px] text-slate-500 mt-1 flex items-center justify-between font-medium">
             <span className="truncate">
               {accounting.customAssetValuation != null
                 ? 'Manual Fixed Valuation'
@@ -480,14 +480,14 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
       </div>
 
       {/* Operational Cost Breakdown Analysis & Configurator */}
-      <div className="bg-slate-900/70 border border-white/10 rounded-2xl p-5 space-y-4">
+      <div className="bg-white border border-orange-200/90 rounded-2xl p-5 space-y-4 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-              <Building className="w-4 h-4 text-sky-400" />
+            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <Building className="w-4 h-4 text-orange-600" />
               <span>Monthly Operational Cost Structure & Amortization</span>
             </h3>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-600 mt-0.5">
               GAAP straight-line depreciation, workstation asset valuation, lease amortization, and hospitality
             </p>
           </div>
@@ -498,25 +498,25 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
               setIsEditingMetrics((prev) => !prev);
               setConfigFocusSection('all');
             }}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 shadow-sm ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 shadow-xs ${
               isEditingMetrics
-                ? 'bg-sky-500 text-slate-950 border-sky-400 hover:bg-sky-400'
-                : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border-white/10'
+                ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white border-orange-400 shadow-[0_2px_12px_rgba(255,107,0,0.3)]'
+                : 'bg-white hover:bg-orange-50 text-slate-700 border-orange-200'
             }`}
           >
-            <Sliders className="w-3.5 h-3.5" />
+            <Sliders className="w-3.5 h-3.5 text-orange-600" />
             <span>{isEditingMetrics ? 'Close Configurator' : 'Configure Financial Variables'}</span>
           </button>
         </div>
 
         {/* Full Comprehensive Financial Variables Configurator */}
         {isEditingMetrics && (
-          <div className="p-4 bg-slate-950 border border-sky-500/30 rounded-xl space-y-4 text-xs animate-in fade-in">
+          <div className="p-4 bg-orange-50/40 border border-orange-300 rounded-xl space-y-4 text-xs animate-in fade-in shadow-xs">
             {/* Quick Filter Section Chips */}
-            <div className="flex items-center justify-between border-b border-white/10 pb-3 flex-wrap gap-2">
+            <div className="flex items-center justify-between border-b border-orange-200 pb-3 flex-wrap gap-2">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-[11px] font-semibold text-slate-400 mr-1 flex items-center gap-1">
-                  <Settings className="w-3.5 h-3.5 text-sky-400" />
+                <span className="text-[11px] font-bold text-slate-700 mr-1 flex items-center gap-1">
+                  <Settings className="w-3.5 h-3.5 text-orange-600" />
                   <span>Config Section:</span>
                 </span>
                 {[
@@ -529,10 +529,10 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                     key={s.id}
                     type="button"
                     onClick={() => setConfigFocusSection(s.id as any)}
-                    className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors ${
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-colors ${
                       configFocusSection === s.id
-                        ? 'bg-sky-500/20 text-sky-300 border-sky-500/40'
-                        : 'bg-slate-900 text-slate-400 border-white/5 hover:text-white'
+                        ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white border-orange-400 shadow-2xs'
+                        : 'bg-white text-slate-600 border-orange-200 hover:text-slate-900 hover:bg-orange-50/50'
                     }`}
                   >
                     {s.label}
@@ -540,62 +540,62 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                 ))}
               </div>
 
-              <div className="text-[11px] text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+              <div className="text-[11px] text-orange-800 bg-orange-100 px-2 py-0.5 rounded border border-orange-300 font-semibold">
                 Changes recalculate runway & balance sheet in real time
               </div>
             </div>
 
             {/* Section 1: Revenue, Cash Reserves & Currency */}
             {(configFocusSection === 'all') && (
-              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-slate-900/60 p-3 rounded-lg border border-white/5">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-white p-3 rounded-lg border border-orange-200 shadow-xs">
                 <div>
-                  <label className="text-slate-400 block mb-1 font-medium">Monthly Gross Revenue</label>
+                  <label className="text-slate-700 block mb-1 font-semibold">Monthly Gross Revenue</label>
                   <div className="relative">
-                    <span className="absolute left-2.5 top-1.5 text-slate-500">{editCurrency}</span>
+                    <span className="absolute left-2.5 top-1.5 text-slate-400">{editCurrency}</span>
                     <input
                       type="number"
                       step={1000}
                       value={editRevenue}
                       onChange={(e) => setEditRevenue(Number(e.target.value))}
-                      className="w-full bg-slate-950 border border-white/10 rounded-lg pl-6 pr-2.5 py-1.5 text-white font-mono"
+                      className="w-full bg-white border border-orange-200 rounded-lg pl-6 pr-2.5 py-1.5 text-slate-900 font-mono shadow-2xs focus:outline-none focus:border-orange-500"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-slate-400 block mb-1 font-medium">Liquid Cash Reserves</label>
+                  <label className="text-slate-700 block mb-1 font-semibold">Liquid Cash Reserves</label>
                   <div className="relative">
-                    <span className="absolute left-2.5 top-1.5 text-slate-500">{editCurrency}</span>
+                    <span className="absolute left-2.5 top-1.5 text-slate-400">{editCurrency}</span>
                     <input
                       type="number"
                       step={10000}
                       value={editReserves}
                       onChange={(e) => setEditReserves(Number(e.target.value))}
-                      className="w-full bg-slate-950 border border-white/10 rounded-lg pl-6 pr-2.5 py-1.5 text-white font-mono"
+                      className="w-full bg-white border border-orange-200 rounded-lg pl-6 pr-2.5 py-1.5 text-slate-900 font-mono shadow-2xs focus:outline-none focus:border-orange-500"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-slate-400 block mb-1 font-medium">Lease Rate ({editCurrency}/m²)</label>
+                  <label className="text-slate-700 block mb-1 font-semibold">Lease Rate ({editCurrency}/m²)</label>
                   <input
                     type="number"
                     min={1}
                     max={200}
                     value={editLeaseRate}
                     onChange={(e) => setEditLeaseRate(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-white font-mono"
+                    className="w-full bg-white border border-orange-200 rounded-lg px-2.5 py-1.5 text-slate-900 font-mono shadow-2xs focus:outline-none focus:border-orange-500"
                   />
                 </div>
 
                 <div>
-                  <label className="text-slate-400 block mb-1 font-medium">Avg Salary / Agent ({editCurrency}/mo)</label>
+                  <label className="text-slate-700 block mb-1 font-semibold">Avg Salary / Agent ({editCurrency}/mo)</label>
                   <input
                     type="number"
                     step={250}
                     value={editSalary}
                     onChange={(e) => setEditSalary(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-white font-mono"
+                    className="w-full bg-white border border-orange-200 rounded-lg px-2.5 py-1.5 text-slate-900 font-mono shadow-2xs focus:outline-none focus:border-orange-500"
                   />
                 </div>
               </div>
@@ -603,20 +603,20 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
 
             {/* Section 2: Asset Valuation & Equipment Depreciation Configuration */}
             {(configFocusSection === 'all' || configFocusSection === 'assets' || configFocusSection === 'depreciation') && (
-              <div className="bg-slate-900/60 p-3.5 rounded-lg border border-purple-500/20 space-y-3">
+              <div className="bg-white p-3.5 rounded-lg border border-orange-200 space-y-3 shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-white flex items-center gap-1.5 text-xs">
-                    <Cpu className="w-3.5 h-3.5 text-purple-400" />
+                  <span className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                    <Cpu className="w-3.5 h-3.5 text-orange-600" />
                     <span>Asset Valuation & Equipment Straight-Line Depreciation</span>
                   </span>
-                  <span className="text-[11px] text-purple-300 font-mono">
+                  <span className="text-[11px] text-orange-700 font-mono font-bold">
                     Current Base: {editCurrency}{(useCustomAssetOverride ? editCustomAssetValuation : office.furniture.length * editEquipmentValuePerItem).toLocaleString()}
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                   <div>
-                    <label className="text-slate-400 block mb-1">
+                    <label className="text-slate-700 block mb-1 font-semibold">
                       Equipment Value Per Item ({editCurrency})
                     </label>
                     <input
@@ -625,7 +625,7 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                       step={100}
                       value={editEquipmentValuePerItem}
                       onChange={(e) => setEditEquipmentValuePerItem(Number(e.target.value))}
-                      className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-white font-mono"
+                      className="w-full bg-white border border-orange-200 rounded-lg px-2.5 py-1.5 text-slate-900 font-mono shadow-2xs focus:outline-none focus:border-orange-500"
                     />
                     <p className="text-[10px] text-slate-500 mt-1">
                       Multiplied by {office.furniture.length} items = {editCurrency}{(office.furniture.length * editEquipmentValuePerItem).toLocaleString()}
@@ -633,13 +633,13 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                   </div>
 
                   <div>
-                    <label className="text-slate-400 block mb-1">
+                    <label className="text-slate-700 block mb-1 font-semibold">
                       Depreciation Horizon (Months)
                     </label>
                     <select
                       value={editDepreciationMonths}
                       onChange={(e) => setEditDepreciationMonths(Number(e.target.value))}
-                      className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-white font-mono"
+                      className="w-full bg-white border border-orange-200 rounded-lg px-2.5 py-1.5 text-slate-900 font-mono shadow-2xs focus:outline-none focus:border-orange-500"
                     >
                       <option value={12}>12 Months (1 Year Aggressive)</option>
                       <option value={24}>24 Months (2 Years)</option>
@@ -653,13 +653,13 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                   </div>
 
                   <div>
-                    <label className="text-slate-400 block mb-1">
+                    <label className="text-slate-700 block mb-1 font-semibold">
                       Currency Symbol
                     </label>
                     <select
                       value={editCurrency}
                       onChange={(e) => setEditCurrency(e.target.value)}
-                      className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-white font-mono"
+                      className="w-full bg-white border border-orange-200 rounded-lg px-2.5 py-1.5 text-slate-900 font-mono shadow-2xs focus:outline-none focus:border-orange-500"
                     >
                       <option value="$">$ (USD)</option>
                       <option value="€">€ (EUR)</option>
@@ -671,29 +671,29 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                 </div>
 
                 {/* Custom Asset Override Option */}
-                <div className="pt-2 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="pt-2 border-t border-orange-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={useCustomAssetOverride}
                       onChange={(e) => setUseCustomAssetOverride(e.target.checked)}
-                      className="rounded bg-slate-950 border-white/20 text-purple-500 focus:ring-0"
+                      className="rounded border-orange-300 text-orange-600 focus:ring-0"
                     />
-                    <span className="text-slate-300 font-medium">
+                    <span className="text-slate-700 font-semibold">
                       Enable Fixed Asset Valuation Override (ignore furniture catalog count)
                     </span>
                   </label>
 
                   {useCustomAssetOverride && (
                     <div className="flex items-center gap-2">
-                      <span className="text-slate-400 text-[11px]">Fixed Value:</span>
+                      <span className="text-slate-500 text-[11px]">Fixed Value:</span>
                       <input
                         type="number"
                         min={0}
                         step={5000}
                         value={editCustomAssetValuation}
                         onChange={(e) => setEditCustomAssetValuation(Number(e.target.value))}
-                        className="w-36 bg-slate-950 border border-purple-500/40 rounded-lg px-2 py-1 text-white font-mono text-xs"
+                        className="w-36 bg-white border border-orange-300 rounded-lg px-2 py-1 text-slate-900 font-mono text-xs focus:outline-none focus:border-orange-500"
                       />
                     </div>
                   )}
@@ -703,20 +703,20 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
 
             {/* Section 3: Hospitality & Amenities Configuration */}
             {(configFocusSection === 'all' || configFocusSection === 'amenities') && (
-              <div className="bg-slate-900/60 p-3.5 rounded-lg border border-amber-500/20 space-y-3">
+              <div className="bg-white p-3.5 rounded-lg border border-orange-200 space-y-3 shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="font-semibold text-white flex items-center gap-1.5 text-xs">
-                    <Coffee className="w-3.5 h-3.5 text-amber-400" />
+                  <span className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                    <Coffee className="w-3.5 h-3.5 text-amber-600" />
                     <span>Hospitality & Office Amenities Expenditures</span>
                   </span>
-                  <span className="text-[11px] text-amber-300 font-mono">
+                  <span className="text-[11px] text-amber-700 font-mono font-bold">
                     Total: {editCurrency}{(agents.length * editAmenitiesCostPerAgent).toLocaleString()}/mo
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="text-slate-400 block mb-1">
+                    <label className="text-slate-700 block mb-1 font-semibold">
                       Monthly Amenities Cost per Agent ({editCurrency}/agent/month)
                     </label>
                     <input
@@ -725,17 +725,17 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                       step={25}
                       value={editAmenitiesCostPerAgent}
                       onChange={(e) => setEditAmenitiesCostPerAgent(Number(e.target.value))}
-                      className="w-full bg-slate-950 border border-white/10 rounded-lg px-2.5 py-1.5 text-white font-mono"
+                      className="w-full bg-white border border-orange-200 rounded-lg px-2.5 py-1.5 text-slate-900 font-mono shadow-2xs focus:outline-none focus:border-orange-500"
                     />
                     <p className="text-[10px] text-slate-500 mt-1">
                       Covers barista coffee beans, pantry snacks, filtered water, and gigabit fiber
                     </p>
                   </div>
 
-                  <div className="p-2.5 bg-slate-950/60 rounded-lg border border-white/5 flex flex-col justify-center">
-                    <div className="text-[11px] text-slate-400">Formula Breakdown:</div>
-                    <div className="text-xs text-white font-mono mt-0.5">
-                      {agents.length} active agents × {editCurrency}{editAmenitiesCostPerAgent}/mo = <strong className="text-amber-300">{editCurrency}{(agents.length * editAmenitiesCostPerAgent).toLocaleString()}/mo</strong>
+                  <div className="p-2.5 bg-orange-50/50 rounded-lg border border-orange-200 flex flex-col justify-center">
+                    <div className="text-[11px] text-slate-600">Formula Breakdown:</div>
+                    <div className="text-xs text-slate-900 font-mono mt-0.5">
+                      {agents.length} active agents × {editCurrency}{editAmenitiesCostPerAgent}/mo = <strong className="text-amber-700">{editCurrency}{(agents.length * editAmenitiesCostPerAgent).toLocaleString()}/mo</strong>
                     </div>
                   </div>
                 </div>
@@ -743,10 +743,10 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
             )}
 
             {/* Actions Bar */}
-            <div className="flex items-center justify-between pt-2 border-t border-white/10">
-              <div className="text-[11px] text-slate-400">
+            <div className="flex items-center justify-between pt-2 border-t border-orange-200">
+              <div className="text-[11px] text-slate-600">
                 Preview Net Margin:{' '}
-                <span className="font-mono font-bold text-white">
+                <span className="font-mono font-bold text-slate-900">
                   {editCurrency}{(
                     editRevenue -
                     (Math.round(areaM2 * editLeaseRate) +
@@ -766,14 +766,14 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                 <button
                   type="button"
                   onClick={() => setIsEditingMetrics(false)}
-                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition-colors"
+                  className="px-3 py-1.5 bg-white hover:bg-orange-50 text-slate-700 border border-orange-200 rounded-lg text-xs font-semibold transition-colors shadow-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
                   onClick={handleSaveMetrics}
-                  className="px-4 py-1.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold rounded-lg text-xs transition-colors flex items-center justify-center gap-1.5 shadow-md"
+                  className="px-4 py-1.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold rounded-lg text-xs transition-all flex items-center justify-center gap-1.5 shadow-[0_2px_12px_rgba(255,107,0,0.3)]"
                 >
                   <Check className="w-3.5 h-3.5" />
                   <span>Save Accounting Configuration</span>
@@ -790,19 +790,19 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
               setIsEditingMetrics(true);
               setConfigFocusSection('all');
             }}
-            className="bg-slate-950/80 hover:bg-slate-900 border border-white/5 hover:border-sky-500/30 rounded-xl p-3.5 cursor-pointer transition-all group"
+            className="bg-orange-50/30 hover:bg-orange-50/60 border border-orange-200/80 hover:border-orange-300 rounded-xl p-3.5 cursor-pointer transition-all group shadow-xs"
           >
-            <div className="text-xs text-slate-400 flex items-center justify-between font-medium">
+            <div className="text-xs text-slate-500 flex items-center justify-between font-semibold">
               <div className="flex items-center gap-1.5">
-                <Building className="w-3.5 h-3.5 text-sky-400" />
+                <Building className="w-3.5 h-3.5 text-orange-600" />
                 <span>Real Estate Lease</span>
               </div>
-              <Edit2 className="w-3 h-3 text-slate-600 group-hover:text-sky-400 transition-colors" />
+              <Edit2 className="w-3 h-3 text-slate-400 group-hover:text-orange-600 transition-colors" />
             </div>
-            <div className="text-base font-bold font-mono text-white mt-1">
+            <div className="text-base font-bold font-mono text-slate-900 mt-1">
               {currency}{monthlyLease.toLocaleString()} / mo
             </div>
-            <div className="text-[11px] text-slate-500 mt-1">
+            <div className="text-[11px] text-slate-500 mt-1 font-medium">
               {areaM2.toFixed(1)} m² @ {currency}{accounting.monthlyLeaseRatePerM2}/m²
             </div>
           </div>
@@ -813,19 +813,19 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
               setIsEditingMetrics(true);
               setConfigFocusSection('all');
             }}
-            className="bg-slate-950/80 hover:bg-slate-900 border border-white/5 hover:border-purple-500/30 rounded-xl p-3.5 cursor-pointer transition-all group"
+            className="bg-orange-50/30 hover:bg-orange-50/60 border border-orange-200/80 hover:border-orange-300 rounded-xl p-3.5 cursor-pointer transition-all group shadow-xs"
           >
-            <div className="text-xs text-slate-400 flex items-center justify-between font-medium">
+            <div className="text-xs text-slate-500 flex items-center justify-between font-semibold">
               <div className="flex items-center gap-1.5">
-                <Users className="w-3.5 h-3.5 text-purple-400" />
+                <Users className="w-3.5 h-3.5 text-orange-600" />
                 <span>Agent Staff Payroll</span>
               </div>
-              <Edit2 className="w-3 h-3 text-slate-600 group-hover:text-purple-400 transition-colors" />
+              <Edit2 className="w-3 h-3 text-slate-400 group-hover:text-orange-600 transition-colors" />
             </div>
-            <div className="text-base font-bold font-mono text-white mt-1">
+            <div className="text-base font-bold font-mono text-slate-900 mt-1">
               {currency}{monthlyPayroll.toLocaleString()} / mo
             </div>
-            <div className="text-[11px] text-slate-500 mt-1">
+            <div className="text-[11px] text-slate-500 mt-1 font-medium">
               {agents.length} agents @ {currency}{accounting.averageSalaryPerAgent.toLocaleString()}/mo
             </div>
           </div>
@@ -836,22 +836,22 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
               setIsEditingMetrics(true);
               setConfigFocusSection('depreciation');
             }}
-            className="bg-slate-950/80 hover:bg-slate-900 border border-white/5 hover:border-emerald-500/40 rounded-xl p-3.5 cursor-pointer transition-all group"
+            className="bg-orange-50/30 hover:bg-orange-50/60 border border-orange-200/80 hover:border-orange-300 rounded-xl p-3.5 cursor-pointer transition-all group shadow-xs"
           >
-            <div className="text-xs text-slate-400 flex items-center justify-between font-medium">
+            <div className="text-xs text-slate-500 flex items-center justify-between font-semibold">
               <div className="flex items-center gap-1.5">
-                <Cpu className="w-3.5 h-3.5 text-emerald-400" />
+                <Cpu className="w-3.5 h-3.5 text-orange-600" />
                 <span>Equipment Depreciation</span>
               </div>
-              <div className="flex items-center gap-1 text-[10px] text-emerald-400 opacity-80 group-hover:opacity-100">
+              <div className="flex items-center gap-1 text-[10px] text-orange-600 opacity-80 group-hover:opacity-100 font-bold">
                 <Edit2 className="w-3 h-3" />
                 <span>Edit</span>
               </div>
             </div>
-            <div className="text-base font-bold font-mono text-emerald-300 mt-1">
+            <div className="text-base font-bold font-mono text-orange-700 mt-1">
               {currency}{equipmentDepreciation.toLocaleString()} / mo
             </div>
-            <div className="text-[11px] text-slate-400 mt-1">
+            <div className="text-[11px] text-slate-500 mt-1 font-medium">
               {depreciationMonths}-mo straight-line on {currency}{equipmentAssetValue.toLocaleString()} assets
             </div>
           </div>
@@ -862,22 +862,22 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
               setIsEditingMetrics(true);
               setConfigFocusSection('amenities');
             }}
-            className="bg-slate-950/80 hover:bg-slate-900 border border-white/5 hover:border-amber-500/40 rounded-xl p-3.5 cursor-pointer transition-all group"
+            className="bg-orange-50/30 hover:bg-orange-50/60 border border-orange-200/80 hover:border-orange-300 rounded-xl p-3.5 cursor-pointer transition-all group shadow-xs"
           >
-            <div className="text-xs text-slate-400 flex items-center justify-between font-medium">
+            <div className="text-xs text-slate-500 flex items-center justify-between font-semibold">
               <div className="flex items-center gap-1.5">
-                <Coffee className="w-3.5 h-3.5 text-amber-400" />
+                <Coffee className="w-3.5 h-3.5 text-amber-600" />
                 <span>Hospitality & Amenities</span>
               </div>
-              <div className="flex items-center gap-1 text-[10px] text-amber-400 opacity-80 group-hover:opacity-100">
+              <div className="flex items-center gap-1 text-[10px] text-amber-600 opacity-80 group-hover:opacity-100 font-bold">
                 <Edit2 className="w-3 h-3" />
                 <span>Edit</span>
               </div>
             </div>
-            <div className="text-base font-bold font-mono text-amber-300 mt-1">
+            <div className="text-base font-bold font-mono text-amber-700 mt-1">
               {currency}{amenitiesCost.toLocaleString()} / mo
             </div>
-            <div className="text-[11px] text-slate-400 mt-1">
+            <div className="text-[11px] text-slate-500 mt-1 font-medium">
               {agents.length} agents @ {currency}{amenitiesCostPerAgent}/mo (barista beans, kiosk, wifi)
             </div>
           </div>
@@ -885,26 +885,28 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
       </div>
 
       {/* Invoices & Accounts Ledger */}
-      <div className="bg-slate-900/80 border border-white/10 rounded-2xl p-5 space-y-4">
+      <div className="bg-white border border-orange-200/90 rounded-2xl p-5 space-y-4 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-              <FileText className="w-4 h-4 text-sky-400" />
+            <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <FileText className="w-4 h-4 text-orange-600" />
               <span>Accounts Ledger & Invoices</span>
             </h3>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-600 mt-0.5">
               Receivables from enterprise licenses and payables for facilities and compute
             </p>
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
             {/* Filter buttons */}
-            <div className="flex items-center p-0.5 bg-slate-950 rounded-lg border border-white/10 text-xs">
+            <div className="flex items-center p-0.5 bg-orange-50/70 rounded-lg border border-orange-200 text-xs">
               <button
                 type="button"
                 onClick={() => setInvoiceFilter('all')}
-                className={`px-2.5 py-1 rounded-md transition-colors ${
-                  invoiceFilter === 'all' ? 'bg-sky-500 text-slate-950 font-semibold' : 'text-slate-400 hover:text-white'
+                className={`px-2.5 py-1 rounded-md transition-all ${
+                  invoiceFilter === 'all'
+                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-2xs'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 All ({invoices.length})
@@ -912,8 +914,10 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
               <button
                 type="button"
                 onClick={() => setInvoiceFilter('receivable')}
-                className={`px-2.5 py-1 rounded-md transition-colors ${
-                  invoiceFilter === 'receivable' ? 'bg-sky-500 text-slate-950 font-semibold' : 'text-slate-400 hover:text-white'
+                className={`px-2.5 py-1 rounded-md transition-all ${
+                  invoiceFilter === 'receivable'
+                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-2xs'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 Receivables
@@ -921,8 +925,10 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
               <button
                 type="button"
                 onClick={() => setInvoiceFilter('payable')}
-                className={`px-2.5 py-1 rounded-md transition-colors ${
-                  invoiceFilter === 'payable' ? 'bg-sky-500 text-slate-950 font-semibold' : 'text-slate-400 hover:text-white'
+                className={`px-2.5 py-1 rounded-md transition-all ${
+                  invoiceFilter === 'payable'
+                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-2xs'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 Payables
@@ -930,8 +936,10 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
               <button
                 type="button"
                 onClick={() => setInvoiceFilter('pending')}
-                className={`px-2.5 py-1 rounded-md transition-colors ${
-                  invoiceFilter === 'pending' ? 'bg-sky-500 text-slate-950 font-semibold' : 'text-slate-400 hover:text-white'
+                className={`px-2.5 py-1 rounded-md transition-all ${
+                  invoiceFilter === 'pending'
+                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-2xs'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 Pending
@@ -941,7 +949,7 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
             <button
               type="button"
               onClick={() => setShowAddInvoiceModal(true)}
-              className="px-3 py-1.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold rounded-lg text-xs transition-colors flex items-center gap-1 shrink-0"
+              className="px-3 py-1.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold rounded-lg text-xs transition-all flex items-center gap-1 shrink-0 shadow-[0_2px_12px_rgba(255,107,0,0.3)]"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>New Invoice</span>
@@ -950,9 +958,9 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
         </div>
 
         {/* Ledger Table */}
-        <div className="overflow-x-auto border border-white/10 rounded-xl">
+        <div className="overflow-x-auto border border-orange-200 rounded-xl">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-950 text-slate-400 border-b border-white/10 font-mono text-[11px]">
+            <thead className="bg-orange-50/70 text-slate-600 border-b border-orange-200 font-mono text-[11px]">
               <tr>
                 <th className="py-2.5 px-3">Type</th>
                 <th className="py-2.5 px-3">Counterparty</th>
@@ -963,39 +971,39 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                 <th className="py-2.5 px-3 text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-orange-100">
               {filteredInvoices.map((inv) => (
-                <tr key={inv.id} className="hover:bg-white/[0.02] transition-colors">
+                <tr key={inv.id} className="hover:bg-orange-50/40 transition-colors">
                   <td className="py-2.5 px-3">
                     <span
                       className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono font-semibold ${
                         inv.type === 'receivable'
-                          ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                          : 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                          ? 'bg-emerald-50 text-emerald-800 border border-emerald-300'
+                          : 'bg-rose-50 text-rose-800 border border-rose-300'
                       }`}
                     >
                       {inv.type === 'receivable' ? (
                         <>
-                          <ArrowDownLeft className="w-3 h-3" />
+                          <ArrowDownLeft className="w-3 h-3 text-emerald-600" />
                           <span>Income</span>
                         </>
                       ) : (
                         <>
-                          <ArrowUpRight className="w-3 h-3" />
+                          <ArrowUpRight className="w-3 h-3 text-rose-600" />
                           <span>Expense</span>
                         </>
                       )}
                     </span>
                   </td>
                   <td className="py-2.5 px-3">
-                    <div className="font-semibold text-white">{inv.counterparty}</div>
-                    <div className="text-[11px] text-slate-500">{inv.description}</div>
+                    <div className="font-bold text-slate-900">{inv.counterparty}</div>
+                    <div className="text-[11px] text-slate-500 font-medium">{inv.description}</div>
                   </td>
-                  <td className="py-2.5 px-3 text-slate-400 font-mono text-[11px]">{inv.category}</td>
-                  <td className="py-2.5 px-3 text-slate-400 font-mono text-[11px]">{inv.dueDate}</td>
+                  <td className="py-2.5 px-3 text-slate-600 font-mono text-[11px]">{inv.category}</td>
+                  <td className="py-2.5 px-3 text-slate-600 font-mono text-[11px]">{inv.dueDate}</td>
                   <td
                     className={`py-2.5 px-3 font-mono font-bold text-right text-xs ${
-                      inv.type === 'receivable' ? 'text-emerald-400' : 'text-slate-200'
+                      inv.type === 'receivable' ? 'text-emerald-700' : 'text-slate-900'
                     }`}
                   >
                     {inv.type === 'receivable' ? '+' : '-'}
@@ -1007,19 +1015,19 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                       onClick={() => handleToggleInvoiceStatus(inv.id)}
                       className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono transition-colors ${
                         inv.status === 'paid'
-                          ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30'
-                          : 'bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30'
+                          ? 'bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100'
+                          : 'bg-amber-50 text-amber-800 border border-amber-300 hover:bg-amber-100'
                       }`}
                       title="Click to toggle status"
                     >
                       {inv.status === 'paid' ? (
                         <>
-                          <CheckCircle2 className="w-3 h-3" />
+                          <CheckCircle2 className="w-3 h-3 text-emerald-600" />
                           <span>Paid</span>
                         </>
                       ) : (
                         <>
-                          <Clock className="w-3 h-3" />
+                          <Clock className="w-3 h-3 text-amber-600" />
                           <span>Pending</span>
                         </>
                       )}
@@ -1029,7 +1037,7 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                     <button
                       type="button"
                       onClick={() => handleDeleteInvoice(inv.id)}
-                      className="p-1 text-slate-500 hover:text-rose-400 rounded transition-colors"
+                      className="p-1 text-slate-400 hover:text-rose-600 rounded transition-colors"
                       title="Delete invoice"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -1044,23 +1052,23 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
 
       {/* MODAL: Configure Accounting Agents */}
       {showConfigAgentsModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-[#0f172a] border border-white/10 rounded-2xl w-full max-w-md shadow-2xl p-5 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
-              <h4 className="text-sm font-semibold text-white flex items-center gap-2">
-                <UserCheck className="w-4 h-4 text-sky-400" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white border border-orange-200/90 rounded-2xl w-full max-w-md shadow-[0_20px_60px_rgba(255,107,0,0.18)] p-5 space-y-4 text-slate-900">
+            <div className="flex items-center justify-between pb-3 border-b border-orange-100">
+              <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <UserCheck className="w-4 h-4 text-orange-600" />
                 <span>Configure Accounting Agents</span>
               </h4>
               <button
                 type="button"
                 onClick={() => setShowConfigAgentsModal(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-slate-400 hover:text-slate-700"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-xs text-slate-600 leading-relaxed font-medium">
               Designate which agents have authorization to govern this suite's balance sheet, run audits, and analyze budget allocations.
             </p>
 
@@ -1070,18 +1078,18 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                 return (
                   <div
                     key={ag.id}
-                    className="p-2.5 bg-slate-950 border border-white/5 rounded-xl flex items-center justify-between gap-3 text-xs"
+                    className="p-2.5 bg-orange-50/40 border border-orange-200 rounded-xl flex items-center justify-between gap-3 text-xs shadow-2xs"
                   >
                     <div className="flex items-center gap-2.5 min-w-0">
                       <div
-                        className="w-7 h-7 rounded-lg flex items-center justify-center text-white font-bold text-xs shrink-0"
+                        className="w-7 h-7 rounded-lg flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-2xs"
                         style={{ backgroundColor: ag.color }}
                       >
                         {ag.avatarInitial}
                       </div>
                       <div className="min-w-0">
-                        <div className="font-semibold text-white truncate">{ag.name}</div>
-                        <div className="text-[11px] text-slate-400 truncate">{ag.role}</div>
+                        <div className="font-bold text-slate-900 truncate">{ag.name}</div>
+                        <div className="text-[11px] text-slate-500 truncate font-medium">{ag.role}</div>
                       </div>
                     </div>
 
@@ -1095,8 +1103,8 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                       }}
                       className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors shrink-0 ${
                         isAssigned
-                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-rose-500/20 hover:text-rose-300 hover:border-rose-500/30'
-                          : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border border-white/10'
+                          ? 'bg-orange-100 text-orange-900 border border-orange-300 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-200'
+                          : 'bg-white hover:bg-orange-50 text-slate-700 border border-orange-200 shadow-2xs'
                       }`}
                     >
                       {isAssigned ? 'Remove' : 'Assign'}
@@ -1106,11 +1114,11 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
               })}
             </div>
 
-            <div className="pt-3 border-t border-white/10 flex justify-end">
+            <div className="pt-3 border-t border-orange-100 flex justify-end">
               <button
                 type="button"
                 onClick={() => setShowConfigAgentsModal(false)}
-                className="px-4 py-2 bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold rounded-lg text-xs transition-colors"
+                className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold rounded-lg text-xs transition-all shadow-[0_2px_12px_rgba(255,107,0,0.3)]"
               >
                 Done
               </button>
@@ -1121,17 +1129,17 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
 
       {/* MODAL: Add Invoice */}
       {showAddInvoiceModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-[#0f172a] border border-white/10 rounded-2xl w-full max-w-md shadow-2xl p-5 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
-              <h4 className="text-sm font-semibold text-white flex items-center gap-2">
-                <Plus className="w-4 h-4 text-sky-400" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white border border-orange-200/90 rounded-2xl w-full max-w-md shadow-[0_20px_60px_rgba(255,107,0,0.18)] p-5 space-y-4 text-slate-900">
+            <div className="flex items-center justify-between pb-3 border-b border-orange-100">
+              <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <Plus className="w-4 h-4 text-orange-600" />
                 <span>Create New Invoice or Expense</span>
               </h4>
               <button
                 type="button"
                 onClick={() => setShowAddInvoiceModal(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-slate-400 hover:text-slate-700"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1139,15 +1147,15 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
 
             <form onSubmit={handleAddInvoice} className="space-y-3 text-xs">
               <div>
-                <label className="text-slate-400 block mb-1">Invoice Type</label>
+                <label className="text-slate-700 block mb-1 font-semibold">Invoice Type</label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => setNewType('receivable')}
-                    className={`py-2 rounded-lg font-semibold transition-colors flex items-center justify-center gap-1.5 ${
+                    className={`py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs ${
                       newType === 'receivable'
-                        ? 'bg-emerald-500 text-slate-950'
-                        : 'bg-slate-950 text-slate-400 border border-white/10'
+                        ? 'bg-emerald-600 text-white'
+                        : 'bg-white text-slate-600 border border-orange-200 hover:bg-orange-50'
                     }`}
                   >
                     <ArrowDownLeft className="w-3.5 h-3.5" />
@@ -1156,10 +1164,10 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                   <button
                     type="button"
                     onClick={() => setNewType('payable')}
-                    className={`py-2 rounded-lg font-semibold transition-colors flex items-center justify-center gap-1.5 ${
+                    className={`py-2 rounded-lg font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs ${
                       newType === 'payable'
-                        ? 'bg-rose-500 text-white'
-                        : 'bg-slate-950 text-slate-400 border border-white/10'
+                        ? 'bg-rose-600 text-white'
+                        : 'bg-white text-slate-600 border border-orange-200 hover:bg-orange-50'
                     }`}
                   >
                     <ArrowUpRight className="w-3.5 h-3.5" />
@@ -1169,63 +1177,63 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
               </div>
 
               <div>
-                <label className="text-slate-400 block mb-1">Counterparty / Client / Vendor</label>
+                <label className="text-slate-700 block mb-1 font-semibold">Counterparty / Client / Vendor</label>
                 <input
                   type="text"
                   required
                   value={newCounterparty}
                   onChange={(e) => setNewCounterparty(e.target.value)}
                   placeholder="e.g. Acme Space Labs"
-                  className="w-full bg-slate-950 border border-white/10 rounded-lg px-3 py-2 text-white"
+                  className="w-full bg-white border border-orange-200 rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 shadow-xs"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-slate-400 block mb-1">Amount ($)</label>
+                  <label className="text-slate-700 block mb-1 font-semibold">Amount ({currency})</label>
                   <input
                     type="number"
                     required
                     value={newAmount}
                     onChange={(e) => setNewAmount(Number(e.target.value))}
-                    className="w-full bg-slate-950 border border-white/10 rounded-lg px-3 py-2 text-white font-mono"
+                    className="w-full bg-white border border-orange-200 rounded-lg px-3 py-2 text-slate-900 font-mono shadow-xs focus:outline-none focus:border-orange-500"
                   />
                 </div>
                 <div>
-                  <label className="text-slate-400 block mb-1">Due Date</label>
+                  <label className="text-slate-700 block mb-1 font-semibold">Due Date</label>
                   <input
                     type="date"
                     required
                     value={newDueDate}
                     onChange={(e) => setNewDueDate(e.target.value)}
-                    className="w-full bg-slate-950 border border-white/10 rounded-lg px-3 py-2 text-white font-mono"
+                    className="w-full bg-white border border-orange-200 rounded-lg px-3 py-2 text-slate-900 font-mono shadow-xs focus:outline-none focus:border-orange-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-slate-400 block mb-1">Category</label>
+                <label className="text-slate-700 block mb-1 font-semibold">Category</label>
                 <input
                   type="text"
                   required
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value)}
                   placeholder="e.g. Cloud Compute, Client Retainer, Hardware"
-                  className="w-full bg-slate-950 border border-white/10 rounded-lg px-3 py-2 text-white"
+                  className="w-full bg-white border border-orange-200 rounded-lg px-3 py-2 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 shadow-xs"
                 />
               </div>
 
-              <div className="pt-3 border-t border-white/10 flex justify-end gap-2">
+              <div className="pt-3 border-t border-orange-100 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowAddInvoiceModal(false)}
-                  className="px-3 py-2 text-slate-400 hover:text-white"
+                  className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold rounded-lg"
+                  className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold rounded-lg shadow-[0_2px_12px_rgba(255,107,0,0.3)] transition-all"
                 >
                   Create Invoice
                 </button>
@@ -1237,40 +1245,40 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
 
       {/* MODAL: AI Audit Report */}
       {showAuditReportModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-[#0f172a] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[85vh] shadow-2xl p-6 flex flex-col">
-            <div className="flex items-center justify-between pb-4 border-b border-white/10 shrink-0">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white border border-orange-200/90 rounded-2xl w-full max-w-2xl max-h-[85vh] shadow-[0_20px_60px_rgba(255,107,0,0.18)] p-6 flex flex-col text-slate-900">
+            <div className="flex items-center justify-between pb-4 border-b border-orange-100 shrink-0">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-sky-400" />
-                <h4 className="text-base font-semibold text-white">
+                <Sparkles className="w-5 h-5 text-orange-600" />
+                <h4 className="text-base font-bold text-slate-900">
                   Corporate Financial & Runway Audit
                 </h4>
               </div>
               <button
                 type="button"
                 onClick={() => setShowAuditReportModal(false)}
-                className="text-slate-400 hover:text-white"
+                className="text-slate-400 hover:text-slate-700"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto py-4 text-xs leading-relaxed text-slate-200 whitespace-pre-wrap font-sans">
+            <div className="flex-1 overflow-y-auto py-4 text-xs leading-relaxed text-slate-800 whitespace-pre-wrap font-mono bg-orange-50/30 p-4 rounded-xl border border-orange-200 shadow-2xs">
               {isAuditing ? (
-                <div className="py-12 flex flex-col items-center justify-center gap-3 text-slate-400">
-                  <RefreshCw className="w-8 h-8 animate-spin text-sky-400" />
-                  <span>Auditing ledger, calculating amortizations, and verifying runway...</span>
+                <div className="py-12 flex flex-col items-center justify-center gap-3 text-slate-500">
+                  <RefreshCw className="w-8 h-8 animate-spin text-orange-500" />
+                  <span className="font-sans font-medium">Auditing ledger, calculating amortizations, and verifying runway...</span>
                 </div>
               ) : (
                 auditReportText
               )}
             </div>
 
-            <div className="pt-3 border-t border-white/10 flex justify-end shrink-0">
+            <div className="pt-3 border-t border-orange-100 flex justify-end shrink-0">
               <button
                 type="button"
                 onClick={() => setShowAuditReportModal(false)}
-                className="px-4 py-2 bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold rounded-lg text-xs"
+                className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold rounded-lg text-xs shadow-[0_2px_12px_rgba(255,107,0,0.3)] transition-all"
               >
                 Done
               </button>

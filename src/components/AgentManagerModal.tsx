@@ -163,31 +163,31 @@ export const AgentManagerModal: React.FC<AgentManagerModalProps> = ({
   const otherAgents = allExistingAgents.filter((a) => a.id !== agent?.id);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-[#0f172a] border border-white/10 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white border border-orange-200/90 rounded-2xl w-full max-w-lg shadow-[0_20px_60px_rgba(255,107,0,0.18)] overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="p-4 bg-slate-900 border-b border-white/10 flex items-center justify-between shrink-0">
+        <div className="p-4 bg-white/95 border-b border-orange-100 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2">
-            <UserPlus className="w-5 h-5 text-sky-400" />
-            <h3 className="text-sm font-semibold text-white">
+            <UserPlus className="w-5 h-5 text-orange-600" />
+            <h3 className="text-sm font-bold text-slate-900">
               {isEditing ? `Edit Agent: ${agent?.name}` : 'Spawn New Office Agent'}
             </h3>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white rounded-lg transition-colors"
+            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-orange-50 rounded-lg transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-5 space-y-4 overflow-y-auto flex-1">
+        <form onSubmit={handleSubmit} className="p-5 space-y-4 overflow-y-auto flex-1 bg-white">
           {/* Name & Role */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Full Name
               </label>
               <input
@@ -196,12 +196,12 @@ export const AgentManagerModal: React.FC<AgentManagerModalProps> = ({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Maya Lin"
-                className="w-full bg-slate-950 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500"
+                className="w-full bg-white border border-orange-200 rounded-lg px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 shadow-xs"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Job Role / Title
               </label>
               <input
@@ -210,7 +210,7 @@ export const AgentManagerModal: React.FC<AgentManagerModalProps> = ({
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
                 placeholder="e.g. Lead Spatial Architect"
-                className="w-full bg-slate-950 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500"
+                className="w-full bg-white border border-orange-200 rounded-lg px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 shadow-xs"
               />
             </div>
           </div>
@@ -218,13 +218,13 @@ export const AgentManagerModal: React.FC<AgentManagerModalProps> = ({
           {/* Department & Hierarchy */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Department
               </label>
               <select
                 value={department}
                 onChange={(e) => setDepartment(e.target.value as OfficeDepartment)}
-                className="w-full bg-slate-950 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500"
+                className="w-full bg-white border border-orange-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-orange-500 shadow-xs"
               >
                 {departmentOptions.map((dept) => (
                   <option key={dept} value={dept}>
@@ -235,13 +235,13 @@ export const AgentManagerModal: React.FC<AgentManagerModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Hierarchy Level
               </label>
               <select
                 value={hierarchy}
                 onChange={(e) => setHierarchy(e.target.value as AgentHierarchyLevel)}
-                className="w-full bg-slate-950 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500"
+                className="w-full bg-white border border-orange-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-orange-500 shadow-xs"
               >
                 {hierarchyOptions.map((h) => (
                   <option key={h} value={h}>
@@ -254,13 +254,13 @@ export const AgentManagerModal: React.FC<AgentManagerModalProps> = ({
 
           {/* Reports To Hierarchy Selection */}
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
               Reports To (Organizational Hierarchy)
             </label>
             <select
               value={reportsToId}
               onChange={(e) => setReportsToId(e.target.value)}
-              className="w-full bg-slate-950 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-sky-500"
+              className="w-full bg-white border border-orange-200 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-orange-500 shadow-xs"
             >
               <option value="">No Direct Manager (Top-level / C-Suite)</option>
               {otherAgents.map((a) => (
@@ -273,8 +273,8 @@ export const AgentManagerModal: React.FC<AgentManagerModalProps> = ({
 
           {/* Color Palette Picker */}
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5 flex items-center gap-1.5">
-              <Palette className="w-3.5 h-3.5 text-sky-400" />
+            <label className="block text-xs font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
+              <Palette className="w-3.5 h-3.5 text-orange-600" />
               <span>Avatar & Figure Color</span>
             </label>
             <div className="flex items-center gap-2 flex-wrap">
@@ -284,7 +284,7 @@ export const AgentManagerModal: React.FC<AgentManagerModalProps> = ({
                   type="button"
                   onClick={() => setColor(c)}
                   className={`w-7 h-7 rounded-full transition-transform flex items-center justify-center ${
-                    color === c ? 'scale-110 ring-2 ring-white ring-offset-2 ring-offset-slate-900' : 'hover:scale-105'
+                    color === c ? 'scale-110 ring-2 ring-orange-500 ring-offset-2 ring-offset-white' : 'hover:scale-105'
                   }`}
                   style={{ backgroundColor: c }}
                 >
@@ -295,20 +295,20 @@ export const AgentManagerModal: React.FC<AgentManagerModalProps> = ({
           </div>
 
           {/* Accounting Controller Toggle */}
-          <div className="p-3 bg-slate-950/80 border border-white/10 rounded-xl space-y-2">
+          <div className="p-3 bg-orange-50/50 border border-orange-200 rounded-xl space-y-2">
             <label className="flex items-start gap-2.5 cursor-pointer">
               <input
                 type="checkbox"
                 checked={isAccountingAgent}
                 onChange={(e) => setIsAccountingAgent(e.target.checked)}
-                className="mt-0.5 w-4 h-4 rounded text-sky-500 bg-slate-900 border-white/20 focus:ring-0"
+                className="mt-0.5 w-4 h-4 rounded text-orange-600 border-orange-300 focus:ring-orange-500"
               />
               <div className="text-xs">
-                <div className="font-semibold text-white flex items-center gap-1.5">
-                  <DollarSign className="w-3.5 h-3.5 text-amber-400" />
+                <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                  <DollarSign className="w-3.5 h-3.5 text-amber-600" />
                   <span>Designate as Accounting & Financial Controller</span>
                 </div>
-                <div className="text-slate-400 text-[11px] mt-0.5 leading-relaxed">
+                <div className="text-slate-600 text-[11px] mt-0.5 leading-relaxed">
                   Grants this agent access to audit the office balance sheet, monitor runway, calculate lease & payroll expenses, and manage invoices.
                 </div>
               </div>
@@ -317,7 +317,7 @@ export const AgentManagerModal: React.FC<AgentManagerModalProps> = ({
 
           {/* Agent Persona / Custom Prompt Instructions */}
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
               Custom Persona & Directives (Optional)
             </label>
             <textarea
@@ -325,12 +325,12 @@ export const AgentManagerModal: React.FC<AgentManagerModalProps> = ({
               value={systemPrompt}
               onChange={(e) => setSystemPrompt(e.target.value)}
               placeholder="e.g. Focus on high-throughput architecture, microservices, and clean code principles."
-              className="w-full bg-slate-950 border border-white/10 rounded-lg p-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500"
+              className="w-full bg-white border border-orange-200 rounded-lg p-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 shadow-xs"
             />
           </div>
 
           {/* Footer Actions */}
-          <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-3 shrink-0">
+          <div className="pt-3 border-t border-orange-100 flex items-center justify-between gap-3 shrink-0">
             {isEditing && (onDeleteAgent || onDelete) ? (
               <button
                 type="button"
@@ -344,7 +344,7 @@ export const AgentManagerModal: React.FC<AgentManagerModalProps> = ({
                     onClose();
                   }
                 }}
-                className="px-3 py-2 text-rose-400 hover:text-white hover:bg-rose-500/20 border border-rose-500/30 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5"
+                className="px-3 py-2 text-rose-600 hover:text-rose-700 hover:bg-rose-50 border border-rose-200 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5 shadow-2xs"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Delete Agent</span>
@@ -357,14 +357,14 @@ export const AgentManagerModal: React.FC<AgentManagerModalProps> = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-3.5 py-2 text-xs font-medium text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                className="px-3.5 py-2 text-xs font-medium text-slate-700 hover:bg-orange-50 border border-orange-200 rounded-lg transition-colors shadow-xs"
               >
                 Cancel
               </button>
 
               <button
                 type="submit"
-                className="px-4 py-2 text-xs font-semibold bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-lg transition-colors flex items-center gap-1.5"
+                className="px-4 py-2 text-xs font-semibold bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-lg transition-all flex items-center gap-1.5 shadow-[0_2px_12px_rgba(255,107,0,0.3)]"
               >
                 <Check className="w-3.5 h-3.5" />
                 <span>{isEditing ? 'Save Changes' : 'Spawn Agent'}</span>

@@ -255,13 +255,13 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
   const hierarchyStyle = HIERARCHY_COLORS[agent.hierarchy] || HIERARCHY_COLORS.Associate;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-[#0f172a] border border-white/10 rounded-2xl w-full max-w-2xl h-[90vh] max-h-[720px] flex flex-col shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="bg-white border border-orange-200/90 rounded-2xl w-full max-w-2xl h-[90vh] max-h-[720px] flex flex-col shadow-[0_20px_60px_rgba(255,107,0,0.18)] overflow-hidden">
         {/* Header */}
-        <div className="p-4 bg-slate-900/90 border-b border-white/10 flex items-center justify-between gap-3 shrink-0">
+        <div className="p-4 bg-white/95 border-b border-orange-100 flex items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
             <div
-              className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold text-base shadow-md shrink-0 ring-2 ring-white/20"
+              className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold text-base shadow-md shrink-0 ring-2 ring-orange-200"
               style={{ backgroundColor: agent.color }}
             >
               {agent.avatarInitial}
@@ -269,20 +269,20 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
 
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-sm font-semibold text-white truncate">{agent.name}</h3>
+                <h3 className="text-sm font-bold text-slate-900 truncate">{agent.name}</h3>
                 <span
                   className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${hierarchyStyle.bg} ${hierarchyStyle.text} ${hierarchyStyle.border}`}
                 >
                   L{agent.hierarchyLevel} {agent.hierarchy}
                 </span>
                 {agent.isAccountingAgent && (
-                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1">
-                    <DollarSign className="w-3 h-3" />
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 border border-orange-300 flex items-center gap-1 shadow-xs">
+                    <DollarSign className="w-3 h-3 text-orange-600" />
                     Accounts Controller
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-400 truncate mt-0.5">{agent.role}</p>
+              <p className="text-xs text-slate-500 truncate mt-0.5 font-medium">{agent.role}</p>
             </div>
           </div>
 
@@ -290,21 +290,21 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
             <button
               type="button"
               onClick={() => setShowApiKeyInput((prev) => !prev)}
-              className={`p-2 rounded-lg border transition-colors flex items-center gap-1.5 text-xs font-medium ${
+              className={`p-2 rounded-lg border transition-colors flex items-center gap-1.5 text-xs font-semibold ${
                 apiKey
-                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300 hover:bg-emerald-500/20'
-                  : 'bg-amber-500/10 border-amber-500/30 text-amber-300 hover:bg-amber-500/20'
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-800 hover:bg-emerald-100'
+                  : 'bg-orange-50 border-orange-200 text-orange-800 hover:bg-orange-100'
               }`}
               title="Configure Personal Gemini API Key"
             >
-              <Key className="w-3.5 h-3.5" />
+              <Key className="w-3.5 h-3.5 text-orange-600" />
               <span className="hidden sm:inline">{apiKey ? 'Key Connected' : 'Set API Key'}</span>
             </button>
 
             <button
               type="button"
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+              className="p-2 text-slate-400 hover:text-slate-700 hover:bg-orange-50 rounded-lg transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -313,10 +313,10 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
 
         {/* Optional Collapsible API Key Drawer */}
         {showApiKeyInput && (
-          <div className="px-4 py-3 bg-slate-950/90 border-b border-white/10 shrink-0 space-y-2 text-xs">
-            <div className="flex items-center justify-between text-slate-300">
-              <span className="flex items-center gap-1.5 font-medium text-white">
-                <ShieldCheck className="w-4 h-4 text-sky-400" />
+          <div className="px-4 py-3 bg-orange-50/50 border-b border-orange-200 shrink-0 space-y-2 text-xs">
+            <div className="flex items-center justify-between text-slate-700">
+              <span className="flex items-center gap-1.5 font-bold text-slate-900">
+                <ShieldCheck className="w-4 h-4 text-orange-600" />
                 <span>Agent Gemini API Key (Stored in LocalStorage)</span>
               </span>
               <span className="text-[11px] text-slate-500">Each agent can have their own API key</span>
@@ -329,12 +329,12 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
                   placeholder="Paste Gemini API key (e.g. AIzaSy...)"
-                  className="w-full bg-slate-900 border border-white/10 rounded-lg pl-3 pr-10 py-1.5 text-xs text-white placeholder-slate-500 font-mono focus:outline-none focus:border-sky-500"
+                  className="w-full bg-white border border-orange-200 rounded-lg pl-3 pr-10 py-1.5 text-xs text-slate-900 placeholder-slate-400 font-mono focus:outline-none focus:border-orange-500 shadow-xs"
                 />
                 <button
                   type="button"
                   onClick={() => setShowKeyPassword((prev) => !prev)}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                 >
                   {showKeyPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                 </button>
@@ -343,11 +343,11 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
               <button
                 type="button"
                 onClick={handleSaveApiKey}
-                className="px-3 py-1.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold rounded-lg text-xs transition-colors shrink-0 flex items-center gap-1"
+                className="px-3.5 py-1.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold rounded-lg text-xs transition-all shrink-0 flex items-center gap-1 shadow-xs"
               >
                 {keySavedToast ? (
                   <>
-                    <Check className="w-3.5 h-3.5 text-emerald-950" />
+                    <Check className="w-3.5 h-3.5" />
                     <span>Saved!</span>
                   </>
                 ) : (
@@ -359,13 +359,13 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
         )}
 
         {/* Status Activity Banner */}
-        <div className="px-4 py-2 bg-slate-900/50 border-b border-white/5 flex items-center justify-between text-xs text-slate-400 shrink-0">
+        <div className="px-4 py-2 bg-orange-50/30 border-b border-orange-100 flex items-center justify-between text-xs text-slate-600 shrink-0">
           <div className="flex items-center gap-2 min-w-0">
             <span className="relative flex h-2 w-2 shrink-0">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
             </span>
-            <span className="text-slate-300 font-medium truncate">
+            <span className="text-slate-700 font-medium truncate">
               {agent.activityDescription || 'Active in suite'}
             </span>
           </div>
@@ -375,14 +375,14 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
         </div>
 
         {/* Chat Message Thread */}
-        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3.5">
+        <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-white">
           {messages.map((msg) => {
             const isUser = msg.role === 'user';
             return (
               <div key={msg.id} className={`flex gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}>
                 {!isUser && (
                   <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs shrink-0 ring-1 ring-white/10"
+                    className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs shrink-0 ring-1 ring-orange-200 shadow-xs"
                     style={{ backgroundColor: agent.color }}
                   >
                     {agent.avatarInitial}
@@ -390,16 +390,16 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
                 )}
 
                 <div
-                  className={`max-w-[82%] sm:max-w-[75%] rounded-2xl px-4 py-2.5 text-xs leading-relaxed ${
+                  className={`max-w-[82%] sm:max-w-[75%] rounded-2xl px-4 py-2.5 text-xs leading-relaxed shadow-xs ${
                     isUser
-                      ? 'bg-sky-600 text-white rounded-tr-none'
-                      : 'bg-slate-900 border border-white/10 text-slate-200 rounded-tl-none whitespace-pre-wrap'
+                      ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-tr-none'
+                      : 'bg-orange-50/50 border border-orange-200/90 text-slate-800 rounded-tl-none whitespace-pre-wrap'
                   }`}
                 >
                   <div>{msg.text}</div>
                   <div
                     className={`text-[10px] mt-1 font-mono tabular-nums ${
-                      isUser ? 'text-sky-200 text-right' : 'text-slate-500'
+                      isUser ? 'text-orange-100 text-right' : 'text-slate-400'
                     }`}
                   >
                     {msg.timestamp}
@@ -407,7 +407,7 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
                 </div>
 
                 {isUser && (
-                  <div className="w-8 h-8 rounded-lg bg-sky-700 flex items-center justify-center text-white font-bold text-xs shrink-0 ring-1 ring-white/10">
+                  <div className="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center text-white font-bold text-xs shrink-0 ring-1 ring-orange-300 shadow-xs">
                     <User className="w-4 h-4" />
                   </div>
                 )}
@@ -416,15 +416,15 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
           })}
 
           {loading && (
-            <div className="flex gap-3 items-center text-xs text-slate-400 animate-pulse">
+            <div className="flex gap-3 items-center text-xs text-slate-500 animate-pulse">
               <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs shrink-0"
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-xs"
                 style={{ backgroundColor: agent.color }}
               >
                 {agent.avatarInitial}
               </div>
-              <div className="bg-slate-900 border border-white/10 rounded-2xl rounded-tl-none px-4 py-2.5 text-slate-400 flex items-center gap-2">
-                <RefreshCw className="w-3.5 h-3.5 animate-spin text-sky-400" />
+              <div className="bg-orange-50/50 border border-orange-200 rounded-2xl rounded-tl-none px-4 py-2.5 text-slate-600 flex items-center gap-2 shadow-xs">
+                <RefreshCw className="w-3.5 h-3.5 animate-spin text-orange-500" />
                 <span>{agent.name} is thinking...</span>
               </div>
             </div>
@@ -432,9 +432,9 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
         </div>
 
         {/* Quick Suggestion Chips */}
-        <div className="px-4 py-2 bg-slate-950/70 border-t border-white/5 flex items-center gap-1.5 overflow-x-auto shrink-0 no-scrollbar">
-          <span className="text-[11px] text-slate-500 flex items-center gap-1 shrink-0 font-medium mr-1">
-            <Sparkles className="w-3 h-3 text-sky-400" />
+        <div className="px-4 py-2.5 bg-orange-50/40 border-t border-orange-100 flex items-center gap-1.5 overflow-x-auto shrink-0 no-scrollbar">
+          <span className="text-[11px] text-slate-600 flex items-center gap-1 shrink-0 font-bold mr-1">
+            <Sparkles className="w-3 h-3 text-orange-600" />
             Suggestions:
           </span>
           {quickPrompts.map((p, idx) => (
@@ -443,7 +443,7 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
               type="button"
               onClick={() => handleSendMessage(p)}
               disabled={loading}
-              className="px-2.5 py-1 bg-slate-900 hover:bg-slate-800 border border-white/10 hover:border-sky-400/50 text-slate-300 hover:text-white rounded-full text-[11px] whitespace-nowrap transition-colors shrink-0"
+              className="px-2.5 py-1 bg-white hover:bg-orange-50 border border-orange-200 hover:border-orange-300 text-slate-700 hover:text-orange-950 rounded-full text-[11px] whitespace-nowrap transition-colors shrink-0 shadow-2xs font-medium"
             >
               {p}
             </button>
@@ -451,7 +451,7 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
         </div>
 
         {/* Message Input Box */}
-        <div className="p-3 bg-slate-900 border-t border-white/10 shrink-0">
+        <div className="p-3 bg-white border-t border-orange-100 shrink-0">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -465,13 +465,13 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
               onChange={(e) => setInputText(e.target.value)}
               placeholder={`Message ${agent.name} (${agent.role})...`}
               disabled={loading}
-              className="flex-1 bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-500"
+              className="flex-1 bg-white border border-orange-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 shadow-xs"
             />
 
             <button
               type="submit"
               disabled={loading || !inputText.trim()}
-              className="p-2.5 bg-sky-500 hover:bg-sky-400 disabled:opacity-40 text-slate-950 font-bold rounded-xl transition-colors shrink-0 flex items-center justify-center"
+              className="p-2.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 disabled:opacity-40 text-white font-bold rounded-xl transition-all shrink-0 flex items-center justify-center shadow-[0_2px_12px_rgba(255,107,0,0.3)]"
               title="Send message (Enter)"
             >
               <Send className="w-4 h-4" />

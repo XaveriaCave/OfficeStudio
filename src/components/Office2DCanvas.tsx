@@ -816,7 +816,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
 
   return (
     <div
-      className="relative w-full h-full flex flex-col bg-[#080d19] select-none overflow-hidden"
+      className="relative w-full h-full flex flex-col bg-white select-none overflow-hidden"
       onDragOver={(e) => {
         e.preventDefault();
         e.dataTransfer.dropEffect = 'copy';
@@ -824,17 +824,17 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
       onDrop={handleDropOn2D}
     >
       {/* Top 2D CAD Studio Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 bg-slate-900/90 border-b border-white/10 z-10">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 bg-white/95 backdrop-blur-md border-b border-orange-200/80 shadow-sm z-10">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-slate-200 whitespace-nowrap">
+          <span className="text-xs font-semibold text-slate-900 whitespace-nowrap">
             2D Floor Polygon & CAD Layout
           </span>
-          <span className="text-slate-600" aria-hidden="true">·</span>
-          <span className="text-xs font-mono tabular-nums text-sky-300 whitespace-nowrap">
+          <span className="text-slate-300" aria-hidden="true">·</span>
+          <span className="text-xs font-mono tabular-nums text-orange-600 font-semibold whitespace-nowrap">
             {areaSqM.toFixed(1)} m² ({Math.round(areaSqM * 10.764)} ft²)
           </span>
-          <span className="text-slate-600 hidden sm:inline" aria-hidden="true">·</span>
-          <span className="text-xs font-mono tabular-nums text-slate-400 hidden sm:inline whitespace-nowrap">
+          <span className="text-slate-300 hidden sm:inline" aria-hidden="true">·</span>
+          <span className="text-xs font-mono tabular-nums text-slate-500 hidden sm:inline whitespace-nowrap">
             {perimeterM.toFixed(1)}m perimeter · {office.vertices.length} corners
           </span>
         </div>
@@ -842,36 +842,36 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
         {/* Action Tools: Undo, Redo, Add Wall, Add Interior Wall, Presets, Snap, Help */}
         <div className="flex items-center gap-1.5 flex-wrap">
           {/* UNDO & REDO BUTTON GROUP */}
-          <div className="flex items-center bg-slate-800 border border-white/10 rounded-lg p-0.5 shadow-sm">
+          <div className="flex items-center bg-white border border-orange-200/90 rounded-lg p-0.5 shadow-sm">
             <button
               type="button"
               onClick={handleUndo}
               disabled={undoStack.length === 0}
-              className="p-1 px-2 text-xs font-medium text-slate-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed rounded flex items-center gap-1 transition-colors"
+              className="p-1 px-2 text-xs font-medium text-slate-700 hover:text-slate-900 hover:bg-orange-50 disabled:opacity-30 disabled:cursor-not-allowed rounded flex items-center gap-1 transition-colors"
               title={
                 undoStack.length > 0
                   ? `Undo: ${undoStack[undoStack.length - 1].description} (Ctrl+Z / ⌘Z)`
                   : 'Undo (Ctrl+Z / ⌘Z)'
               }
             >
-              <Undo2 className="w-3.5 h-3.5 text-sky-400" />
+              <Undo2 className="w-3.5 h-3.5 text-orange-500" />
               <span className="hidden sm:inline text-xs">Undo</span>
             </button>
 
-            <div className="w-[1px] h-3.5 bg-white/10 mx-0.5" />
+            <div className="w-[1px] h-3.5 bg-orange-100 mx-0.5" />
 
             <button
               type="button"
               onClick={handleRedo}
               disabled={redoStack.length === 0}
-              className="p-1 px-2 text-xs font-medium text-slate-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed rounded flex items-center gap-1 transition-colors"
+              className="p-1 px-2 text-xs font-medium text-slate-700 hover:text-slate-900 hover:bg-orange-50 disabled:opacity-30 disabled:cursor-not-allowed rounded flex items-center gap-1 transition-colors"
               title={
                 redoStack.length > 0
                   ? `Redo: ${redoStack[redoStack.length - 1].description} (Ctrl+Y / ⌘Shift+Z)`
                   : 'Redo (Ctrl+Y / ⌘Shift+Z)'
               }
             >
-              <Redo2 className="w-3.5 h-3.5 text-sky-400" />
+              <Redo2 className="w-3.5 h-3.5 text-orange-500" />
               <span className="hidden sm:inline text-xs">Redo</span>
             </button>
           </div>
@@ -880,7 +880,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
           <button
             type="button"
             onClick={handleAddWallCornerGeneral}
-            className="px-2.5 py-1 text-xs font-medium rounded-lg bg-sky-600 hover:bg-sky-500 text-white transition-colors flex items-center gap-1 shadow-sm"
+            className="px-2.5 py-1 text-xs font-semibold rounded-lg bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white transition-all flex items-center gap-1 shadow-[0_0_12px_rgba(255,120,40,0.35)]"
             title="Add a new corner vertex to split an existing wall and expand the perimeter"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -892,10 +892,10 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
           <button
             type="button"
             onClick={handleAddInteriorWall}
-            className="px-2.5 py-1 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-750 text-slate-200 border border-white/15 hover:border-white/25 transition-colors flex items-center gap-1"
+            className="px-2.5 py-1 text-xs font-medium rounded-lg bg-white hover:bg-orange-50 text-slate-700 border border-orange-200/90 hover:border-orange-300 transition-colors flex items-center gap-1 shadow-sm"
             title="Place a 3m solid interior drywall partition to divide spaces"
           >
-            <Columns className="w-3.5 h-3.5 text-amber-400" />
+            <Columns className="w-3.5 h-3.5 text-orange-500" />
             <span className="hidden sm:inline">+ Interior Wall</span>
           </button>
 
@@ -904,7 +904,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
             <button
               type="button"
               onClick={() => setShowAddAgentMenu((prev) => !prev)}
-              className="px-2.5 py-1 text-xs font-medium rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white transition-colors flex items-center gap-1 shadow-sm"
+              className="px-2.5 py-1 text-xs font-medium rounded-lg bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-300 transition-colors flex items-center gap-1 shadow-sm"
               title="Spawn an agent to work, roam, and collaborate in this suite"
             >
               <UserPlus className="w-3.5 h-3.5" />
@@ -913,47 +913,47 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
             </button>
 
             {showAddAgentMenu && (
-              <div className="absolute top-full left-0 mt-1 w-56 bg-slate-900 border border-white/15 rounded-xl shadow-2xl p-1.5 z-50 text-xs space-y-1 animate-in fade-in">
+              <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-orange-200 rounded-xl shadow-2xl p-1.5 z-50 text-xs space-y-1 animate-in fade-in">
                 <button
                   type="button"
                   onClick={() => handleQuickSpawnAgent('exec')}
-                  className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-white/10 text-slate-200 flex items-center justify-between"
+                  className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-orange-50 text-slate-800 flex items-center justify-between"
                 >
                   <span>🏢 Executive Director</span>
-                  <span className="text-[10px] font-mono text-amber-400">L1</span>
+                  <span className="text-[10px] font-mono text-orange-600 font-semibold">L1</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => handleQuickSpawnAgent('eng')}
-                  className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-white/10 text-slate-200 flex items-center justify-between"
+                  className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-orange-50 text-slate-800 flex items-center justify-between"
                 >
                   <span>💻 Platform Engineer</span>
-                  <span className="text-[10px] font-mono text-sky-400">L4</span>
+                  <span className="text-[10px] font-mono text-orange-600 font-semibold">L4</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => handleQuickSpawnAgent('des')}
-                  className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-white/10 text-slate-200 flex items-center justify-between"
+                  className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-orange-50 text-slate-800 flex items-center justify-between"
                 >
                   <span>🎨 Spatial Designer</span>
-                  <span className="text-[10px] font-mono text-pink-400">L4</span>
+                  <span className="text-[10px] font-mono text-orange-600 font-semibold">L4</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => handleQuickSpawnAgent('acc')}
-                  className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-white/10 text-slate-200 flex items-center justify-between"
+                  className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-orange-50 text-slate-800 flex items-center justify-between"
                 >
                   <span>💵 Financial Controller</span>
-                  <span className="text-[10px] font-mono text-emerald-400">L2</span>
+                  <span className="text-[10px] font-mono text-orange-600 font-semibold">L2</span>
                 </button>
-                <div className="border-t border-white/10 pt-1">
+                <div className="border-t border-orange-100 pt-1">
                   <button
                     type="button"
                     onClick={() => {
                       setShowAddAgentMenu(false);
                       onOpenAgentManager?.();
                     }}
-                    className="w-full text-left px-2.5 py-1.5 rounded-lg bg-sky-500/15 text-sky-300 hover:bg-sky-500/25 font-medium flex items-center gap-1.5"
+                    className="w-full text-left px-2.5 py-1.5 rounded-lg bg-orange-50 text-orange-700 hover:bg-orange-100 font-medium flex items-center gap-1.5"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
                     <span>Custom Agent...</span>
@@ -978,7 +978,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
                   showToast(`Applied preset: ${preset.name}`);
                 }
               }}
-              className="px-2 py-1 text-xs bg-slate-800 border border-white/10 rounded-lg text-slate-200 focus:outline-none focus:border-sky-400"
+              className="px-2 py-1 text-xs bg-white border border-orange-200/90 rounded-lg text-slate-800 focus:outline-none focus:border-orange-500 shadow-sm cursor-pointer"
             >
               <option value="" disabled>
                 Shape Templates...
@@ -994,28 +994,28 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
           <button
             type="button"
             onClick={onToggleSnapToGrid}
-            className={`px-2 py-1 text-xs font-medium rounded-lg border transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 ${
+            className={`px-2 py-1 text-xs font-medium rounded-lg border transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 shadow-sm ${
               snapToGrid
-                ? 'bg-sky-500/20 border-sky-400/40 text-sky-200'
-                : 'bg-slate-800 border-white/10 text-slate-400 hover:text-white'
+                ? 'bg-orange-50 border-orange-400 text-orange-700 shadow-[0_0_10px_rgba(255,120,40,0.25)]'
+                : 'bg-white border-orange-200/90 text-slate-600 hover:text-slate-900'
             }`}
             title="Snap vertices and furniture to 0.25m CAD grid"
           >
-            <Grid className="w-3.5 h-3.5" />
+            <Grid className="w-3.5 h-3.5 text-orange-500" />
             <span className="hidden md:inline">Snap</span>
           </button>
 
           <button
             type="button"
             onClick={() => setShowDimensions((prev) => !prev)}
-            className={`px-2 py-1 text-xs font-medium rounded-lg border transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 ${
+            className={`px-2 py-1 text-xs font-medium rounded-lg border transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 shadow-sm ${
               showDimensions
-                ? 'bg-sky-500/20 border-sky-400/40 text-sky-200'
-                : 'bg-slate-800 border-white/10 text-slate-400 hover:text-white'
+                ? 'bg-orange-50 border-orange-400 text-orange-700 shadow-[0_0_10px_rgba(255,120,40,0.25)]'
+                : 'bg-white border-orange-200/90 text-slate-600 hover:text-slate-900'
             }`}
             title="Toggle Wall Dimension Labels"
           >
-            <Ruler className="w-3.5 h-3.5" />
+            <Ruler className="w-3.5 h-3.5 text-orange-500" />
             <span className="hidden lg:inline">Dimensions</span>
           </button>
 
@@ -1023,19 +1023,19 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
           <button
             type="button"
             onClick={() => setShowGuideModal(true)}
-            className="px-2 py-1 text-xs font-medium rounded-lg bg-slate-800 hover:bg-slate-700 text-sky-300 border border-sky-500/30 flex items-center gap-1 transition-colors"
+            className="px-2 py-1 text-xs font-medium rounded-lg bg-white hover:bg-orange-50 text-slate-700 border border-orange-200/90 flex items-center gap-1 transition-colors shadow-sm"
             title="CAD Guide: Undo/Redo, wall tools, and deletion"
           >
-            <HelpCircle className="w-3.5 h-3.5 text-sky-400" />
+            <HelpCircle className="w-3.5 h-3.5 text-orange-500" />
             <span className="hidden sm:inline">Guide</span>
           </button>
 
           {/* Zoom controls */}
-          <div className="flex items-center bg-slate-800 border border-white/10 rounded-lg p-0.5">
+          <div className="flex items-center bg-white border border-orange-200/90 rounded-lg p-0.5 shadow-sm">
             <button
               type="button"
               onClick={() => setZoom((z) => Math.min(2.6, Number((z + 0.25).toFixed(2))))}
-              className="p-1 text-slate-300 hover:text-white rounded"
+              className="p-1 text-slate-600 hover:text-slate-900 rounded"
               title="Zoom In"
             >
               <ZoomIn className="w-3.5 h-3.5" />
@@ -1043,7 +1043,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
             <button
               type="button"
               onClick={() => setZoom((z) => Math.max(0.5, Number((z - 0.25).toFixed(2))))}
-              className="p-1 text-slate-300 hover:text-white rounded"
+              className="p-1 text-slate-600 hover:text-slate-900 rounded"
               title="Zoom Out"
             >
               <ZoomOut className="w-3.5 h-3.5" />
@@ -1054,7 +1054,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
                 setZoom(1);
                 setPan({ x: 0, z: 0 });
               }}
-              className="p-1 text-slate-300 hover:text-white rounded"
+              className="p-1 text-slate-600 hover:text-slate-900 rounded"
               title="Reset CAD View"
             >
               <Maximize className="w-3.5 h-3.5" />
@@ -1103,12 +1103,12 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
           className="w-full h-full cursor-crosshair touch-none"
         >
           <defs>
-            {/* 1m Major Grid & 0.25m Minor Sub-grid */}
+            {/* 1m Major Grid & 0.25m Minor Sub-grid with light orange neon lines */}
             <pattern id="cadSubGrid" width="0.5" height="0.5" patternUnits="userSpaceOnUse">
               <path
                 d="M 0.5 0 L 0 0 0 0.5"
                 fill="none"
-                stroke="rgba(148, 163, 184, 0.07)"
+                stroke="rgba(249, 115, 22, 0.09)"
                 strokeWidth="0.02"
               />
             </pattern>
@@ -1117,7 +1117,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
               <path
                 d="M 2 0 L 0 0 0 2"
                 fill="none"
-                stroke="rgba(148, 163, 184, 0.16)"
+                stroke="rgba(249, 115, 22, 0.22)"
                 strokeWidth="0.035"
               />
             </pattern>
@@ -1139,7 +1139,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
             y1={0}
             x2={25}
             y2={0}
-            stroke="rgba(56, 189, 248, 0.18)"
+            stroke="rgba(249, 115, 22, 0.35)"
             strokeWidth={0.03}
             strokeDasharray="0.2 0.2"
           />
@@ -1148,17 +1148,17 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
             y1={-25}
             x2={0}
             y2={25}
-            stroke="rgba(56, 189, 248, 0.18)"
+            stroke="rgba(249, 115, 22, 0.35)"
             strokeWidth={0.03}
             strokeDasharray="0.2 0.2"
           />
 
-          {/* Room Floor Polygon Fill */}
+          {/* Room Floor Polygon Fill with Light Orange Neon Perimeter */}
           <polygon
             data-bg="true"
             points={polygonPointsAttr}
-            fill="rgba(56, 189, 248, 0.09)"
-            stroke="#38bdf8"
+            fill="rgba(254, 215, 170, 0.35)"
+            stroke="#f97316"
             strokeWidth={0.14}
             strokeLinejoin="round"
           />
@@ -1225,8 +1225,8 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
                           y={-0.16}
                           width={w}
                           height={0.32}
-                          fill="#080d19"
-                          stroke="#f43f5e"
+                          fill="#ffffff"
+                          stroke="#ea580c"
                           strokeWidth={0.035}
                           strokeDasharray="0.08 0.06"
                         />
@@ -1642,19 +1642,20 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
               >
                 <circle
                   r={isSelected ? 0.3 : 0.22}
-                  fill={isSelected ? '#fbbf24' : '#38bdf8'}
-                  stroke="#0f172a"
+                  fill={isSelected ? '#ea580c' : '#f97316'}
+                  stroke="#ffffff"
                   strokeWidth={0.06}
-                  className="transition-transform group-hover:scale-125"
+                  className="transition-transform group-hover:scale-125 shadow-sm"
                 />
                 {showDimensions && (
                   <text
                     x={0}
                     y={0.48}
                     textAnchor="middle"
-                    fill={isSelected ? '#fde68a' : '#94a3b8'}
+                    fill={isSelected ? '#c2410c' : '#7c2d12'}
                     fontSize={0.2}
                     fontFamily="JetBrains Mono, monospace"
+                    fontWeight="600"
                   >
                     ({v.x.toFixed(1)}, {v.z.toFixed(1)})
                   </text>
@@ -1667,42 +1668,42 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
 
         {/* Contextual Inspector Overlay for Selected Vertex or Selected Wall Edge */}
         {(selectedVertexIdx !== null || selectedEdgeIdx !== null) && (
-          <div className="absolute top-3 left-3 z-20 flex items-center gap-2 flex-wrap px-3 py-2 bg-slate-950/95 backdrop-blur-md border border-white/15 rounded-xl shadow-2xl max-w-xl">
+          <div className="absolute top-3 left-3 z-20 flex items-center gap-2 flex-wrap px-3 py-2 bg-white/95 backdrop-blur-md border border-orange-300 rounded-xl shadow-[0_8px_30px_rgba(255,120,40,0.18)] max-w-xl text-slate-900">
             {selectedVertexIdx !== null && office.vertices[selectedVertexIdx] && (
               <>
-                <span className="text-xs font-semibold text-slate-200">
+                <span className="text-xs font-semibold text-slate-900">
                   Corner #{selectedVertexIdx + 1}:
                 </span>
-                <span className="text-xs font-mono tabular-nums text-amber-300">
+                <span className="text-xs font-mono tabular-nums text-orange-600 font-bold">
                   ({office.vertices[selectedVertexIdx].x.toFixed(2)}m,{' '}
                   {office.vertices[selectedVertexIdx].z.toFixed(2)}m)
                 </span>
                 <button
                   type="button"
                   onClick={() => handleDeleteVertex(selectedVertexIdx)}
-                  className="ml-2 px-2.5 py-1 text-xs font-medium bg-rose-500/25 text-rose-300 hover:bg-rose-500/35 border border-rose-500/30 rounded-md flex items-center gap-1.5 transition-colors"
+                  className="ml-2 px-2.5 py-1 text-xs font-medium bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-300 rounded-md flex items-center gap-1.5 transition-colors"
                   title="Delete this corner and merge adjacent walls into one straight line"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                   <span>Delete Corner (Del)</span>
                 </button>
-                <span className="text-[11px] text-slate-400">or double-click to delete</span>
+                <span className="text-[11px] text-slate-500">or double-click to delete</span>
               </>
             )}
 
             {selectedEdgeIdx !== null && (
               <>
                 <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <span className="text-xs font-semibold text-slate-200">
+                  <span className="text-xs font-semibold text-slate-900">
                     Wall #{selectedEdgeIdx + 1}:
                   </span>
                   <button
                     type="button"
                     onClick={() => handleInsertVertexAtEdge(selectedEdgeIdx)}
-                    className="px-2 py-1 text-xs rounded-md bg-sky-600/30 text-sky-200 hover:bg-sky-600/50 border border-sky-400/30 flex items-center gap-1"
+                    className="px-2 py-1 text-xs rounded-md bg-orange-100 text-orange-800 hover:bg-orange-200 border border-orange-300 flex items-center gap-1 font-medium"
                     title="Split this wall into two wall segments with a new corner"
                   >
-                    <Split className="w-3 h-3 text-sky-400" />
+                    <Split className="w-3 h-3 text-orange-600" />
                     <span>+ Split Wall (Add Corner)</span>
                   </button>
                 </div>
@@ -1713,8 +1714,8 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
                     onClick={() => handleSetEdgeFeature(selectedEdgeIdx, 'none')}
                     className={`px-2 py-1 text-xs rounded-md flex items-center gap-1 transition-colors ${
                       !currentEdgeFeature
-                        ? 'bg-sky-500 text-slate-950 font-semibold'
-                        : 'bg-slate-800 text-slate-300 hover:text-white'
+                        ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-sm'
+                        : 'bg-slate-100 text-slate-700 hover:bg-orange-50 hover:text-orange-900 border border-slate-200'
                     }`}
                     title="Continuous solid architectural wall"
                   >
@@ -1729,7 +1730,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
                     className={`px-2 py-1 text-xs rounded-md flex items-center gap-1 transition-colors ${
                       currentEdgeFeature?.type === 'opening'
                         ? 'bg-rose-500 text-white font-semibold shadow'
-                        : 'bg-rose-500/20 text-rose-200 border border-rose-500/30 hover:bg-rose-500/30'
+                        : 'bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100'
                     }`}
                     title="Delete a portion of this wall to create an open walkthrough or archway"
                   >
@@ -1742,8 +1743,8 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
                     onClick={() => handleSetEdgeFeature(selectedEdgeIdx, 'glass_wall')}
                     className={`px-2 py-1 text-xs rounded-md flex items-center gap-1 transition-colors ${
                       currentEdgeFeature?.type === 'glass_wall'
-                        ? 'bg-sky-500 text-slate-950 font-semibold'
-                        : 'bg-slate-800 text-slate-300 hover:text-white'
+                        ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-sm'
+                        : 'bg-slate-100 text-slate-700 hover:bg-orange-50 hover:text-orange-900 border border-slate-200'
                     }`}
                   >
                     <Columns className="w-3 h-3" />
@@ -1755,8 +1756,8 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
                     onClick={() => handleSetEdgeFeature(selectedEdgeIdx, 'window')}
                     className={`px-2 py-1 text-xs rounded-md flex items-center gap-1 transition-colors ${
                       currentEdgeFeature?.type === 'window'
-                        ? 'bg-sky-500 text-slate-950 font-semibold'
-                        : 'bg-slate-800 text-slate-300 hover:text-white'
+                        ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-sm'
+                        : 'bg-slate-100 text-slate-700 hover:bg-orange-50 hover:text-orange-900 border border-slate-200'
                     }`}
                   >
                     <Columns className="w-3 h-3" />
@@ -1768,8 +1769,8 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
                     onClick={() => handleSetEdgeFeature(selectedEdgeIdx, 'door')}
                     className={`px-2 py-1 text-xs rounded-md flex items-center gap-1 transition-colors ${
                       currentEdgeFeature?.type === 'door'
-                        ? 'bg-amber-500 text-slate-950 font-semibold'
-                        : 'bg-slate-800 text-slate-300 hover:text-white'
+                        ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-sm'
+                        : 'bg-slate-100 text-slate-700 hover:bg-orange-50 hover:text-orange-900 border border-slate-200'
                     }`}
                   >
                     <DoorOpen className="w-3 h-3" />
@@ -1779,15 +1780,15 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
 
                 {/* Sub-toolbar when opening / portion deletion is active: Quick width selection */}
                 {currentEdgeFeature?.type === 'opening' && (
-                  <div className="w-full flex items-center gap-1.5 pt-1 border-t border-white/10 text-[11px]">
-                    <span className="text-slate-400">Cutout width:</span>
+                  <div className="w-full flex items-center gap-1.5 pt-1 border-t border-slate-200 text-[11px]">
+                    <span className="text-slate-500">Cutout width:</span>
                     <button
                       type="button"
                       onClick={() => handleSetEdgeFeature(selectedEdgeIdx, 'opening', 1.2)}
-                      className={`px-2 py-0.5 rounded ${
+                      className={`px-2 py-0.5 rounded font-medium ${
                         currentEdgeFeature.width === 1.2
-                          ? 'bg-rose-500 text-white font-medium'
-                          : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                          ? 'bg-rose-500 text-white'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
                       1.2m Walkway
@@ -1795,10 +1796,10 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
                     <button
                       type="button"
                       onClick={() => handleSetEdgeFeature(selectedEdgeIdx, 'opening', 2.0)}
-                      className={`px-2 py-0.5 rounded ${
+                      className={`px-2 py-0.5 rounded font-medium ${
                         currentEdgeFeature.width === 2.0
-                          ? 'bg-rose-500 text-white font-medium'
-                          : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                          ? 'bg-rose-500 text-white'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
                       2.0m Passage
@@ -1806,10 +1807,10 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
                     <button
                       type="button"
                       onClick={() => handleSetEdgeFeature(selectedEdgeIdx, 'opening', 3.5)}
-                      className={`px-2 py-0.5 rounded ${
+                      className={`px-2 py-0.5 rounded font-medium ${
                         currentEdgeFeature.width === 3.5
-                          ? 'bg-rose-500 text-white font-medium'
-                          : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                          ? 'bg-rose-500 text-white'
+                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                       }`}
                     >
                       3.5m Wide Arch
@@ -1822,7 +1823,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
                         const len = Math.hypot(v2.x - v1.x, v2.z - v1.z);
                         handleSetEdgeFeature(selectedEdgeIdx, 'opening', len * 0.98);
                       }}
-                      className="px-2 py-0.5 rounded bg-rose-500/30 text-rose-200 hover:bg-rose-500/50"
+                      className="px-2 py-0.5 rounded bg-rose-100 text-rose-700 hover:bg-rose-200 font-medium"
                       title="Completely remove the wall elevation on this edge"
                     >
                       Full (Remove Wall)
@@ -1836,8 +1837,8 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
 
         {/* Selected Furniture Quick Actions in 2D */}
         {selectedFurnitureId && selectedItem && (
-          <div className="absolute top-3 right-3 z-20 flex items-center gap-2 px-3 py-1.5 bg-slate-950/95 backdrop-blur-md border border-sky-500/40 rounded-xl shadow-xl">
-            <span className="text-xs text-slate-200 font-medium">
+          <div className="absolute top-3 right-3 z-20 flex items-center gap-2 px-3 py-1.5 bg-white/95 backdrop-blur-md border border-orange-300 rounded-xl shadow-[0_8px_25px_rgba(255,120,40,0.18)] text-slate-900">
+            <span className="text-xs text-slate-900 font-semibold">
               {selectedItem.label || selectedItem.name}
             </span>
             <button
@@ -1848,7 +1849,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
                   rotation: ((selectedItem.rotation || 0) + 45) % 360,
                 });
               }}
-              className="px-2 py-1 text-xs bg-sky-500/20 text-sky-300 hover:bg-sky-500/30 rounded flex items-center gap-1 transition-colors"
+              className="px-2 py-1 text-xs bg-orange-50 text-orange-700 hover:bg-orange-100 border border-orange-200 rounded flex items-center gap-1 font-medium transition-colors"
             >
               <RotateCw className="w-3 h-3" />
               <span>Rotate 45°</span>
@@ -1856,7 +1857,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
             <button
               type="button"
               onClick={() => handleDeleteFurnitureItem(selectedItem.id, selectedItem.name || selectedItem.label)}
-              className="px-2 py-1 text-xs bg-rose-500/25 text-rose-300 hover:bg-rose-500/40 border border-rose-500/30 rounded flex items-center gap-1 transition-colors"
+              className="px-2 py-1 text-xs bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-300 rounded flex items-center gap-1 font-medium transition-colors"
               title="Delete this item (Del or Backspace)"
             >
               <Trash2 className="w-3 h-3" />
@@ -1867,22 +1868,22 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
 
         {/* Selected Agent Quick Actions in 2D */}
         {selectedAgentId && selectedAgent && (
-          <div className="absolute top-3 left-3 z-20 flex flex-wrap items-center gap-2 p-2 bg-slate-950/95 backdrop-blur-md border border-sky-500/40 rounded-xl shadow-2xl animate-in fade-in">
-            <div className="flex items-center gap-2 pr-2 border-r border-white/10">
+          <div className="absolute top-3 left-3 z-20 flex flex-wrap items-center gap-2 p-2 bg-white/95 backdrop-blur-md border border-orange-300 rounded-xl shadow-[0_8px_30px_rgba(255,120,40,0.2)] animate-in fade-in text-slate-900">
+            <div className="flex items-center gap-2 pr-2 border-r border-orange-200">
               <div
-                className="w-7 h-7 rounded-lg flex items-center justify-center text-white font-bold text-xs shrink-0"
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-white font-bold text-xs shrink-0 shadow-sm"
                 style={{ backgroundColor: selectedAgent.color }}
               >
                 {selectedAgent.avatarInitial}
               </div>
               <div className="text-xs">
-                <div className="font-semibold text-white flex items-center gap-1.5">
+                <div className="font-semibold text-slate-900 flex items-center gap-1.5">
                   <span>{selectedAgent.name}</span>
-                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-300">
+                  <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-orange-100 text-orange-800 font-medium">
                     {selectedAgent.hierarchy}
                   </span>
                 </div>
-                <div className="text-[11px] text-slate-400">{selectedAgent.role}</div>
+                <div className="text-[11px] text-slate-500">{selectedAgent.role}</div>
               </div>
             </div>
 
@@ -1890,7 +1891,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
             <button
               type="button"
               onClick={() => onOpenAgentChat?.(selectedAgent)}
-              className="px-2.5 py-1 text-xs bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold rounded-lg flex items-center gap-1 transition-colors shadow"
+              className="px-2.5 py-1 text-xs bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold rounded-lg flex items-center gap-1 transition-colors shadow-[0_2px_10px_rgba(255,107,0,0.3)]"
               title="Open real-time AI conversation with this agent (or double-click agent)"
             >
               <Bot className="w-3.5 h-3.5" />
@@ -1901,7 +1902,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
             <button
               type="button"
               onClick={() => handleSeatAgentAtDesk(selectedAgent)}
-              className="px-2 py-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 rounded-lg flex items-center gap-1 transition-colors"
+              className="px-2 py-1 text-xs bg-orange-50 hover:bg-orange-100 text-orange-900 border border-orange-200 rounded-lg flex items-center gap-1 transition-colors font-medium"
               title="Seat at available desk"
             >
               <span>💻 Sit at Desk</span>
@@ -1910,7 +1911,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
             <button
               type="button"
               onClick={() => handleSendAgentToAmenity(selectedAgent, 'coffee')}
-              className="px-2 py-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 rounded-lg flex items-center gap-1 transition-colors"
+              className="px-2 py-1 text-xs bg-orange-50 hover:bg-orange-100 text-orange-900 border border-orange-200 rounded-lg flex items-center gap-1 transition-colors font-medium"
               title="Send to coffee dispenser"
             >
               <span>☕ Coffee</span>
@@ -1919,7 +1920,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
             <button
               type="button"
               onClick={() => handleSendAgentToAmenity(selectedAgent, 'tennis')}
-              className="px-2 py-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 rounded-lg flex items-center gap-1 transition-colors"
+              className="px-2 py-1 text-xs bg-orange-50 hover:bg-orange-100 text-orange-900 border border-orange-200 rounded-lg flex items-center gap-1 transition-colors font-medium"
               title="Play table tennis"
             >
               <span>🏓 Tennis</span>
@@ -1928,7 +1929,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
             <button
               type="button"
               onClick={() => handleSendAgentToAmenity(selectedAgent, 'smartboard')}
-              className="px-2 py-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 rounded-lg flex items-center gap-1 transition-colors"
+              className="px-2 py-1 text-xs bg-orange-50 hover:bg-orange-100 text-orange-900 border border-orange-200 rounded-lg flex items-center gap-1 transition-colors font-medium"
               title="Brainstorm on smartboard"
             >
               <span>📊 Board</span>
@@ -1937,7 +1938,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
             <button
               type="button"
               onClick={() => handleSendAgentToAmenity(selectedAgent, 'store')}
-              className="px-2 py-1 text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 rounded-lg flex items-center gap-1 transition-colors"
+              className="px-2 py-1 text-xs bg-orange-50 hover:bg-orange-100 text-orange-900 border border-orange-200 rounded-lg flex items-center gap-1 transition-colors font-medium"
               title="Visit micro-market store kiosk"
             >
               <span>🏪 Store</span>
@@ -1947,7 +1948,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
             <button
               type="button"
               onClick={() => onOpenAgentManager?.(selectedAgent)}
-              className="p-1.5 bg-slate-800 hover:bg-slate-750 text-slate-300 hover:text-white rounded-lg transition-colors"
+              className="p-1.5 bg-orange-50 hover:bg-orange-100 text-slate-600 hover:text-slate-900 border border-orange-200 rounded-lg transition-colors"
               title="Edit agent role & hierarchy"
             >
               <UserPlus className="w-3.5 h-3.5" />
@@ -1956,7 +1957,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
             <button
               type="button"
               onClick={() => handleDeleteAgentItem(selectedAgent.id)}
-              className="p-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 rounded-lg transition-colors"
+              className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 rounded-lg transition-colors"
               title="Delete this agent"
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -1965,105 +1966,105 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
         )}
 
         {/* Bottom 2D Instructions Bar */}
-        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between pointer-events-none text-[11px] text-slate-300">
-          <div className="px-3 py-1.5 bg-slate-950/85 backdrop-blur-md border border-white/10 rounded-lg flex items-center gap-2 flex-wrap shadow-lg">
-            <span className="text-sky-300 font-semibold">CAD Shortcuts:</span>
-            <span><strong className="text-white">Ctrl+Z</strong> Undo · <strong className="text-white">Ctrl+Y</strong> Redo</span>
-            <span className="text-slate-600">·</span>
+        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between pointer-events-none text-[11px] text-slate-600">
+          <div className="px-3 py-1.5 bg-white/90 backdrop-blur-md border border-orange-200/90 rounded-lg flex items-center gap-2 flex-wrap shadow-[0_4px_16px_rgba(255,120,40,0.1)] pointer-events-auto">
+            <span className="text-orange-600 font-bold">CAD Shortcuts:</span>
+            <span><strong className="text-slate-900 font-medium">Ctrl+Z</strong> Undo · <strong className="text-slate-900 font-medium">Ctrl+Y</strong> Redo</span>
+            <span className="text-slate-300">·</span>
             <span>Double-click corner or item to delete</span>
-            <span className="text-slate-600">·</span>
-            <span>Click <strong className="text-sky-400 font-mono">+</strong> on wall line to add wall</span>
-            <span className="text-slate-600">·</span>
-            <span>Click wall line → choose <strong className="text-rose-400">✂️ Delete Portion</strong></span>
+            <span className="text-slate-300">·</span>
+            <span>Click <strong className="text-orange-600 font-mono">+</strong> on wall line to add wall</span>
+            <span className="text-slate-300">·</span>
+            <span>Click wall line → choose <strong className="text-rose-600 font-medium">✂️ Delete Portion</strong></span>
           </div>
         </div>
       </div>
 
       {/* CAD Help & Interactive Guide Modal */}
       {showGuideModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-slate-900 border border-white/15 rounded-2xl max-w-lg w-full p-6 shadow-2xl text-slate-200 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-white/10">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white border border-orange-200 rounded-2xl max-w-lg w-full p-6 shadow-[0_20px_50px_rgba(255,107,0,0.18)] text-slate-900 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-orange-100">
               <div className="flex items-center gap-2">
-                <div className="p-2 bg-sky-500/20 text-sky-400 rounded-lg">
+                <div className="p-2 bg-orange-100 text-orange-600 rounded-lg">
                   <HelpCircle className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-white">2D Floor & Wall Architecture Guide</h3>
-                  <p className="text-xs text-slate-400">Quick answers on walls, deletions, history, and reshaping</p>
+                  <h3 className="text-sm font-bold text-slate-900">2D Floor & Wall Architecture Guide</h3>
+                  <p className="text-xs text-slate-500">Quick answers on walls, deletions, history, and reshaping</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setShowGuideModal(false)}
-                className="p-1 text-slate-400 hover:text-white rounded-lg transition-colors"
+                className="p-1 text-slate-400 hover:text-slate-700 rounded-lg transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="space-y-4 text-xs">
+            <div className="space-y-3 text-xs">
               {/* Question: Undo and Redo */}
-              <div className="p-3 bg-slate-950/60 border border-sky-400/20 rounded-xl space-y-1.5">
-                <div className="flex items-center gap-2 font-semibold text-sky-300">
-                  <Undo2 className="w-4 h-4 text-sky-400" />
+              <div className="p-3 bg-orange-50/50 border border-orange-200 rounded-xl space-y-1.5">
+                <div className="flex items-center gap-2 font-bold text-orange-700">
+                  <Undo2 className="w-4 h-4 text-orange-600" />
                   <span>Undo & Redo Options</span>
                 </div>
-                <p className="text-slate-300 leading-relaxed">
+                <p className="text-slate-700 leading-relaxed">
                   • Use the <strong>Undo</strong> and <strong>Redo</strong> buttons in the top CAD toolbar at any time.
                 </p>
-                <p className="text-slate-300 leading-relaxed">
-                  • Keyboard shortcuts: press <kbd className="px-1.5 py-0.5 bg-slate-800 border border-white/20 rounded font-mono text-white">Ctrl+Z</kbd> (or <kbd className="px-1.5 py-0.5 bg-slate-800 border border-white/20 rounded font-mono text-white">⌘Z</kbd>) to undo, and <kbd className="px-1.5 py-0.5 bg-slate-800 border border-white/20 rounded font-mono text-white">Ctrl+Y</kbd> (or <kbd className="px-1.5 py-0.5 bg-slate-800 border border-white/20 rounded font-mono text-white">⌘Shift+Z</kbd>) to redo.
+                <p className="text-slate-700 leading-relaxed">
+                  • Keyboard shortcuts: press <kbd className="px-1.5 py-0.5 bg-white border border-orange-200 rounded font-mono text-slate-800 shadow-xs">Ctrl+Z</kbd> (or <kbd className="px-1.5 py-0.5 bg-white border border-orange-200 rounded font-mono text-slate-800 shadow-xs">⌘Z</kbd>) to undo, and <kbd className="px-1.5 py-0.5 bg-white border border-orange-200 rounded font-mono text-slate-800 shadow-xs">Ctrl+Y</kbd> (or <kbd className="px-1.5 py-0.5 bg-white border border-orange-200 rounded font-mono text-slate-800 shadow-xs">⌘Shift+Z</kbd>) to redo.
                 </p>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[11px] text-slate-500">
                   * Tracks moving corners, adding walls, deleting elements, moving furniture, rotating, and wall cutouts.
                 </p>
               </div>
 
               {/* Question 1: How to delete elements */}
-              <div className="p-3 bg-slate-950/60 border border-white/10 rounded-xl space-y-1.5">
-                <div className="flex items-center gap-2 font-semibold text-sky-300">
-                  <Trash2 className="w-4 h-4 text-rose-400" />
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5">
+                <div className="flex items-center gap-2 font-bold text-orange-700">
+                  <Trash2 className="w-4 h-4 text-rose-500" />
                   <span>1. How to Delete Elements or Corners</span>
                 </div>
-                <p className="text-slate-300 leading-relaxed">
-                  • <strong>Double-click</strong> directly on any corner point (blue circle) or furniture element to delete it immediately.
+                <p className="text-slate-700 leading-relaxed">
+                  • <strong>Double-click</strong> directly on any corner point (orange circle) or furniture element to delete it immediately.
                 </p>
-                <p className="text-slate-300 leading-relaxed">
-                  • Alternatively, <strong>click to select</strong> the element or corner, then press <kbd className="px-1.5 py-0.5 bg-slate-800 border border-white/20 rounded font-mono text-white">Delete</kbd> or <kbd className="px-1.5 py-0.5 bg-slate-800 border border-white/20 rounded font-mono text-white">Backspace</kbd>, or click the red <strong>Delete</strong> button in the top banner.
+                <p className="text-slate-700 leading-relaxed">
+                  • Alternatively, <strong>click to select</strong> the element or corner, then press <kbd className="px-1.5 py-0.5 bg-white border border-slate-200 rounded font-mono text-slate-800">Delete</kbd> or <kbd className="px-1.5 py-0.5 bg-white border border-slate-200 rounded font-mono text-slate-800">Backspace</kbd>, or click the red <strong>Delete</strong> button in the top banner.
                 </p>
-                <p className="text-[11px] text-slate-400">
+                <p className="text-[11px] text-slate-500">
                   * Note: An enclosed room requires a minimum of 3 corner points.
                 </p>
               </div>
 
               {/* Question 2: How to add a wall */}
-              <div className="p-3 bg-slate-950/60 border border-white/10 rounded-xl space-y-1.5">
-                <div className="flex items-center gap-2 font-semibold text-sky-300">
-                  <Plus className="w-4 h-4 text-emerald-400" />
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5">
+                <div className="flex items-center gap-2 font-bold text-orange-700">
+                  <Plus className="w-4 h-4 text-emerald-600" />
                   <span>2. How to Add a Wall</span>
                 </div>
-                <p className="text-slate-300 leading-relaxed">
-                  • <strong>Perimeter Wall</strong>: Click the blue <strong><Plus className="w-3 h-3 inline mx-0.5" /></strong> handle located at the midpoint of any wall line (or click <strong>+ Add Wall Corner</strong> in the top toolbar). This inserts a new corner. Drag that corner outwards to create new walls and alcoves!
+                <p className="text-slate-700 leading-relaxed">
+                  • <strong>Perimeter Wall</strong>: Click the orange <strong><Plus className="w-3 h-3 inline mx-0.5" /></strong> handle located at the midpoint of any wall line (or click <strong>+ Add Wall Corner</strong> in the top toolbar). This inserts a new corner. Drag that corner outwards to create new walls and alcoves!
                 </p>
-                <p className="text-slate-300 leading-relaxed">
+                <p className="text-slate-700 leading-relaxed">
                   • <strong>Interior Partition Wall</strong>: Click <strong>+ Interior Wall</strong> in the top toolbar to drop a 3-meter architectural drywall divider anywhere inside the office floor.
                 </p>
               </div>
 
               {/* Question 3: How to delete a portion of the wall */}
-              <div className="p-3 bg-slate-950/60 border border-white/10 rounded-xl space-y-1.5">
-                <div className="flex items-center gap-2 font-semibold text-sky-300">
-                  <Scissors className="w-4 h-4 text-rose-400" />
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5">
+                <div className="flex items-center gap-2 font-bold text-orange-700">
+                  <Scissors className="w-4 h-4 text-rose-500" />
                   <span>3. How to Delete a Portion of a Wall</span>
                 </div>
-                <p className="text-slate-300 leading-relaxed">
+                <p className="text-slate-700 leading-relaxed">
                   • Click on any wall line to open the Wall Architecture toolbar.
                 </p>
-                <p className="text-slate-300 leading-relaxed">
+                <p className="text-slate-700 leading-relaxed">
                   • Click <strong>✂️ Delete Portion (Opening)</strong>. This cuts out that portion of the wall, turning it into a real walkthrough passage in both 2D and 3D!
                 </p>
-                <p className="text-slate-300 leading-relaxed">
+                <p className="text-slate-700 leading-relaxed">
                   • You can choose cutout widths: <strong>1.2m</strong>, <strong>2.0m</strong>, <strong>3.5m</strong>, or <strong>Full (Remove Wall)</strong>. Double-click the cutout at any time to restore the solid wall.
                 </p>
               </div>
@@ -2073,7 +2074,7 @@ export const Office2DCanvas: React.FC<Office2DCanvasProps> = ({
               <button
                 type="button"
                 onClick={() => setShowGuideModal(false)}
-                className="px-4 py-2 bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold text-xs rounded-xl transition-colors"
+                className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold text-xs rounded-xl transition-all shadow-[0_2px_12px_rgba(255,107,0,0.3)]"
               >
                 Got it, let's design!
               </button>

@@ -190,8 +190,8 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
     const height = container.clientHeight || 600;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color('#090e1a');
-    scene.fog = new THREE.FogExp2('#090e1a', 0.015);
+    scene.background = new THREE.Color('#faf9f6');
+    scene.fog = new THREE.FogExp2('#faf9f6', 0.012);
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 150);
@@ -230,8 +230,8 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
     canvasEl.addEventListener('webglcontextlost', handleContextLost);
     canvasEl.addEventListener('webglcontextrestored', handleContextRestored);
 
-    // Exterior architectural ground grid
-    const gridHelper = new THREE.GridHelper(44, 44, '#1e293b', '#131c31');
+    // Exterior architectural ground grid with light neon orange lines
+    const gridHelper = new THREE.GridHelper(44, 44, '#fb923c', '#ffedd5');
     gridHelper.position.y = -0.17;
     scene.add(gridHelper);
 
@@ -239,7 +239,7 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
     const groundPlane = new THREE.Mesh(
       new THREE.PlaneGeometry(80, 80),
       new THREE.MeshStandardMaterial({
-        color: '#070b14',
+        color: '#f8fafc',
         roughness: 0.95,
         metalness: 0.05,
       })
@@ -249,17 +249,17 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
     groundPlane.receiveShadow = true;
     scene.add(groundPlane);
 
-    // Three-point studio + architectural lighting rig
-    const ambientLight = new THREE.AmbientLight('#e2e8f0', 0.75);
+    // Three-point studio + architectural lighting rig with warm key & neon orange rim
+    const ambientLight = new THREE.AmbientLight('#fffbeb', 0.85);
     ambientLight.name = 'studio-ambient';
     scene.add(ambientLight);
 
-    const hemiLight = new THREE.HemisphereLight('#f8fafc', '#1e293b', 0.65);
+    const hemiLight = new THREE.HemisphereLight('#ffffff', '#ffedd5', 0.65);
     hemiLight.position.set(0, 20, 0);
     hemiLight.name = 'studio-hemi';
     scene.add(hemiLight);
 
-    const keyLight = new THREE.DirectionalLight('#fffbeb', 1.55);
+    const keyLight = new THREE.DirectionalLight('#fff7ed', 1.55);
     keyLight.position.set(14, 22, 12);
     keyLight.castShadow = true;
     keyLight.shadow.mapSize.width = 2048;
@@ -275,7 +275,7 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
     keyLight.name = 'studio-key';
     scene.add(keyLight);
 
-    const rimLight = new THREE.DirectionalLight('#38bdf8', 0.45);
+    const rimLight = new THREE.DirectionalLight('#f97316', 0.55);
     rimLight.position.set(-14, 12, -14);
     rimLight.name = 'studio-rim';
     scene.add(rimLight);
@@ -617,72 +617,72 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
 
     const preset = office.lightingPreset || 'daylight';
     if (preset === 'daylight') {
-      scene.background = new THREE.Color('#0b1120');
-      scene.fog = new THREE.FogExp2('#0b1120', 0.014);
+      scene.background = new THREE.Color('#faf9f6');
+      scene.fog = new THREE.FogExp2('#faf9f6', 0.012);
       if (ambient) {
-        ambient.color.set('#f1f5f9');
+        ambient.color.set('#fffbeb');
         ambient.intensity = 0.85;
       }
       if (hemi) hemi.intensity = 0.7;
       if (key) {
-        key.color.set('#fffbeb');
+        key.color.set('#fff7ed');
         key.intensity = 1.55;
         key.position.set(14, 22, 12);
       }
       if (rim) {
-        rim.color.set('#38bdf8');
-        rim.intensity = 0.4;
+        rim.color.set('#f97316');
+        rim.intensity = 0.55;
       }
     } else if (preset === 'golden_hour') {
-      scene.background = new THREE.Color('#130f1e');
-      scene.fog = new THREE.FogExp2('#130f1e', 0.015);
+      scene.background = new THREE.Color('#fff7ed');
+      scene.fog = new THREE.FogExp2('#fff7ed', 0.014);
       if (ambient) {
-        ambient.color.set('#fed7aa');
-        ambient.intensity = 0.65;
+        ambient.color.set('#ffedd5');
+        ambient.intensity = 0.75;
       }
-      if (hemi) hemi.intensity = 0.5;
+      if (hemi) hemi.intensity = 0.6;
       if (key) {
         key.color.set('#fb923c');
-        key.intensity = 1.9;
+        key.intensity = 1.85;
         key.position.set(22, 11, 14);
       }
       if (rim) {
-        rim.color.set('#818cf8');
-        rim.intensity = 0.55;
+        rim.color.set('#ea580c');
+        rim.intensity = 0.65;
       }
     } else if (preset === 'night_studio') {
-      scene.background = new THREE.Color('#050811');
-      scene.fog = new THREE.FogExp2('#050811', 0.018);
+      scene.background = new THREE.Color('#1c1917');
+      scene.fog = new THREE.FogExp2('#1c1917', 0.018);
       if (ambient) {
-        ambient.color.set('#38bdf8');
-        ambient.intensity = 0.38;
+        ambient.color.set('#fed7aa');
+        ambient.intensity = 0.45;
       }
-      if (hemi) hemi.intensity = 0.3;
+      if (hemi) hemi.intensity = 0.35;
       if (key) {
-        key.color.set('#93c5fd');
-        key.intensity = 0.65;
+        key.color.set('#fdba74');
+        key.intensity = 0.85;
         key.position.set(-10, 18, -10);
       }
       if (rim) {
-        rim.color.set('#f59e0b');
-        rim.intensity = 0.5;
+        rim.color.set('#ff7828');
+        rim.intensity = 0.8;
       }
     } else if (preset === 'blueprint') {
-      scene.background = new THREE.Color('#081c30');
-      scene.fog = new THREE.FogExp2('#081c30', 0.012);
+      scene.background = new THREE.Color('#fffbf5');
+      scene.fog = new THREE.FogExp2('#fffbf5', 0.01);
       if (ambient) {
-        ambient.color.set('#bae6fd');
-        ambient.intensity = 1.05;
+        ambient.color.set('#ffedd5');
+        ambient.intensity = 0.95;
       }
-      if (hemi) hemi.intensity = 0.8;
+      if (hemi) hemi.intensity = 0.75;
       if (key) {
-        key.color.set('#e0f2fe');
-        key.intensity = 1.2;
+        key.color.set('#fff7ed');
+        key.intensity = 1.35;
         key.position.set(10, 25, 10);
       }
       if (rim) {
-        rim.color.set('#38bdf8');
-        rim.intensity = 0.7;
+        rim.color.set('#f97316');
+        rim.intensity = 0.6;
       }
     }
   }, [office.lightingPreset]);
@@ -903,14 +903,14 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
       {/* Top-Left Floating Viewport Controls HUD */}
       <div className="absolute top-3 left-3 z-10 flex flex-wrap items-center gap-2 pointer-events-auto">
         {/* Camera Angle Presets */}
-        <div className="flex items-center gap-1 p-1 bg-slate-950/75 backdrop-blur-md border border-white/10 rounded-lg">
+        <div className="flex items-center gap-1 p-1 bg-white/95 backdrop-blur-md border border-orange-200/90 rounded-lg shadow-sm">
           <button
             type="button"
             onClick={() => applyCameraPreset('isometric')}
             className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
               activeCamPreset === 'isometric'
-                ? 'bg-sky-500 text-slate-950 font-semibold'
-                : 'text-slate-300 hover:text-white hover:bg-white/5'
+                ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_10px_rgba(255,120,40,0.35)]'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-orange-50/60'
             }`}
             title="Isometric 3D Orbit View"
           >
@@ -922,8 +922,8 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
             onClick={() => applyCameraPreset('top_down')}
             className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
               activeCamPreset === 'top_down'
-                ? 'bg-sky-500 text-slate-950 font-semibold'
-                : 'text-slate-300 hover:text-white hover:bg-white/5'
+                ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_10px_rgba(255,120,40,0.35)]'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-orange-50/60'
             }`}
             title="Top-Down Architectural Plan View"
           >
@@ -935,8 +935,8 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
             onClick={() => applyCameraPreset('walkthrough')}
             className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
               activeCamPreset === 'walkthrough'
-                ? 'bg-sky-500 text-slate-950 font-semibold'
-                : 'text-slate-300 hover:text-white hover:bg-white/5'
+                ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_10px_rgba(255,120,40,0.35)]'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-orange-50/60'
             }`}
             title="Interior Eye-Level Perspective"
           >
@@ -948,8 +948,8 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
             onClick={() => applyCameraPreset('corner')}
             className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
               activeCamPreset === 'corner'
-                ? 'bg-sky-500 text-slate-950 font-semibold'
-                : 'text-slate-300 hover:text-white hover:bg-white/5'
+                ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_10px_rgba(255,120,40,0.35)]'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-orange-50/60'
             }`}
             title="Reverse Corner Perspective"
           >
@@ -960,7 +960,7 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
 
         {/* Wall Cutaway Mode Selector */}
         {!compactMode && (
-          <div className="flex items-center gap-1 p-1 bg-slate-950/75 backdrop-blur-md border border-white/10 rounded-lg">
+          <div className="flex items-center gap-1 p-1 bg-white/95 backdrop-blur-md border border-orange-200/90 rounded-lg shadow-sm">
             {(
               [
                 { id: 'smart_cutaway', label: 'Smart Cutaway' },
@@ -975,8 +975,8 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
                 onClick={() => onUpdateOfficeMeta({ wallMode: wm.id })}
                 className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
                   office.wallMode === wm.id
-                    ? 'bg-white/15 text-white'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-orange-100 text-orange-800 font-semibold border border-orange-300/60'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-orange-50/60'
                 }`}
               >
                 {wm.label}
@@ -991,18 +991,18 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
         <button
           type="button"
           onClick={onToggleSnapToGrid}
-          className={`px-2.5 py-1.5 text-xs font-medium rounded-lg border backdrop-blur-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
+          className={`px-2.5 py-1.5 text-xs font-medium rounded-lg border backdrop-blur-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 shadow-sm ${
             snapToGrid
-              ? 'bg-sky-500/20 border-sky-400/40 text-sky-200'
-              : 'bg-slate-950/75 border-white/10 text-slate-400 hover:text-white'
+              ? 'bg-orange-50 border-orange-400 text-orange-700 shadow-[0_0_10px_rgba(255,120,40,0.25)]'
+              : 'bg-white/95 border-orange-200/90 text-slate-600 hover:text-slate-900'
           }`}
           title="Toggle 0.25m Grid Snapping when dragging furniture"
         >
-          <Grid className="w-3.5 h-3.5" />
+          <Grid className="w-3.5 h-3.5 text-orange-500" />
           <span>Snap 0.25m</span>
         </button>
 
-        <div className="flex items-center gap-1 p-1 bg-slate-950/75 backdrop-blur-md border border-white/10 rounded-lg">
+        <div className="flex items-center gap-1 p-1 bg-white/95 backdrop-blur-md border border-orange-200/90 rounded-lg shadow-sm">
           {(
             [
               { id: 'daylight', label: 'Daylight', icon: Sun },
@@ -1018,8 +1018,8 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
                 onClick={() => onUpdateOfficeMeta({ lightingPreset: lp.id })}
                 className={`px-2 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 ${
                   office.lightingPreset === lp.id
-                    ? 'bg-amber-500/25 text-amber-200'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-medium shadow-[0_0_8px_rgba(255,120,40,0.3)]'
+                    : 'text-slate-500 hover:text-slate-800 hover:bg-orange-50/60'
                 }`}
                 title={`${lp.label} Lighting`}
               >
@@ -1034,17 +1034,17 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
           <button
             type="button"
             onClick={onToggleFullscreen}
-            className={`px-2.5 py-1.5 text-xs font-medium rounded-lg border backdrop-blur-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
+            className={`px-2.5 py-1.5 text-xs font-medium rounded-lg border backdrop-blur-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 shadow-sm ${
               isFullscreen
-                ? 'bg-sky-500/25 border-sky-400/50 text-sky-200'
-                : 'bg-slate-950/75 border-white/10 text-slate-300 hover:text-white hover:border-white/20'
+                ? 'bg-orange-50 border-orange-400 text-orange-800'
+                : 'bg-white/95 border-orange-200/90 text-slate-700 hover:text-slate-900 hover:bg-orange-50/60'
             }`}
             title={isFullscreen ? 'Exit Fullscreen (Esc or F)' : 'Fullscreen 3D Playground (F)'}
           >
             {isFullscreen ? (
-              <Minimize2 className="w-3.5 h-3.5 text-sky-400" />
+              <Minimize2 className="w-3.5 h-3.5 text-orange-500" />
             ) : (
-              <Maximize2 className="w-3.5 h-3.5" />
+              <Maximize2 className="w-3.5 h-3.5 text-orange-500" />
             )}
             <span className="hidden sm:inline">
               {isFullscreen ? 'Exit' : 'Fullscreen'}
@@ -1055,15 +1055,15 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
 
       {/* Floating Quick Action Bar when a 3D Furniture Item is Selected */}
       {selectedItem && (
-        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 px-3 py-2 bg-slate-950/85 backdrop-blur-md border border-sky-500/35 rounded-xl shadow-2xl pointer-events-auto">
-          <div className="pr-2 border-r border-white/10">
-            <div className="text-xs font-semibold text-white whitespace-nowrap">
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 px-3 py-2 bg-white/95 backdrop-blur-md border border-orange-300 rounded-xl shadow-[0_8px_30px_rgba(255,120,40,0.2)] pointer-events-auto">
+          <div className="pr-2 border-r border-orange-100">
+            <div className="text-xs font-semibold text-slate-900 whitespace-nowrap">
               {selectedItem.label || selectedItem.name}
             </div>
-            <div className="text-[11px] font-mono tabular-nums text-slate-400 whitespace-nowrap">
+            <div className="text-[11px] font-mono tabular-nums text-slate-500 whitespace-nowrap">
               X: {selectedItem.x.toFixed(2)}m · Z: {selectedItem.z.toFixed(2)}m · {selectedItem.rotation}°
               {!insideBounds && (
-                <span className="text-amber-400 ml-1.5">· Outside Floor Boundary</span>
+                <span className="text-orange-600 font-semibold ml-1.5">· Outside Floor Boundary</span>
               )}
             </div>
           </div>
@@ -1075,7 +1075,7 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
                 rotation: ((selectedItem.rotation || 0) - 45 + 360) % 360,
               })
             }
-            className="p-1.5 text-slate-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+            className="p-1.5 text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
             title="Rotate -45° (Shift+R)"
           >
             <RotateCcw className="w-4 h-4" />
@@ -1088,7 +1088,7 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
                 rotation: ((selectedItem.rotation || 0) + 45) % 360,
               })
             }
-            className="p-1.5 text-slate-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+            className="p-1.5 text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
             title="Rotate +45° (R)"
           >
             <RotateCw className="w-4 h-4" />
@@ -1100,14 +1100,14 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
             onChange={(e) =>
               onUpdateFurniture(selectedItem.id, { primaryColor: e.target.value })
             }
-            className="w-6 h-6 rounded cursor-pointer bg-transparent border border-white/20"
+            className="w-6 h-6 rounded cursor-pointer bg-transparent border border-orange-200"
             title="Primary Material Finish"
           />
 
           <button
             type="button"
             onClick={() => onDuplicateFurniture(selectedItem.id)}
-            className="p-1.5 text-slate-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+            className="p-1.5 text-slate-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
             title="Duplicate Furniture"
           >
             <Copy className="w-4 h-4" />
@@ -1116,7 +1116,7 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
           <button
             type="button"
             onClick={() => onDeleteFurniture(selectedItem.id)}
-            className="p-1.5 text-rose-400 hover:text-rose-300 hover:bg-rose-500/15 rounded-lg transition-colors"
+            className="p-1.5 text-rose-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
             title="Delete Furniture (Del)"
           >
             <Trash2 className="w-4 h-4" />
@@ -1125,21 +1125,21 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
       )}
 
       {/* Subtle Bottom-Left Controls Help & Telemetry Bar */}
-      <div className="absolute bottom-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none text-[11px] text-slate-400">
-        <div className="px-2.5 py-1 bg-slate-950/70 backdrop-blur-sm border border-white/10 rounded-md">
+      <div className="absolute bottom-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none text-[11px] text-slate-500">
+        <div className="px-2.5 py-1 bg-white/90 backdrop-blur-sm border border-orange-200/80 rounded-md shadow-sm">
           <span>Drag furniture to reposition</span>
-          <span className="mx-1.5">·</span>
+          <span className="mx-1.5 text-slate-300">·</span>
           <span>Left-drag background to orbit</span>
-          <span className="mx-1.5">·</span>
+          <span className="mx-1.5 text-slate-300">·</span>
           <span>Right-drag to pan</span>
-          <span className="mx-1.5">·</span>
+          <span className="mx-1.5 text-slate-300">·</span>
           <span>Scroll to zoom</span>
-          <span className="mx-1.5">·</span>
+          <span className="mx-1.5 text-slate-300">·</span>
           <span>Press R to rotate</span>
         </div>
 
         {liveDragCoords && (
-          <div className="px-2.5 py-1 bg-sky-950/85 border border-sky-400/40 text-sky-200 font-mono tabular-nums rounded-md">
+          <div className="px-2.5 py-1 bg-orange-50 border border-orange-300 text-orange-700 font-mono tabular-nums rounded-md shadow-sm">
             Drop / Drag Target: ({liveDragCoords.x.toFixed(2)}m, {liveDragCoords.z.toFixed(2)}m)
           </div>
         )}

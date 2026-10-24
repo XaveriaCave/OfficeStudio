@@ -73,14 +73,14 @@ export const MiniFloorplanSvg: React.FC<{
     <svg
       viewBox={`${minX} ${minZ} ${width} ${depth}`}
       preserveAspectRatio="xMidYMid meet"
-      className={`${className} bg-slate-950/90 rounded-lg border border-white/10 shrink-0`}
+      className={`${className} bg-orange-50/40 rounded-lg border border-orange-200/80 shrink-0`}
     >
       <polygon
         points={pointsAttr}
         fill={floorCfg.baseColor}
-        fillOpacity={0.22}
-        stroke="#38bdf8"
-        strokeWidth={0.22}
+        fillOpacity={0.25}
+        stroke="#f97316"
+        strokeWidth={0.24}
         strokeLinejoin="round"
       />
       {office.furniture.map((f) => {
@@ -100,7 +100,7 @@ export const MiniFloorplanSvg: React.FC<{
               height={d}
               rx={0.08}
               fill={f.primaryColor || cat.defaultPrimaryColor}
-              stroke="#e2e8f0"
+              stroke="#fb923c"
               strokeWidth={0.05}
             />
           </g>
@@ -129,8 +129,8 @@ const Campus3DConstellation: React.FC<{
     const height = container.clientHeight || 420;
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color('#070c18');
-    scene.fog = new THREE.FogExp2('#070c18', 0.008);
+    scene.background = new THREE.Color('#faf9f6');
+    scene.fog = new THREE.FogExp2('#faf9f6', 0.006);
 
     const camera = new THREE.PerspectiveCamera(42, width / height, 0.5, 250);
 
@@ -146,14 +146,14 @@ const Campus3DConstellation: React.FC<{
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
-    const ambient = new THREE.AmbientLight('#f1f5f9', 0.9);
+    const ambient = new THREE.AmbientLight('#fff7ed', 1.0);
     scene.add(ambient);
-    const dirLight = new THREE.DirectionalLight('#fffbeb', 1.4);
+    const dirLight = new THREE.DirectionalLight('#ffedd5', 1.3);
     dirLight.position.set(25, 45, 30);
     dirLight.castShadow = true;
     scene.add(dirLight);
 
-    const grid = new THREE.GridHelper(110, 55, '#1e293b', '#0f172a');
+    const grid = new THREE.GridHelper(110, 55, '#fb923c', '#fed7aa');
     grid.position.y = -0.5;
     scene.add(grid);
 
@@ -202,7 +202,7 @@ const Campus3DConstellation: React.FC<{
         const ring = new THREE.Mesh(
           new THREE.RingGeometry(8.2, 8.6, 48),
           new THREE.MeshBasicMaterial({
-            color: '#38bdf8',
+            color: '#f97316',
             side: THREE.DoubleSide,
           })
         );
@@ -377,18 +377,19 @@ const Campus3DConstellation: React.FC<{
         isFullscreen
           ? 'fixed inset-0 z-50 rounded-none w-screen h-screen'
           : 'relative w-full h-96 rounded-xl'
-      } overflow-hidden border border-white/10 bg-[#070c18]`}
+      } overflow-hidden border border-orange-200/80 bg-white shadow-md`}
     >
       <div
         ref={mountRef}
         className={`w-full h-full ${hoveredOfficeId ? 'cursor-pointer' : 'cursor-grab'}`}
       />
-      <div className="absolute top-3 left-3 z-10 px-3 py-1.5 bg-slate-950/80 backdrop-blur-md border border-white/10 rounded-lg pointer-events-none">
-        <div className="text-xs font-semibold text-white">
-          3D Multi-Office Spatial Hierarchy Constellation
+      <div className="absolute top-3 left-3 z-10 px-3 py-1.5 bg-white/95 backdrop-blur-md border border-orange-200 rounded-lg shadow-sm pointer-events-none">
+        <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+          <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
+          <span>3D Multi-Office Spatial Hierarchy Constellation</span>
         </div>
-        <div className="text-[11px] text-slate-400">
-          Cyan arcs link parent HQ suites to child offices · Click any 3D office to select · Double-click to enter 3D Playground
+        <div className="text-[11px] text-slate-500">
+          Orange arcs link parent HQ suites to child offices · Click any 3D office to select · Double-click to enter 3D Playground
         </div>
       </div>
 
@@ -396,15 +397,15 @@ const Campus3DConstellation: React.FC<{
         <button
           type="button"
           onClick={() => setIsFullscreen(!isFullscreen)}
-          className={`px-3 py-1.5 text-xs font-medium rounded-lg border backdrop-blur-md transition-colors flex items-center gap-1.5 shadow-lg ${
+          className={`px-3 py-1.5 text-xs font-medium rounded-lg border backdrop-blur-md transition-colors flex items-center gap-1.5 shadow-sm ${
             isFullscreen
-              ? 'bg-sky-500/25 border-sky-400/50 text-sky-200'
-              : 'bg-slate-950/80 border-white/10 text-slate-300 hover:text-white hover:border-white/20'
+              ? 'bg-orange-100 border-orange-400 text-orange-900'
+              : 'bg-white/90 border-orange-200 text-slate-700 hover:text-orange-600 hover:border-orange-400'
           }`}
           title={isFullscreen ? 'Exit Fullscreen (Esc)' : 'Fullscreen 3D Campus Constellation'}
         >
           {isFullscreen ? (
-            <Minimize2 className="w-3.5 h-3.5 text-sky-400" />
+            <Minimize2 className="w-3.5 h-3.5 text-orange-600" />
           ) : (
             <Maximize2 className="w-3.5 h-3.5" />
           )}
@@ -413,11 +414,11 @@ const Campus3DConstellation: React.FC<{
       </div>
 
       {hoveredOffice && (
-        <div className="absolute bottom-3 left-3 z-10 px-3 py-2 bg-slate-950/90 border border-sky-400/40 rounded-lg pointer-events-none">
-          <div className="text-xs font-semibold text-sky-300">
+        <div className="absolute bottom-3 left-3 z-10 px-3 py-2 bg-white/95 border border-orange-300 rounded-lg shadow-[0_4px_16px_rgba(255,107,0,0.15)] pointer-events-none">
+          <div className="text-xs font-bold text-orange-600">
             {hoveredOffice.code} — {hoveredOffice.name}
           </div>
-          <div className="text-[11px] text-slate-300 font-mono tabular-nums">
+          <div className="text-[11px] text-slate-600 font-mono tabular-nums">
             Floor 0{hoveredOffice.floorLevel} · {hoveredOffice.department} ·{' '}
             {computePolygonArea(hoveredOffice.vertices).toFixed(1)} m² ·{' '}
             {hoveredOffice.furniture.length} 3D items
@@ -508,16 +509,16 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
         <div
           className={`p-4 rounded-xl border transition-colors flex flex-col lg:flex-row lg:items-center justify-between gap-4 ${
             isSelected
-              ? 'bg-slate-900/95 border-sky-500/50'
-              : 'bg-slate-900/60 border-white/10 hover:border-white/20'
+              ? 'bg-orange-50/70 border-orange-400 shadow-[0_0_15px_rgba(255,107,0,0.18)]'
+              : 'bg-white border-orange-200/80 hover:border-orange-300 shadow-sm'
           }`}
           style={{ marginLeft: `${Math.min(depth * 28, 84)}px` }}
         >
           <div className="flex items-start sm:items-center gap-4 min-w-0">
             <MiniFloorplanSvg office={office} className="w-24 h-20" />
             <div className="min-w-0 space-y-1">
-              <div className="flex items-center gap-2 text-xs text-slate-400 font-mono tabular-nums">
-                <span className="text-sky-400 font-semibold">{office.code}</span>
+              <div className="flex items-center gap-2 text-xs text-slate-500 font-mono tabular-nums">
+                <span className="text-orange-600 font-bold">{office.code}</span>
                 <span aria-hidden="true">·</span>
                 <span>{office.department}</span>
                 <span aria-hidden="true">·</span>
@@ -530,11 +531,11 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                 <span>{office.furniture.length} 3D Assets</span>
               </div>
 
-              <h3 className="text-base font-semibold text-white truncate">
+              <h3 className="text-base font-bold text-slate-900 truncate">
                 {office.name}
               </h3>
 
-              <p className="text-xs text-slate-400 line-clamp-1 max-w-2xl">
+              <p className="text-xs text-slate-600 line-clamp-1 max-w-2xl">
                 {office.description}
               </p>
 
@@ -554,7 +555,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
             <button
               type="button"
               onClick={() => onSelectOfficeAndMode(office.id, 'playground_3d')}
-              className="px-3 py-1.5 text-xs font-semibold bg-sky-500 text-slate-950 rounded-lg hover:bg-sky-400 transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5"
+              className="px-3 py-1.5 text-xs font-semibold bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-lg hover:from-orange-600 hover:to-amber-600 transition-all shadow-[0_2px_8px_rgba(255,107,0,0.25)] whitespace-nowrap shrink-0 flex items-center gap-1.5"
             >
               <Box className="w-3.5 h-3.5" />
               <span>Open 3D World</span>
@@ -563,7 +564,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
             <button
               type="button"
               onClick={() => onSelectOfficeAndMode(office.id, 'editor_2d')}
-              className="px-3 py-1.5 text-xs font-medium bg-slate-800 text-slate-200 hover:text-white rounded-lg border border-white/10 transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5"
+              className="px-3 py-1.5 text-xs font-medium bg-orange-50 text-orange-900 hover:bg-orange-100 rounded-lg border border-orange-200 transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5"
             >
               <Compass className="w-3.5 h-3.5" />
               <span>2D Shape</span>
@@ -572,7 +573,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
             <button
               type="button"
               onClick={() => onOpenCreateModal(office.id)}
-              className="px-2.5 py-1.5 text-xs font-medium bg-slate-800/80 text-slate-300 hover:text-white rounded-lg border border-white/10 transition-colors whitespace-nowrap shrink-0 flex items-center gap-1"
+              className="px-2.5 py-1.5 text-xs font-medium bg-orange-50 text-orange-900 hover:bg-orange-100 rounded-lg border border-orange-200 transition-colors whitespace-nowrap shrink-0 flex items-center gap-1"
               title="Add Sub-Office under this node in company hierarchy"
             >
               <Plus className="w-3.5 h-3.5" />
@@ -582,7 +583,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
             <button
               type="button"
               onClick={() => onOpenEditModal(office)}
-              className="p-1.5 text-slate-400 hover:text-white bg-slate-800/80 rounded-lg border border-white/10 transition-colors"
+              className="p-1.5 text-slate-500 hover:text-slate-900 bg-white hover:bg-orange-50 rounded-lg border border-orange-200 transition-colors"
               title="Modify Office Properties"
             >
               <Edit3 className="w-3.5 h-3.5" />
@@ -591,7 +592,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
             <button
               type="button"
               onClick={() => onDuplicateOffice(office.id)}
-              className="p-1.5 text-slate-400 hover:text-white bg-slate-800/80 rounded-lg border border-white/10 transition-colors"
+              className="p-1.5 text-slate-500 hover:text-slate-900 bg-white hover:bg-orange-50 rounded-lg border border-orange-200 transition-colors"
               title="Duplicate Office"
             >
               <Copy className="w-3.5 h-3.5" />
@@ -601,7 +602,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
               <button
                 type="button"
                 onClick={() => onDeleteOffice(office.id)}
-                className="p-1.5 text-rose-400 hover:text-rose-300 bg-rose-500/10 rounded-lg border border-rose-500/20 transition-colors"
+                className="p-1.5 text-rose-500 hover:text-rose-700 bg-rose-50 rounded-lg border border-rose-200 transition-colors"
                 title="Delete Office"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -620,47 +621,48 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
   };
 
   return (
-    <div className="flex-1 h-full overflow-y-auto bg-[#0b1120] p-6 lg:p-8 space-y-8">
+    <div className="flex-1 h-full overflow-y-auto bg-white p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8">
       {/* Header & Primary Actions */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/10 pb-6">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-orange-200 pb-5 sm:pb-6">
         <div>
-          <div className="text-xs text-sky-400 font-medium mb-1">
-            Enterprise Spatial Architecture · Client-Side WebGL Studio
+          <div className="text-xs text-orange-600 font-semibold mb-1 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
+            <span>Enterprise Spatial Architecture · Client-Side WebGL Studio</span>
           </div>
-          <h1 className="text-2xl lg:text-3xl font-bold text-white tracking-tight">
+          <h1 className="text-2xl lg:text-3xl font-bold text-slate-900 tracking-tight">
             {viewMode === 'hierarchy'
               ? 'Company Spatial Hierarchy & Floor Tree'
               : 'Company Office Layout & 3D World Directory'}
           </h1>
-          <p className="text-sm text-slate-400 mt-1 max-w-2xl">
+          <p className="text-sm text-slate-600 mt-1 max-w-2xl font-medium">
             Inspect the organization’s multi-floor spatial hierarchy, customize 2D polygonal floor footprints, and launch interactive WebGL 3D office playgrounds.
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 shrink-0">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 shrink-0">
           <button
             type="button"
             onClick={() => setShow3DConstellation((prev) => !prev)}
-            className="px-3.5 py-2 text-xs font-medium bg-slate-900 hover:bg-slate-800 text-slate-200 border border-white/10 rounded-lg transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5"
+            className="px-3 sm:px-3.5 py-2 text-xs font-semibold bg-white hover:bg-orange-50 text-slate-700 hover:text-slate-900 border border-orange-200 rounded-lg transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 shadow-xs"
           >
-            <Layers className="w-3.5 h-3.5 text-sky-400" />
+            <Layers className="w-3.5 h-3.5 text-orange-600" />
             <span>{show3DConstellation ? 'Hide 3D Campus Map' : 'Show 3D Campus Map'}</span>
           </button>
 
           <button
             type="button"
             onClick={onResetAllToPresets}
-            className="px-3 py-2 text-xs font-medium bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white border border-white/10 rounded-lg transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5"
+            className="px-3 py-2 text-xs font-semibold bg-white hover:bg-orange-50 text-slate-700 hover:text-slate-900 border border-orange-200 rounded-lg transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 shadow-xs"
             title="Reset all offices to default architectural presets"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
+            <RotateCcw className="w-3.5 h-3.5 text-orange-600" />
             <span>Reset Presets</span>
           </button>
 
           <button
             type="button"
             onClick={() => onOpenCreateModal(null)}
-            className="px-4 py-2 text-xs font-semibold bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-lg transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5"
+            className="px-3.5 sm:px-4 py-2 text-xs font-semibold bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-lg transition-all shadow-[0_2px_12px_rgba(255,107,0,0.3)] whitespace-nowrap shrink-0 flex items-center gap-1.5"
           >
             <Plus className="w-4 h-4" />
             <span>Add New Office</span>
@@ -670,46 +672,46 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
 
       {/* Corporate Company Profile & Branch Allocation Banner */}
       {activeCompany && (
-        <div className="p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900/95 to-sky-950/40 border border-sky-500/20 shadow-xl space-y-4">
+        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-orange-50 via-amber-50/40 to-white border border-orange-200/90 shadow-[0_4px_25px_rgba(255,107,0,0.08)] space-y-4">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="flex items-start sm:items-center gap-3.5">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-tr from-sky-500/20 to-indigo-500/20 border border-sky-400/40 flex items-center justify-center text-sky-400 shrink-0">
+              <div className="w-12 h-12 rounded-xl bg-orange-100 border border-orange-300 flex items-center justify-center text-orange-600 shrink-0 shadow-sm">
                 <Building2 className="w-6 h-6" />
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="text-xl font-bold text-white tracking-tight">
+                  <h2 className="text-xl font-bold text-slate-900 tracking-tight">
                     {activeCompany.name}
                   </h2>
-                  <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-sky-500/15 text-sky-300 border border-sky-400/30">
+                  <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-orange-100 text-orange-800 border border-orange-200">
                     {activeCompany.companyType}
                   </span>
-                  <span className="px-2 py-0.5 text-xs rounded bg-slate-800 text-slate-300 font-medium">
+                  <span className="px-2 py-0.5 text-xs rounded bg-slate-100 text-slate-700 font-medium">
                     {activeCompany.country}
                   </span>
                 </div>
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-400 mt-1">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-600 mt-1">
                   {activeCompany.gstDetails && (
-                    <span className="flex items-center gap-1 font-mono text-emerald-400 font-medium">
+                    <span className="flex items-center gap-1 font-mono text-emerald-700 font-medium">
                       <FileText className="w-3.5 h-3.5" />
                       <span>GST/Tax ID: {activeCompany.gstDetails}</span>
                     </span>
                   )}
                   {activeCompany.domain && (
-                    <span className="flex items-center gap-1 text-sky-400">
+                    <span className="flex items-center gap-1 text-orange-600">
                       <Globe className="w-3.5 h-3.5" />
                       <span>{activeCompany.domain}</span>
                     </span>
                   )}
                   {activeCompany.registrationNumber && (
-                    <span className="font-mono text-slate-400">
+                    <span className="font-mono text-slate-500">
                       Reg: {activeCompany.registrationNumber}
                     </span>
                   )}
-                  <span className="text-slate-400">
-                    Currency: <strong className="text-white">{activeCompany.currency}</strong>
+                  <span className="text-slate-600">
+                    Currency: <strong className="text-slate-900">{activeCompany.currency}</strong>
                   </span>
-                  <span className="text-sky-300 font-medium">
+                  <span className="text-orange-700 font-medium">
                     {offices.filter((o) => o.companyId === activeCompany.id || activeCompany.officeIds?.includes(o.id)).length} Offices Assigned
                   </span>
                 </div>
@@ -722,7 +724,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                   <select
                     value={activeCompany.id}
                     onChange={(e) => onSelectCompany(e.target.value)}
-                    className="px-3 py-2 text-xs font-medium bg-slate-950/80 text-slate-200 border border-white/15 rounded-lg focus:outline-none focus:border-sky-400"
+                    className="px-3 py-2 text-xs font-medium bg-white text-slate-800 border border-orange-200 rounded-lg focus:outline-none focus:border-orange-500 shadow-xs"
                   >
                     {companies.map((c) => (
                       <option key={c.id} value={c.id}>
@@ -738,17 +740,17 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                   <button
                     type="button"
                     onClick={() => onOpenConfigureCompany(activeCompany)}
-                    className="px-3.5 py-2 text-xs font-medium bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-400/30 rounded-lg transition-colors flex items-center gap-1.5"
+                    className="px-3.5 py-2 text-xs font-medium bg-orange-50 hover:bg-orange-100 text-orange-900 border border-orange-300 rounded-lg transition-colors flex items-center gap-1.5 shadow-xs"
                     title="Configure company name, type, GST, domain, country, and assigned offices"
                   >
-                    <Settings2 className="w-3.5 h-3.5" />
+                    <Settings2 className="w-3.5 h-3.5 text-orange-600" />
                     <span>Configure Company & Offices</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => onOpenConfigureCompany(undefined)}
-                    className="px-3 py-2 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10 rounded-lg transition-colors flex items-center gap-1.5"
+                    className="px-3 py-2 text-xs font-medium bg-white hover:bg-orange-50 text-slate-700 border border-orange-200 rounded-lg transition-colors flex items-center gap-1.5 shadow-xs"
                     title="Register an additional company entity"
                   >
                     <Plus className="w-3.5 h-3.5" />
@@ -760,28 +762,28 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                       <button
                         type="button"
                         onClick={() => setIsConfirmingBannerDelete(true)}
-                        className="p-2 text-slate-400 hover:text-rose-400 bg-slate-800/80 hover:bg-rose-500/10 border border-white/10 hover:border-rose-500/30 rounded-lg transition-colors"
+                        className="p-2 text-slate-400 hover:text-rose-600 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-300 rounded-lg transition-colors"
                         title={`Delete "${activeCompany.name}" (unassigns its offices)`}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     ) : (
-                      <div className="flex items-center gap-1.5 p-1 bg-rose-950/80 border border-rose-500/40 rounded-lg">
-                        <span className="text-[11px] text-rose-200 px-1 font-medium">Delete entity?</span>
+                      <div className="flex items-center gap-1.5 p-1 bg-rose-50 border border-rose-300 rounded-lg">
+                        <span className="text-[11px] text-rose-800 px-1 font-medium">Delete entity?</span>
                         <button
                           type="button"
                           onClick={() => {
                             onDeleteCompany(activeCompany.id);
                             setIsConfirmingBannerDelete(false);
                           }}
-                          className="px-2 py-0.5 text-[11px] font-semibold text-white bg-rose-600 hover:bg-rose-500 rounded transition-colors"
+                          className="px-2 py-0.5 text-[11px] font-semibold text-white bg-rose-600 hover:bg-rose-500 rounded transition-colors shadow-xs"
                         >
                           Delete
                         </button>
                         <button
                           type="button"
                           onClick={() => setIsConfirmingBannerDelete(false)}
-                          className="px-1.5 py-0.5 text-[11px] text-slate-300 hover:text-white bg-slate-800 rounded transition-colors"
+                          className="px-1.5 py-0.5 text-[11px] text-slate-600 hover:text-slate-900 bg-slate-200 rounded transition-colors"
                         >
                           ✕
                         </button>
@@ -797,42 +799,42 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
 
       {/* 4-Column Quantitative Spatial Metrics Strip */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-4 rounded-xl bg-slate-900/70 border border-white/10">
-          <div className="text-xs text-slate-400">Active Office Suites</div>
-          <div className="text-2xl font-bold text-white font-mono tabular-nums mt-1">
+        <div className="p-4 rounded-xl bg-white border border-orange-200/80 shadow-sm">
+          <div className="text-xs text-slate-500 font-medium">Active Office Suites</div>
+          <div className="text-2xl font-bold text-slate-900 font-mono tabular-nums mt-1">
             {offices.length}
           </div>
-          <div className="text-xs text-slate-500 mt-1">
+          <div className="text-xs text-slate-400 mt-1">
             Across {uniqueFloors.length} building floor levels
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/70 border border-white/10">
-          <div className="text-xs text-slate-400">Total Configured Floor Area</div>
-          <div className="text-2xl font-bold text-white font-mono tabular-nums mt-1">
+        <div className="p-4 rounded-xl bg-white border border-orange-200/80 shadow-sm">
+          <div className="text-xs text-slate-500 font-medium">Total Configured Floor Area</div>
+          <div className="text-2xl font-bold text-slate-900 font-mono tabular-nums mt-1">
             {totalAreaSqM.toFixed(1)} m²
           </div>
-          <div className="text-xs text-slate-500 font-mono tabular-nums mt-1">
+          <div className="text-xs text-slate-400 font-mono tabular-nums mt-1">
             {Math.round(totalAreaSqM * 10.764).toLocaleString()} sq.ft total polygon area
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/70 border border-white/10">
-          <div className="text-xs text-slate-400">Workstation & Meeting Capacity</div>
-          <div className="text-2xl font-bold text-sky-400 font-mono tabular-nums mt-1">
+        <div className="p-4 rounded-xl bg-white border border-orange-200/80 shadow-sm">
+          <div className="text-xs text-slate-500 font-medium">Workstation & Meeting Capacity</div>
+          <div className="text-2xl font-bold text-orange-600 font-mono tabular-nums mt-1">
             {totalSeatCapacity} Seats
           </div>
-          <div className="text-xs text-slate-500 font-mono tabular-nums mt-1">
+          <div className="text-xs text-slate-400 font-mono tabular-nums mt-1">
             {(totalAreaSqM / Math.max(1, totalSeatCapacity)).toFixed(1)} m² per seat ratio
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/70 border border-white/10">
-          <div className="text-xs text-slate-400">Placed 3D Furniture Assets</div>
-          <div className="text-2xl font-bold text-white font-mono tabular-nums mt-1">
+        <div className="p-4 rounded-xl bg-white border border-orange-200/80 shadow-sm">
+          <div className="text-xs text-slate-500 font-medium">Placed 3D Furniture Assets</div>
+          <div className="text-2xl font-bold text-slate-900 font-mono tabular-nums mt-1">
             {totalFurnitureItems}
           </div>
-          <div className="text-xs text-slate-500 mt-1">
+          <div className="text-xs text-slate-400 mt-1">
             Real-time WebGL customizable objects
           </div>
         </div>
@@ -852,14 +854,14 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
       <div className="space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-1 p-1 bg-slate-900 border border-white/10 rounded-lg">
+            <div className="flex items-center gap-1 p-1 bg-orange-50/70 border border-orange-200 rounded-lg">
               <button
                 type="button"
                 onClick={() => onSelectOfficeAndMode(selectedOfficeId, 'dashboard')}
-                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
                   viewMode !== 'hierarchy'
-                    ? 'bg-sky-500 text-slate-950 font-semibold'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 <LayoutGrid className="w-3.5 h-3.5" />
@@ -868,10 +870,10 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
               <button
                 type="button"
                 onClick={() => onSelectOfficeAndMode(selectedOfficeId, 'hierarchy')}
-                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
                   viewMode === 'hierarchy'
-                    ? 'bg-sky-500 text-slate-950 font-semibold'
-                    : 'text-slate-400 hover:text-white'
+                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 <GitBranch className="w-3.5 h-3.5" />
@@ -889,19 +891,19 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Filter offices by name or code..."
-                  className="pl-8 pr-3 py-1.5 text-xs bg-slate-900 border border-white/10 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-sky-400"
+                  className="pl-8 pr-3 py-1.5 text-xs bg-white border border-orange-200 rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-orange-500 shadow-xs"
                 />
               </div>
 
               {/* Floor Filter */}
-              <div className="flex items-center gap-1 p-1 bg-slate-900 border border-white/10 rounded-lg">
+              <div className="flex items-center gap-1 p-1 bg-white border border-orange-200 rounded-lg shadow-xs">
                 <button
                   type="button"
                   onClick={() => setFloorFilter('All')}
                   className={`px-2.5 py-1 text-xs rounded-md transition-colors whitespace-nowrap shrink-0 ${
                     floorFilter === 'All'
-                      ? 'bg-white/15 text-white font-medium'
-                      : 'text-slate-400 hover:text-white'
+                      ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-medium shadow-xs'
+                      : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
                   All Floors
@@ -913,8 +915,8 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                     onClick={() => setFloorFilter(fl)}
                     className={`px-2.5 py-1 text-xs font-mono tabular-nums rounded-md transition-colors whitespace-nowrap shrink-0 ${
                       floorFilter === fl
-                        ? 'bg-white/15 text-white font-medium'
-                        : 'text-slate-400 hover:text-white'
+                        ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-medium shadow-xs'
+                        : 'text-slate-600 hover:text-slate-900'
                     }`}
                   >
                     F0{fl}
@@ -929,7 +931,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                 onChange={(e) =>
                   setDepartmentFilter(e.target.value as OfficeDepartment | 'All')
                 }
-                className="px-2.5 py-1.5 text-xs bg-slate-900 border border-white/10 rounded-lg text-slate-200 focus:outline-none focus:border-sky-400"
+                className="px-2.5 py-1.5 text-xs bg-white border border-orange-200 rounded-lg text-slate-800 focus:outline-none focus:border-orange-500 shadow-xs"
               >
                 <option value="All">All Divisions</option>
                 <option value="Executive">Executive</option>
@@ -965,15 +967,15 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                   key={office.id}
                   className={`p-5 rounded-xl border transition-colors flex flex-col justify-between gap-4 ${
                     isSelected
-                      ? 'bg-slate-900/95 border-sky-500/50'
-                      : 'bg-slate-900/60 border-white/10 hover:border-white/20'
+                      ? 'bg-orange-50/60 border-orange-400 shadow-[0_0_20px_rgba(255,107,0,0.18)]'
+                      : 'bg-white border-orange-200/80 hover:border-orange-300 shadow-sm'
                   }`}
                 >
                   <div className="space-y-3">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <div className="flex items-center gap-1.5 text-xs text-slate-400 font-mono tabular-nums">
-                          <span className="text-sky-400 font-semibold">
+                        <div className="flex items-center gap-1.5 text-xs text-slate-500 font-mono tabular-nums">
+                          <span className="text-orange-600 font-bold">
                             {office.code}
                           </span>
                           <span aria-hidden="true">·</span>
@@ -981,7 +983,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                           <span aria-hidden="true">·</span>
                           <span>Floor 0{office.floorLevel}</span>
                         </div>
-                        <h3 className="text-lg font-semibold text-white mt-0.5 truncate">
+                        <h3 className="text-lg font-bold text-slate-900 mt-0.5 truncate">
                           {office.name}
                         </h3>
                       </div>
@@ -990,7 +992,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                         <button
                           type="button"
                           onClick={() => onOpenEditModal(office)}
-                          className="p-1.5 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                          className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-orange-50 rounded-lg transition-colors border border-slate-200"
                           title="Edit Office Spec"
                         >
                           <Edit3 className="w-3.5 h-3.5" />
@@ -998,7 +1000,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                         <button
                           type="button"
                           onClick={() => onDuplicateOffice(office.id)}
-                          className="p-1.5 text-slate-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                          className="p-1.5 text-slate-500 hover:text-slate-900 hover:bg-orange-50 rounded-lg transition-colors border border-slate-200"
                           title="Duplicate Office"
                         >
                           <Copy className="w-3.5 h-3.5" />
@@ -1007,7 +1009,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                           <button
                             type="button"
                             onClick={() => onDeleteOffice(office.id)}
-                            className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors"
+                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors border border-slate-200"
                             title="Delete Office"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -1028,36 +1030,36 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                         <MiniFloorplanSvg office={office} className="w-32 h-28" />
                       </div>
 
-                      <div className="space-y-1.5 text-xs text-slate-300 min-w-0">
+                      <div className="space-y-1.5 text-xs text-slate-600 min-w-0">
                         <div className="font-mono tabular-nums">
-                          <span className="text-slate-500">Area: </span>
-                          <span className="text-white font-semibold">
+                          <span className="text-slate-400">Area: </span>
+                          <span className="text-slate-900 font-bold">
                             {area.toFixed(1)} m²
                           </span>
-                          <span className="text-slate-500">
+                          <span className="text-slate-400">
                             {' '}
                             ({Math.round(area * 10.764)} ft²)
                           </span>
                         </div>
                         <div className="font-mono tabular-nums">
-                          <span className="text-slate-500">Capacity: </span>
-                          <span className="text-sky-300 font-semibold">
+                          <span className="text-slate-400">Capacity: </span>
+                          <span className="text-orange-600 font-bold">
                             {seats} Seats
                           </span>
-                          <span className="text-slate-500">
+                          <span className="text-slate-400">
                             {' '}
                             · {office.furniture.length} Items
                           </span>
                         </div>
                         <div className="truncate">
-                          <span className="text-slate-500">Floor: </span>
-                          <span>
+                          <span className="text-slate-400">Floor: </span>
+                          <span className="text-slate-800 font-medium">
                             {FLOOR_MATERIAL_CONFIG[office.floorMaterial].label}
                           </span>
                         </div>
                         <div className="truncate">
-                          <span className="text-slate-500">Hierarchy: </span>
-                          <span>
+                          <span className="text-slate-400">Hierarchy: </span>
+                          <span className="text-slate-800">
                             {parentOffice
                               ? `Reports to ${parentOffice.code}`
                               : 'Root HQ Suite'}
@@ -1066,19 +1068,19 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                       </div>
                     </div>
 
-                    <p className="text-xs text-slate-400 line-clamp-2">
+                    <p className="text-xs text-slate-600 line-clamp-2">
                       {office.description}
                     </p>
                   </div>
 
                   {/* Card Footer Action Buttons */}
-                  <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-2">
+                  <div className="pt-3 border-t border-orange-100 flex items-center justify-between gap-2">
                     <button
                       type="button"
                       onClick={() =>
                         onSelectOfficeAndMode(office.id, 'playground_3d')
                       }
-                      className="flex-1 py-2 px-3 text-xs font-semibold bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-lg transition-colors whitespace-nowrap flex items-center justify-center gap-1.5"
+                      className="flex-1 py-2 px-3 text-xs font-semibold bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-lg transition-all shadow-[0_2px_10px_rgba(255,107,0,0.25)] whitespace-nowrap flex items-center justify-center gap-1.5"
                     >
                       <Box className="w-3.5 h-3.5" />
                       <span>Launch 3D Playground</span>
@@ -1087,7 +1089,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                     <button
                       type="button"
                       onClick={() => onSelectOfficeAndMode(office.id, 'editor_2d')}
-                      className="py-2 px-3 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition-colors whitespace-nowrap flex items-center gap-1"
+                      className="py-2 px-3 text-xs font-medium bg-orange-50 hover:bg-orange-100 text-orange-900 border border-orange-200 rounded-lg transition-colors whitespace-nowrap flex items-center gap-1"
                     >
                       <span>2D Shape</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
@@ -1098,7 +1100,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                       onClick={() =>
                         onSelectOfficeAndMode(office.id, 'split_studio')
                       }
-                      className="py-2 px-2.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors whitespace-nowrap"
+                      className="py-2 px-2.5 text-xs font-medium bg-orange-50 hover:bg-orange-100 text-orange-900 border border-orange-200 rounded-lg transition-colors whitespace-nowrap"
                       title="Open synchronized 2D + 3D Split Studio"
                     >
                       Split
