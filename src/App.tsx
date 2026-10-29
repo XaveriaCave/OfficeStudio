@@ -24,6 +24,8 @@ import {
   Settings2,
   Globe,
   FileText,
+  Lock,
+  PencilOff,
 } from 'lucide-react';
 import {
   Company,
@@ -121,6 +123,7 @@ export default function App() {
   const [spatialViewsOpen, setSpatialViewsOpen] = useState<boolean>(true);
   const [collapsedFloors, setCollapsedFloors] = useState<Record<number, boolean>>({});
   const [sidebarFilterMode, setSidebarFilterMode] = useState<'company' | 'all'>('company');
+  const [is3DEditMode, setIs3DEditMode] = useState<boolean>(true);
 
   const toggleFloorCollapse = (floor: number) => {
     setCollapsedFloors((prev) => ({ ...prev, [floor]: !prev[floor] }));
@@ -1581,6 +1584,35 @@ export default function App() {
                     </>
                   ) : (
                     <>
+                      {(viewMode === 'playground_3d' || viewMode === 'split_studio') && (
+                        <button
+                          type="button"
+                          onClick={() => setIs3DEditMode((prev) => !prev)}
+                          className={`px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all whitespace-nowrap shrink-0 flex items-center gap-1.5 shadow-sm ${
+                            !is3DEditMode
+                              ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-600 shadow-[0_0_10px_rgba(245,158,11,0.35)]'
+                              : 'bg-white hover:bg-orange-50 text-slate-700 hover:text-orange-600 border-orange-200/90'
+                          }`}
+                          title={
+                            is3DEditMode
+                              ? 'Disable editing (Switch to Non-Edit Mode)'
+                              : 'Non-edit mode active. Click to enable editing'
+                          }
+                        >
+                          {!is3DEditMode ? (
+                            <>
+                              <Lock className="w-3.5 h-3.5 text-white" />
+                              <span>Non-Edit Mode</span>
+                            </>
+                          ) : (
+                            <>
+                              <PencilOff className="w-3.5 h-3.5 text-orange-500" />
+                              <span className="hidden sm:inline">Disable Edit</span>
+                            </>
+                          )}
+                        </button>
+                      )}
+
                       <button
                         type="button"
                         onClick={() => setCatalogOpen((prev) => !prev)}
@@ -1647,6 +1679,8 @@ export default function App() {
                       onToggleSnapToGrid={() => setSnapToGrid((s) => !s)}
                       isFullscreen={isStudioFullscreen}
                       onToggleFullscreen={toggleStudioFullscreen}
+                      isEditMode={is3DEditMode}
+                      onToggleEditMode={() => setIs3DEditMode((prev) => !prev)}
                     />
                   )}
 
@@ -1727,6 +1761,8 @@ export default function App() {
                           compactMode
                           isFullscreen={isStudioFullscreen}
                           onToggleFullscreen={toggleStudioFullscreen}
+                          isEditMode={is3DEditMode}
+                          onToggleEditMode={() => setIs3DEditMode((prev) => !prev)}
                         />
                       </div>
                     </div>

@@ -16,6 +16,8 @@ import {
   Minimize2,
   Layers,
   Bot,
+  Lock,
+  PencilOff,
 } from 'lucide-react';
 import {
   FurnitureItem,
@@ -53,6 +55,8 @@ interface Office3DCanvasProps {
   compactMode?: boolean;
   isFullscreen?: boolean;
   onToggleFullscreen?: () => void;
+  isEditMode?: boolean;
+  onToggleEditMode?: () => void;
 }
 
 type CameraViewPreset = 'isometric' | 'top_down' | 'walkthrough' | 'corner';
@@ -75,6 +79,8 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
   compactMode = false,
   isFullscreen = false,
   onToggleFullscreen,
+  isEditMode: propIsEditMode,
+  onToggleEditMode: propOnToggleEditMode,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [webglLost, setWebglLost] = useState(false);
@@ -82,6 +88,23 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
   const [isDragging3D, setIsDragging3D] = useState(false);
   const [liveDragCoords, setLiveDragCoords] = useState<{ x: number; z: number } | null>(null);
   const [activeCamPreset, setActiveCamPreset] = useState<CameraViewPreset>('isometric');
+
+  // Edit Mode state: if disabled, furniture cannot be dragged, moved, or deleted
+  const [internalEditMode, setInternalEditMode] = useState(true);
+  const isEditMode = propIsEditMode !== undefined ? propIsEditMode : internalEditMode;
+  const isEditModeRef = useRef(isEditMode);
+  isEditModeRef.current = isEditMode;
+
+  const toggleEditMode = useCallback(() => {
+    if (propOnToggleEditMode) {
+      propOnToggleEditMode();
+    } else {
+      setInternalEditMode((prev) => !prev);
+    }
+    if (isEditMode) {
+      onSelectFurniture(null);
+    }
+  }, [propOnToggleEditMode, isEditMode, onSelectFurniture]);
 
   // Mutable refs for Three.js objects & interaction state inside event listeners
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -391,7 +414,7 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
         return;
       }
 
-      const hitFurnitureId = raycastFurniture(e.clientX, e.clientY);
+      const hitFurnitureId = isEditModeRef.current ? raycastFurniture(e.clientX, e.clientY) : null;
       if (hitFurnitureId) {
         onSelectFurnitureRef.current(hitFurnitureId);
         const item = officeRef.current.furniture.find((f) => f.id === hitFurnitureId);
@@ -484,8 +507,8 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
         return;
       }
 
-      // Hover detection when idle
-      const hovered = raycastFurniture(e.clientX, e.clientY);
+      // Hover detection when idle (only in edit mode)
+      const hovered = isEditModeRef.current ? raycastFurniture(e.clientX, e.clientY) : null;
       setHoveredFurnitureId((prev) => (prev !== hovered ? hovered : prev));
     };
 
@@ -773,7 +796,7 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
         onToggleFullscreen();
         return;
       }
-      if (!selectedFurnitureId) {
+      if (!selectedFurnitureId || !isEditMode) {
         if (e.key === 'Escape' && isFullscreen && onToggleFullscreen) {
           e.preventDefault();
           onToggleFullscreen();
@@ -804,11 +827,19 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
     onSelectFurniture,
     isFullscreen,
     onToggleFullscreen,
+    isEditMode,
   ]);
 
   // HTML5 Drag & Drop from Furniture Catalog onto the 3D WebGL Canvas
   const handleCanvasDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+    if (!isEditMode) {
+      e.dataTransfer.dropEffect = 'none';
+      if (ghostMeshRef.current) {
+        ghostMeshRef.current.visible = false;
+      }
+      return;
+    }
     e.dataTransfer.dropEffect = 'copy';
 
     const container = containerRef.current;
@@ -852,6 +883,7 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
       ghostMeshRef.current.visible = false;
     }
     setLiveDragCoords(null);
+    if (!isEditMode) return;
 
     const droppedType =
       (e.dataTransfer.getData('application/x-furniture-type') as FurnitureType) ||
@@ -988,19 +1020,50 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
 
       {/* Top-Right Lighting & Grid Snap Controls */}
       <div className="absolute top-3 right-3 z-10 flex items-center gap-2 pointer-events-auto">
+        {/* Non-Edit Mode / Edit Mode Toggle Button */}
         <button
           type="button"
-          onClick={onToggleSnapToGrid}
-          className={`px-2.5 py-1.5 text-xs font-medium rounded-lg border backdrop-blur-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 shadow-sm ${
-            snapToGrid
-              ? 'bg-orange-50 border-orange-400 text-orange-700 shadow-[0_0_10px_rgba(255,120,40,0.25)]'
-              : 'bg-white/95 border-orange-200/90 text-slate-600 hover:text-slate-900'
+          onClick={toggleEditMode}
+          className={`px-2.5 py-1.5 text-xs font-semibold rounded-lg border backdrop-blur-md transition-all whitespace-nowrap shrink-0 flex items-center gap-1.5 shadow-sm ${
+            !isEditMode
+              ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-600 shadow-[0_0_12px_rgba(245,158,11,0.4)]'
+              : 'bg-white/95 hover:bg-orange-50 border-orange-200/90 text-slate-700 hover:text-orange-600'
           }`}
-          title="Toggle 0.25m Grid Snapping when dragging furniture"
+          title={
+            isEditMode
+              ? 'Disable Editing (Switch to Non-Edit / View-Only Mode)'
+              : 'Non-Edit Mode Active (Editing disabled). Click to enable editing'
+          }
+          aria-label={isEditMode ? 'Disable editing' : 'Enable editing'}
         >
-          <Grid className="w-3.5 h-3.5 text-orange-500" />
-          <span>Snap 0.25m</span>
+          {!isEditMode ? (
+            <>
+              <Lock className="w-3.5 h-3.5 text-white" />
+              <span>Non-Edit Mode</span>
+            </>
+          ) : (
+            <>
+              <PencilOff className="w-3.5 h-3.5 text-orange-500" />
+              <span className="hidden sm:inline">Disable Edit</span>
+            </>
+          )}
         </button>
+
+        {isEditMode && (
+          <button
+            type="button"
+            onClick={onToggleSnapToGrid}
+            className={`px-2.5 py-1.5 text-xs font-medium rounded-lg border backdrop-blur-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 shadow-sm ${
+              snapToGrid
+                ? 'bg-orange-50 border-orange-400 text-orange-700 shadow-[0_0_10px_rgba(255,120,40,0.25)]'
+                : 'bg-white/95 border-orange-200/90 text-slate-600 hover:text-slate-900'
+            }`}
+            title="Toggle 0.25m Grid Snapping when dragging furniture"
+          >
+            <Grid className="w-3.5 h-3.5 text-orange-500" />
+            <span>Snap 0.25m</span>
+          </button>
+        )}
 
         <div className="flex items-center gap-1 p-1 bg-white/95 backdrop-blur-md border border-orange-200/90 rounded-lg shadow-sm">
           {(
@@ -1054,7 +1117,7 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
       </div>
 
       {/* Floating Quick Action Bar when a 3D Furniture Item is Selected */}
-      {selectedItem && (
+      {selectedItem && isEditMode && (
         <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 px-3 py-2 bg-white/95 backdrop-blur-md border border-orange-300 rounded-xl shadow-[0_8px_30px_rgba(255,120,40,0.2)] pointer-events-auto">
           <div className="pr-2 border-r border-orange-100">
             <div className="text-xs font-semibold text-slate-900 whitespace-nowrap">
@@ -1126,19 +1189,33 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
 
       {/* Subtle Bottom-Left Controls Help & Telemetry Bar */}
       <div className="absolute bottom-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none text-[11px] text-slate-500">
-        <div className="px-2.5 py-1 bg-white/90 backdrop-blur-sm border border-orange-200/80 rounded-md shadow-sm">
-          <span>Drag furniture to reposition</span>
-          <span className="mx-1.5 text-slate-300">·</span>
-          <span>Left-drag background to orbit</span>
-          <span className="mx-1.5 text-slate-300">·</span>
-          <span>Right-drag to pan</span>
-          <span className="mx-1.5 text-slate-300">·</span>
-          <span>Scroll to zoom</span>
-          <span className="mx-1.5 text-slate-300">·</span>
-          <span>Press R to rotate</span>
-        </div>
+        {!isEditMode ? (
+          <div className="px-2.5 py-1 bg-amber-50/95 backdrop-blur-sm border border-amber-300 text-amber-900 rounded-md shadow-sm flex items-center gap-1.5">
+            <Lock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+            <span className="font-semibold">Non-Edit Mode Active:</span>
+            <span>Furniture is locked in place</span>
+            <span className="mx-1.5 text-amber-300">·</span>
+            <span>Left-drag to orbit</span>
+            <span className="mx-1.5 text-amber-300">·</span>
+            <span>Right-drag to pan</span>
+            <span className="mx-1.5 text-amber-300">·</span>
+            <span>Scroll to zoom</span>
+          </div>
+        ) : (
+          <div className="px-2.5 py-1 bg-white/90 backdrop-blur-sm border border-orange-200/80 rounded-md shadow-sm">
+            <span>Drag furniture to reposition</span>
+            <span className="mx-1.5 text-slate-300">·</span>
+            <span>Left-drag background to orbit</span>
+            <span className="mx-1.5 text-slate-300">·</span>
+            <span>Right-drag to pan</span>
+            <span className="mx-1.5 text-slate-300">·</span>
+            <span>Scroll to zoom</span>
+            <span className="mx-1.5 text-slate-300">·</span>
+            <span>Press R to rotate</span>
+          </div>
+        )}
 
-        {liveDragCoords && (
+        {liveDragCoords && isEditMode && (
           <div className="px-2.5 py-1 bg-orange-50 border border-orange-300 text-orange-700 font-mono tabular-nums rounded-md shadow-sm">
             Drop / Drag Target: ({liveDragCoords.x.toFixed(2)}m, {liveDragCoords.z.toFixed(2)}m)
           </div>
