@@ -12,6 +12,85 @@ import {
   getDefaultAccountingForOffice,
 } from './utils/agentAccountingDefaults';
 
+export const PRESET_COMPANY_LOGOS = [
+  {
+    id: 'spatial_cube',
+    label: 'Spatial Cube',
+    url: `data:image/svg+xml;utf8,${encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+        <rect width="100" height="100" rx="24" fill="#fff7ed"/>
+        <path d="M50 18L80 34V66L50 82L20 66V34L50 18Z" fill="#ffedd5" stroke="#f97316" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M50 18V50M50 50L80 34M50 50L20 34" stroke="#ea580c" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M50 50V82" stroke="#ea580c" stroke-width="4" stroke-linejoin="round"/>
+        <circle cx="50" cy="50" r="7" fill="#f97316"/>
+      </svg>
+    `)}`,
+  },
+  {
+    id: 'quantum_orbit',
+    label: 'Quantum Orbit',
+    url: `data:image/svg+xml;utf8,${encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+        <rect width="100" height="100" rx="24" fill="#fffbeb"/>
+        <ellipse cx="50" cy="50" rx="36" ry="14" transform="rotate(-30 50 50)" stroke="#f59e0b" stroke-width="4" fill="none"/>
+        <ellipse cx="50" cy="50" rx="36" ry="14" transform="rotate(30 50 50)" stroke="#ea580c" stroke-width="4" fill="none"/>
+        <circle cx="50" cy="50" r="10" fill="#f97316"/>
+      </svg>
+    `)}`,
+  },
+  {
+    id: 'apex_tower',
+    label: 'Apex Spire',
+    url: `data:image/svg+xml;utf8,${encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+        <rect width="100" height="100" rx="24" fill="#fff7ed"/>
+        <path d="M50 15L25 78H75L50 15Z" fill="#ffedd5" stroke="#f97316" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M50 15V78" stroke="#ea580c" stroke-width="3"/>
+        <path d="M35 52H65" stroke="#ea580c" stroke-width="3"/>
+      </svg>
+    `)}`,
+  },
+  {
+    id: 'cyber_shield',
+    label: 'Cyber Shield',
+    url: `data:image/svg+xml;utf8,${encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+        <rect width="100" height="100" rx="24" fill="#f0f9ff"/>
+        <path d="M50 16L78 28V52C78 68 66 81 50 86C34 81 22 68 22 52V28L50 16Z" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M50 32L64 46L44 66L34 56" stroke="#0284c7" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    `)}`,
+  },
+  {
+    id: 'nexus_cluster',
+    label: 'Nexus Cluster',
+    url: `data:image/svg+xml;utf8,${encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+        <rect width="100" height="100" rx="24" fill="#f0fdf4"/>
+        <circle cx="50" cy="28" r="8" fill="#16a34a"/>
+        <circle cx="30" cy="66" r="8" fill="#16a34a"/>
+        <circle cx="70" cy="66" r="8" fill="#16a34a"/>
+        <line x1="50" y1="28" x2="30" y2="66" stroke="#22c55e" stroke-width="4"/>
+        <line x1="50" y1="28" x2="70" y2="66" stroke="#22c55e" stroke-width="4"/>
+        <line x1="30" y1="66" x2="70" y2="66" stroke="#22c55e" stroke-width="4"/>
+        <circle cx="50" cy="54" r="5" fill="#15803d"/>
+      </svg>
+    `)}`,
+  },
+  {
+    id: 'global_network',
+    label: 'Global Network',
+    url: `data:image/svg+xml;utf8,${encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+        <rect width="100" height="100" rx="24" fill="#eff6ff"/>
+        <circle cx="50" cy="50" r="30" stroke="#3b82f6" stroke-width="4"/>
+        <ellipse cx="50" cy="50" rx="14" ry="30" stroke="#2563eb" stroke-width="3"/>
+        <line x1="20" y1="50" x2="80" y2="50" stroke="#2563eb" stroke-width="3"/>
+      </svg>
+    `)}`,
+  },
+];
+
 export const DEFAULT_COMPANIES: Company[] = [
   {
     id: 'comp-default-1',
@@ -34,6 +113,7 @@ export const DEFAULT_COMPANIES: Company[] = [
       'office-pod-203',
       'office-ops-100',
     ],
+    logoUrl: PRESET_COMPANY_LOGOS[0].url,
     createdAt: '2026-01-15T09:00:00Z',
     updatedAt: '2026-10-22T00:00:00Z',
   },

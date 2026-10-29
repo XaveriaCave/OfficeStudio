@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   X,
   Building2,
@@ -16,8 +16,13 @@ import {
   Maximize2,
   DollarSign,
   Plus,
+  Upload,
+  Image as ImageIcon,
+  Sparkles,
+  Link as LinkIcon,
 } from 'lucide-react';
 import { Company, CompanyType, OfficeSpace, computePolygonArea } from '../types';
+import { PRESET_COMPANY_LOGOS } from '../presets';
 
 interface CompanyModalProps {
   isOpen: boolean;
@@ -124,10 +129,14 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
   const [registeredAddress, setRegisteredAddress] = useState('');
   const [contactEmail, setContactEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
+  const [customUrlInput, setCustomUrlInput] = useState('');
+  const [showUrlInput, setShowUrlInput] = useState(false);
   const [selectedOfficeIds, setSelectedOfficeIds] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [activeTab, setActiveTab] = useState<'profile' | 'offices'>('profile');
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setIsConfirmingDelete(false);
@@ -143,6 +152,7 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
       setRegisteredAddress(company.registeredAddress || '');
       setContactEmail(company.contactEmail || '');
       setPhone(company.phone || '');
+      setLogoUrl(company.logoUrl || '');
       setSelectedOfficeIds(company.officeIds || []);
     } else {
       // New company defaults
@@ -158,6 +168,7 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
       setRegisteredAddress('');
       setContactEmail('');
       setPhone('');
+      setLogoUrl(PRESET_COMPANY_LOGOS[0]?.url || '');
       // For a new company, by default no offices are pre-checked unless unassigned exist
       const unassignedOfficeIds = allOffices
         .filter((o) => !o.companyId || !allCompanies.some((c) => c.id === o.companyId))
@@ -166,6 +177,8 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
     }
     setErrors({});
     setActiveTab('profile');
+    setShowUrlInput(false);
+    setCustomUrlInput('');
   }, [company, isOpen, allOffices, allCompanies]);
 
   if (!isOpen) return null;
@@ -182,6 +195,48 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
 
   const handleDeselectAllOffices = () => {
     setSelectedOfficeIds([]);
+  };
+
+  const handleLogoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        // Downscale to max 256x256 to conserve localStorage quota
+        const canvas = document.createElement('canvas');
+        const maxDim = 256;
+        let width = img.width;
+        let height = img.height;
+        if (width > height) {
+          if (width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          }
+        } else {
+          if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL('image/png', 0.9);
+          setLogoUrl(dataUrl);
+        }
+      };
+      if (typeof event.target?.result === 'string') {
+        img.src = event.target.result;
+      }
+    };
+    reader.readAsDataURL(file);
+    // Reset file input value so re-selecting same file triggers onChange
+    e.target.value = '';
   };
 
   const validate = (): boolean => {
@@ -216,6 +271,7 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
       registeredAddress: registeredAddress.trim() || undefined,
       contactEmail: contactEmail.trim() || undefined,
       phone: phone.trim() || undefined,
+      logoUrl: logoUrl.trim() || undefined,
       officeIds: selectedOfficeIds,
       createdAt: company?.createdAt || now,
       updatedAt: now,
@@ -236,7 +292,6 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
     0
   );
 
-
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200"
@@ -249,15 +304,23 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
         {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-orange-100 bg-orange-50/50 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-orange-100 border border-orange-300 flex items-center justify-center text-orange-600 shadow-sm">
-              <Building2 className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-orange-100 border border-orange-300 flex items-center justify-center text-orange-600 shadow-sm overflow-hidden shrink-0">
+              {logoUrl ? (
+                <img
+                  src={logoUrl}
+                  alt={name || 'Company'}
+                  className="w-full h-full object-contain p-1"
+                />
+              ) : (
+                <Building2 className="w-5 h-5" />
+              )}
             </div>
             <div>
               <h2 className="text-lg font-bold text-slate-900 tracking-tight">
                 {isNew ? 'Configure New Company' : `Edit Company · ${company?.name}`}
               </h2>
               <p className="text-xs text-slate-500">
-                Manage entity legal structure, GST/Tax identification, regional domain, and allocate office branches.
+                Manage entity legal structure, GST/Tax identification, regional domain, brand logo, and allocate office branches.
               </p>
             </div>
           </div>
@@ -304,6 +367,146 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6">
           {activeTab === 'profile' ? (
             <div className="space-y-6">
+              {/* Brand Identity / Company Logo & Icon */}
+              <div className="p-4 rounded-xl bg-gradient-to-r from-orange-50/70 via-amber-50/40 to-white border border-orange-200/80 space-y-3.5 shadow-2xs">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-800 flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4 text-orange-600" />
+                    <span>Company Brand Logo & Icon</span>
+                  </label>
+                  <span className="text-[11px] text-slate-500">
+                    Displayed across Top Bar, Navigation Sidebars, and Layout Dashboards
+                  </span>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  {/* Current Logo Preview Box */}
+                  <div className="relative group shrink-0">
+                    <div className="w-16 h-16 rounded-xl bg-white border-2 border-orange-300/80 shadow-sm flex items-center justify-center overflow-hidden p-1.5">
+                      {logoUrl ? (
+                        <img
+                          src={logoUrl}
+                          alt="Company Logo Preview"
+                          className="w-full h-full object-contain"
+                        />
+                      ) : (
+                        <Building2 className="w-8 h-8 text-orange-400" />
+                      )}
+                    </div>
+                    {logoUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setLogoUrl('')}
+                        className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-rose-500 text-white flex items-center justify-center hover:bg-rose-600 shadow-sm transition-colors"
+                        title="Remove logo"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Actions: File Upload, Web URL, Preset Emblems */}
+                  <div className="flex-1 space-y-2.5 w-full">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                        className="hidden"
+                        onChange={handleLogoFileUpload}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="px-3 py-1.5 text-xs font-semibold bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Upload Logo / Icon</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setShowUrlInput((prev) => !prev)}
+                        className="px-3 py-1.5 text-xs font-semibold bg-white hover:bg-orange-50 text-slate-700 border border-orange-200 rounded-lg transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                      >
+                        <LinkIcon className="w-3.5 h-3.5 text-orange-500" />
+                        <span>{showUrlInput ? 'Hide URL Input' : 'Enter Image URL'}</span>
+                      </button>
+
+                      {logoUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setLogoUrl('')}
+                          className="px-2.5 py-1.5 text-xs font-medium text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+
+                    {showUrlInput && (
+                      <div className="flex items-center gap-2 pt-1">
+                        <input
+                          type="url"
+                          value={customUrlInput}
+                          onChange={(e) => setCustomUrlInput(e.target.value)}
+                          placeholder="https://example.com/logo.png"
+                          className="flex-1 px-3 py-1.5 bg-white border border-orange-200 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-500 shadow-2xs"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (customUrlInput.trim()) {
+                              setLogoUrl(customUrlInput.trim());
+                              setCustomUrlInput('');
+                              setShowUrlInput(false);
+                            }
+                          }}
+                          className="px-3 py-1.5 text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-white rounded-lg transition-colors cursor-pointer"
+                        >
+                          Apply
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Presets Row */}
+                    <div>
+                      <div className="flex items-center gap-1.5 mb-1.5">
+                        <Sparkles className="w-3 h-3 text-orange-500" />
+                        <span className="text-[11px] font-semibold text-slate-600">
+                          Or select corporate emblem preset:
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        {PRESET_COMPANY_LOGOS.map((preset) => {
+                          const isSelected = logoUrl === preset.url;
+                          return (
+                            <button
+                              key={preset.id}
+                              type="button"
+                              onClick={() => setLogoUrl(preset.url)}
+                              className={`px-2 py-1 rounded-md text-[11px] font-medium flex items-center gap-1.5 transition-all border cursor-pointer ${
+                                isSelected
+                                  ? 'bg-orange-100 text-orange-800 border-orange-400 font-semibold shadow-2xs'
+                                  : 'bg-white text-slate-600 border-orange-200 hover:border-orange-300 hover:bg-orange-50/50'
+                              }`}
+                              title={preset.label}
+                            >
+                              <img
+                                src={preset.url}
+                                alt={preset.label}
+                                className="w-3.5 h-3.5 object-contain"
+                              />
+                              <span>{preset.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               {/* Row 1: Company Name & Company Type */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>

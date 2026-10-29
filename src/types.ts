@@ -199,6 +199,7 @@ export interface Company {
   officeIds: string[];
   createdAt: string;
   updatedAt: string;
+  logoUrl?: string;
 }
 
 export interface OfficeSpace {

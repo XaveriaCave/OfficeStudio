@@ -851,7 +851,15 @@ export default function App() {
               className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-orange-50/70 hover:bg-orange-100/70 text-xs border border-orange-200/80 rounded-lg text-slate-700 hover:text-slate-900 transition-colors shadow-sm"
               title="Configure Company Legal Profile & Offices"
             >
-              <Building2 className="w-3.5 h-3.5 text-orange-500" />
+              {activeCompany.logoUrl ? (
+                <img
+                  src={activeCompany.logoUrl}
+                  alt={activeCompany.name}
+                  className="w-4 h-4 rounded object-contain shrink-0"
+                />
+              ) : (
+                <Building2 className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+              )}
               <span className="font-semibold text-slate-900 max-w-[140px] truncate">
                 {activeCompany.name}
               </span>
@@ -1005,7 +1013,15 @@ export default function App() {
             <div className="p-3 border-b border-orange-100 bg-orange-50/40">
               <div className="flex items-center justify-between mb-1.5">
                 <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                  <Building2 className="w-3.5 h-3.5 text-orange-500" />
+                  {activeCompany?.logoUrl ? (
+                    <img
+                      src={activeCompany.logoUrl}
+                      alt={activeCompany.name}
+                      className="w-4 h-4 rounded object-contain shrink-0"
+                    />
+                  ) : (
+                    <Building2 className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                  )}
                   <span>Company Entity</span>
                 </div>
                 <div className="flex items-center gap-1">
@@ -1149,7 +1165,15 @@ export default function App() {
             <div className="px-3 pt-2.5 pb-2 border-b border-orange-100 bg-orange-50/20">
               <div className="flex items-center justify-between mb-1.5">
                 <span className="text-[11px] font-semibold text-slate-700 tracking-tight flex items-center gap-1.5 truncate">
-                  <Building2 className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                  {activeCompany.logoUrl ? (
+                    <img
+                      src={activeCompany.logoUrl}
+                      alt={activeCompany.name}
+                      className="w-3.5 h-3.5 rounded object-contain shrink-0"
+                    />
+                  ) : (
+                    <Building2 className="w-3.5 h-3.5 text-orange-500 shrink-0" />
+                  )}
                   <span className="truncate">{activeCompany.name}</span>
                 </span>
                 <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-orange-100 text-orange-700 font-medium shrink-0">

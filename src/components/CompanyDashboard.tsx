@@ -675,8 +675,16 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
         <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-orange-50 via-amber-50/40 to-white border border-orange-200/90 shadow-[0_4px_25px_rgba(255,107,0,0.08)] space-y-4">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="flex items-start sm:items-center gap-3.5">
-              <div className="w-12 h-12 rounded-xl bg-orange-100 border border-orange-300 flex items-center justify-center text-orange-600 shrink-0 shadow-sm">
-                <Building2 className="w-6 h-6" />
+              <div className="w-12 h-12 rounded-xl bg-orange-100 border border-orange-300 flex items-center justify-center text-orange-600 shrink-0 shadow-sm overflow-hidden p-1.5">
+                {activeCompany.logoUrl ? (
+                  <img
+                    src={activeCompany.logoUrl}
+                    alt={activeCompany.name}
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <Building2 className="w-6 h-6" />
+                )}
               </div>
               <div>
                 <div className="flex flex-wrap items-center gap-2">
