@@ -123,7 +123,7 @@ export default function App() {
   const [spatialViewsOpen, setSpatialViewsOpen] = useState<boolean>(true);
   const [collapsedFloors, setCollapsedFloors] = useState<Record<number, boolean>>({});
   const [sidebarFilterMode, setSidebarFilterMode] = useState<'company' | 'all'>('company');
-  const [is3DEditMode, setIs3DEditMode] = useState<boolean>(true);
+  const [is3DEditMode, setIs3DEditMode] = useState<boolean>(false);
 
   const toggleFloorCollapse = (floor: number) => {
     setCollapsedFloors((prev) => ({ ...prev, [floor]: !prev[floor] }));

@@ -89,8 +89,8 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
   const [liveDragCoords, setLiveDragCoords] = useState<{ x: number; z: number } | null>(null);
   const [activeCamPreset, setActiveCamPreset] = useState<CameraViewPreset>('isometric');
 
-  // Edit Mode state: if disabled, furniture cannot be dragged, moved, or deleted
-  const [internalEditMode, setInternalEditMode] = useState(true);
+  // Edit Mode state: if disabled (default), furniture cannot be dragged, moved, or deleted
+  const [internalEditMode, setInternalEditMode] = useState(false);
   const isEditMode = propIsEditMode !== undefined ? propIsEditMode : internalEditMode;
   const isEditModeRef = useRef(isEditMode);
   isEditModeRef.current = isEditMode;
