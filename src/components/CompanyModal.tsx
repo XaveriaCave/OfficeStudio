@@ -129,6 +129,7 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
   const [registeredAddress, setRegisteredAddress] = useState('');
   const [contactEmail, setContactEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [defaultTaxRate, setDefaultTaxRate] = useState<number>(18);
   const [logoUrl, setLogoUrl] = useState('');
   const [customUrlInput, setCustomUrlInput] = useState('');
   const [showUrlInput, setShowUrlInput] = useState(false);
@@ -147,6 +148,7 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
       setDomain(company.domain || '');
       setCountry(company.country || 'India');
       setCurrency(company.currency || '$');
+      setDefaultTaxRate(company.defaultTaxRate ?? 18);
       setRegistrationNumber(company.registrationNumber || '');
       setPanNumber(company.panNumber || '');
       setRegisteredAddress(company.registeredAddress || '');
@@ -163,6 +165,7 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
       setDomain('example.com');
       setCountry('India');
       setCurrency('$');
+      setDefaultTaxRate(18);
       setRegistrationNumber('');
       setPanNumber('');
       setRegisteredAddress('');
@@ -271,6 +274,7 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
       registeredAddress: registeredAddress.trim() || undefined,
       contactEmail: contactEmail.trim() || undefined,
       phone: phone.trim() || undefined,
+      defaultTaxRate: Number(defaultTaxRate),
       logoUrl: logoUrl.trim() || undefined,
       officeIds: selectedOfficeIds,
       createdAt: company?.createdAt || now,
@@ -548,11 +552,11 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
                 </div>
               </div>
 
-              {/* Row 2: GST Details / Tax ID & PAN / National Tax No */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 p-4 rounded-xl bg-orange-50/40 border border-orange-200/60">
+              {/* Row 2: GST Details / Tax ID, Default Tax Rate & Corporate Registration */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-xl bg-orange-50/40 border border-orange-200/60">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                    GST Details / Tax Identification No (GSTIN / VAT / EIN)
+                    GST Details / Tax ID (GSTIN / VAT / EIN)
                   </label>
                   <div className="relative">
                     <FileText className="w-4 h-4 text-orange-600 absolute left-3 top-3 pointer-events-none" />
@@ -560,18 +564,40 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
                       type="text"
                       value={gstDetails}
                       onChange={(e) => setGstDetails(e.target.value.toUpperCase())}
-                      placeholder="e.g. 29ABCDE1234F1Z5 or US-EIN-99-1234567"
+                      placeholder="e.g. 29ABCDE1234F1Z5 or EIN-99-1234567"
                       className="w-full pl-9 pr-3.5 py-2 bg-white border border-orange-200 rounded-lg text-sm font-mono font-bold text-orange-700 placeholder-slate-400 focus:outline-none focus:border-orange-500 transition-colors shadow-xs"
                     />
                   </div>
                   <p className="text-[11px] text-slate-500 mt-1">
-                    Applies to invoice tax audits, reverse charge accounting, and regional compliance.
+                    Tax identifier for invoice headers & PDFs.
                   </p>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-                    Corporate Registration (CIN / ROC / Business ID)
+                    Default GST / Tax Rate (%)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min={0}
+                      max={100}
+                      step={0.5}
+                      value={defaultTaxRate}
+                      onChange={(e) => setDefaultTaxRate(Number(e.target.value))}
+                      placeholder="18"
+                      className="w-full px-3.5 py-2 pr-8 bg-white border border-orange-200 rounded-lg text-sm font-mono font-bold text-slate-900 focus:outline-none focus:border-orange-500 transition-colors shadow-xs"
+                    />
+                    <span className="absolute right-3 top-2 text-slate-400 font-bold">%</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    Standard percentage applied to invoices (e.g. 18% GST).
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+                    Corporate Registration (CIN / ROC)
                   </label>
                   <input
                     type="text"
@@ -581,7 +607,7 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
                     className="w-full px-3.5 py-2 bg-white border border-orange-200 rounded-lg text-sm font-mono text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-500 transition-colors shadow-xs"
                   />
                   <p className="text-[11px] text-slate-500 mt-1">
-                    Official incorporation registration or Registrar of Companies (ROC) filing code.
+                    Official incorporation / ROC filing code.
                   </p>
                 </div>
               </div>

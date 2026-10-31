@@ -27,18 +27,26 @@ import {
   Check,
   Sliders,
   Settings,
+  Download,
+  FileDown,
+  Printer,
+  Eye,
 } from 'lucide-react';
 import {
   AccountingInvoice,
+  Company,
   OfficeAccounting,
   OfficeAgent,
   OfficeSpace,
   computePolygonArea,
 } from '../types';
 import { HIERARCHY_COLORS } from '../utils/agentAccountingDefaults';
+import { downloadInvoicePdf, downloadStatementPdf } from '../utils/invoicePdfGenerator';
+import { InvoicePdfPreviewModal } from './InvoicePdfPreviewModal';
 
 interface AccountingPanelProps {
   office: OfficeSpace;
+  company?: Company;
   onUpdateAccounting: (patch: Partial<OfficeAccounting>) => void;
   onOpenAgentChat: (agent: OfficeAgent) => void;
   onOpenAgentManager: (agent?: OfficeAgent) => void;
@@ -46,6 +54,7 @@ interface AccountingPanelProps {
 
 export const AccountingPanel: React.FC<AccountingPanelProps> = ({
   office,
+  company,
   onUpdateAccounting,
   onOpenAgentChat,
   onOpenAgentManager,
@@ -69,14 +78,23 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
   const [auditReportText, setAuditReportText] = useState<string | null>(null);
   const [isAuditing, setIsAuditing] = useState(false);
 
+  // PDF Download & Preview Modal States
+  const [selectedInvoiceForPdf, setSelectedInvoiceForPdf] = useState<AccountingInvoice | null>(null);
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
+  const [isDownloadingStatement, setIsDownloadingStatement] = useState(false);
+  const [downloadingInvoiceId, setDownloadingInvoiceId] = useState<string | null>(null);
+  const [pdfSuccessMessage, setPdfSuccessMessage] = useState<string | null>(null);
+  const [downloadPdfAfterCreate, setDownloadPdfAfterCreate] = useState(true);
+
   // Financial model configuration editor states
   const [isEditingMetrics, setIsEditingMetrics] = useState(false);
-  const [configFocusSection, setConfigFocusSection] = useState<'all' | 'assets' | 'depreciation' | 'amenities'>('all');
+  const [configFocusSection, setConfigFocusSection] = useState<'all' | 'tax' | 'assets' | 'depreciation' | 'amenities'>('all');
   const [editRevenue, setEditRevenue] = useState(accounting?.monthlyRevenue ?? 145000);
   const [editReserves, setEditReserves] = useState(accounting?.cashReserves ?? 1500000);
   const [editLeaseRate, setEditLeaseRate] = useState(accounting?.monthlyLeaseRatePerM2 ?? 28);
   const [editSalary, setEditSalary] = useState(accounting?.averageSalaryPerAgent ?? 8500);
-  const [editCurrency, setEditCurrency] = useState(accounting?.currency || '$');
+  const [editCurrency, setEditCurrency] = useState(accounting?.currency || company?.currency || '$');
+  const [editTaxRate, setEditTaxRate] = useState(accounting?.taxRate ?? company?.defaultTaxRate ?? 18);
   const [editEquipmentValuePerItem, setEditEquipmentValuePerItem] = useState(accounting?.equipmentValuePerItem ?? 2800);
   const [editDepreciationMonths, setEditDepreciationMonths] = useState(accounting?.depreciationMonths ?? 36);
   const [editAmenitiesCostPerAgent, setEditAmenitiesCostPerAgent] = useState(accounting?.amenitiesCostPerAgent ?? 450);
@@ -89,7 +107,8 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
       setEditReserves(accounting.cashReserves ?? 1500000);
       setEditLeaseRate(accounting.monthlyLeaseRatePerM2 ?? 28);
       setEditSalary(accounting.averageSalaryPerAgent ?? 8500);
-      setEditCurrency(accounting.currency || '$');
+      setEditCurrency(accounting.currency || company?.currency || '$');
+      setEditTaxRate(accounting.taxRate ?? company?.defaultTaxRate ?? 18);
       setEditEquipmentValuePerItem(accounting.equipmentValuePerItem ?? 2800);
       setEditDepreciationMonths(accounting.depreciationMonths ?? 36);
       setEditAmenitiesCostPerAgent(accounting.amenitiesCostPerAgent ?? 450);
@@ -98,7 +117,7 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
         setEditCustomAssetValuation(accounting.customAssetValuation);
       }
     }
-  }, [accounting]);
+  }, [accounting, company]);
 
   // New Invoice Form state
   const [newCounterparty, setNewCounterparty] = useState('');
@@ -154,9 +173,62 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
     onUpdateAccounting({ invoices: updated });
   };
 
+  const handleUpdateInvoiceStatus = (invId: string, status: 'paid' | 'pending' | 'overdue') => {
+    const updated = invoices.map((inv) => {
+      if (inv.id !== invId) return inv;
+      return { ...inv, status };
+    });
+    onUpdateAccounting({ invoices: updated });
+    if (selectedInvoiceForPdf && selectedInvoiceForPdf.id === invId) {
+      setSelectedInvoiceForPdf({ ...selectedInvoiceForPdf, status });
+    }
+  };
+
   const handleDeleteInvoice = (invId: string) => {
     const updated = invoices.filter((inv) => inv.id !== invId);
     onUpdateAccounting({ invoices: updated });
+  };
+
+  const handleQuickDownloadPdf = (inv: AccountingInvoice, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setDownloadingInvoiceId(inv.id);
+    try {
+      downloadInvoicePdf({
+        invoice: inv,
+        office,
+        company,
+      });
+      setPdfSuccessMessage(`Downloaded PDF for ${inv.counterparty}`);
+      setTimeout(() => setPdfSuccessMessage(null), 3500);
+    } catch (err) {
+      console.error('Error downloading invoice PDF:', err);
+    } finally {
+      setTimeout(() => setDownloadingInvoiceId(null), 600);
+    }
+  };
+
+  const handleOpenPdfModal = (inv: AccountingInvoice, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setSelectedInvoiceForPdf(inv);
+    setIsPdfModalOpen(true);
+  };
+
+  const handleDownloadStatement = () => {
+    setIsDownloadingStatement(true);
+    try {
+      downloadStatementPdf({
+        office,
+        company,
+        accounting,
+        invoices,
+      });
+      setPdfSuccessMessage(`Downloaded Financial Statement PDF for ${office.name}`);
+      setTimeout(() => setPdfSuccessMessage(null), 3500);
+    } catch (err) {
+      console.error('Error downloading statement PDF:', err);
+    } finally {
+      setTimeout(() => setIsDownloadingStatement(false), 600);
+    }
   };
 
   const handleAddInvoice = (e: React.FormEvent) => {
@@ -178,6 +250,18 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
     setShowAddInvoiceModal(false);
     setNewCounterparty('');
     setNewDescription('');
+
+    if (downloadPdfAfterCreate) {
+      setTimeout(() => {
+        downloadInvoicePdf({
+          invoice: newInv,
+          office,
+          company,
+        });
+        setPdfSuccessMessage(`Created and downloaded PDF for ${newInv.counterparty}`);
+        setTimeout(() => setPdfSuccessMessage(null), 3500);
+      }, 200);
+    }
   };
 
   const handleSaveMetrics = () => {
@@ -187,6 +271,7 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
       monthlyLeaseRatePerM2: Number(editLeaseRate),
       averageSalaryPerAgent: Number(editSalary),
       currency: editCurrency,
+      taxRate: Number(editTaxRate),
       equipmentValuePerItem: Number(editEquipmentValuePerItem),
       depreciationMonths: Number(editDepreciationMonths),
       amenitiesCostPerAgent: Number(editAmenitiesCostPerAgent),
@@ -477,6 +562,32 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
             </span>
           </div>
         </div>
+
+        {/* Tax / GST Rate Card */}
+        <div
+          onClick={() => {
+            setIsEditingMetrics(true);
+            setConfigFocusSection('tax');
+          }}
+          className="bg-white hover:bg-orange-50/50 border border-orange-200/90 hover:border-orange-300 rounded-xl p-4 flex flex-col justify-between cursor-pointer transition-all group shadow-xs"
+          title="Click to view and configure Tax / GST Invoicing Rate"
+        >
+          <div className="text-[11px] font-semibold text-slate-500 flex items-center justify-between">
+            <span>Tax / GST Rate</span>
+            <div className="flex items-center gap-1 text-[10px] text-orange-600 opacity-80 group-hover:opacity-100 font-bold">
+              <Edit2 className="w-3 h-3" />
+              <span>Configure</span>
+            </div>
+          </div>
+          <div className="text-lg sm:text-xl font-bold font-mono text-slate-900 mt-1.5">
+            {accounting.taxRate ?? 18}%
+          </div>
+          <div className="text-[11px] text-slate-500 mt-1 flex items-center justify-between font-medium truncate">
+            <span className="truncate">
+              {company?.gstDetails ? `GST: ${company.gstDetails}` : 'Applied to Invoices & Bills'}
+            </span>
+          </div>
+        </div>
       </div>
 
       {/* Operational Cost Breakdown Analysis & Configurator */}
@@ -498,7 +609,7 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
               setIsEditingMetrics((prev) => !prev);
               setConfigFocusSection('all');
             }}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 shadow-xs ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all flex items-center gap-1.5 shadow-xs cursor-pointer ${
               isEditingMetrics
                 ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white border-orange-400 shadow-[0_2px_12px_rgba(255,107,0,0.3)]'
                 : 'bg-white hover:bg-orange-50 text-slate-700 border-orange-200'
@@ -521,6 +632,7 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                 </span>
                 {[
                   { id: 'all', label: 'All Parameters' },
+                  { id: 'tax', label: 'Tax & GST Rate' },
                   { id: 'assets', label: 'Asset Valuation' },
                   { id: 'depreciation', label: 'Equipment Depreciation' },
                   { id: 'amenities', label: 'Hospitality & Amenities' },
@@ -529,7 +641,7 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                     key={s.id}
                     type="button"
                     onClick={() => setConfigFocusSection(s.id as any)}
-                    className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-colors ${
+                    className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-colors cursor-pointer ${
                       configFocusSection === s.id
                         ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white border-orange-400 shadow-2xs'
                         : 'bg-white text-slate-600 border-orange-200 hover:text-slate-900 hover:bg-orange-50/50'
@@ -541,9 +653,83 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
               </div>
 
               <div className="text-[11px] text-orange-800 bg-orange-100 px-2 py-0.5 rounded border border-orange-300 font-semibold">
-                Changes recalculate runway & balance sheet in real time
+                Changes recalculate invoice taxes, runway & balance sheet in real time
               </div>
             </div>
+
+            {/* Section: Dedicated Tax / GST Rate Configuration */}
+            {(configFocusSection === 'all' || configFocusSection === 'tax') && (
+              <div className="bg-white p-3.5 rounded-lg border border-orange-200 space-y-3 shadow-xs">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <span className="font-bold text-slate-900 flex items-center gap-1.5 text-xs">
+                    <FileText className="w-3.5 h-3.5 text-orange-600" />
+                    <span>Tax & GST Identification & Invoicing Rates</span>
+                  </span>
+                  <div className="flex items-center gap-2">
+                    {company?.gstDetails && (
+                      <span className="text-[11px] text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-300 font-mono font-medium">
+                        GSTIN: {company.gstDetails}
+                      </span>
+                    )}
+                    <span className="text-[11px] text-orange-800 bg-orange-100 px-2 py-0.5 rounded border border-orange-300 font-mono font-bold">
+                      Active Suite Tax: {editTaxRate}%
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="text-slate-700 block mb-1 font-semibold">
+                      Tax / GST Rate Percentage (%)
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        min={0}
+                        max={100}
+                        step={0.5}
+                        value={editTaxRate}
+                        onChange={(e) => setEditTaxRate(Number(e.target.value))}
+                        className="w-full bg-white border border-orange-200 rounded-lg px-2.5 py-1.5 text-slate-900 font-mono shadow-2xs focus:outline-none focus:border-orange-500"
+                      />
+                      <span className="absolute right-2.5 top-1.5 text-slate-400 font-bold">%</span>
+                    </div>
+                    <p className="text-[10px] text-slate-500 mt-1">
+                      This rate is used to calculate Tax/GST on all invoices, bills, and PDF downloads for {office.name}.
+                    </p>
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="text-slate-700 block mb-1 font-semibold">
+                      Quick Regulatory Presets:
+                    </label>
+                    <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                      {[
+                        { rate: 18, label: '18% Standard GST (India / Services)' },
+                        { rate: 21, label: '21% EU Standard VAT' },
+                        { rate: 20, label: '20% UK Standard VAT' },
+                        { rate: 12, label: '12% Concessional GST' },
+                        { rate: 5, label: '5% Reduced GST / UAE VAT' },
+                        { rate: 0, label: '0% Tax Exempt / SEZ Export' },
+                      ].map((p) => (
+                        <button
+                          key={p.rate}
+                          type="button"
+                          onClick={() => setEditTaxRate(p.rate)}
+                          className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition-colors cursor-pointer ${
+                            editTaxRate === p.rate
+                              ? 'bg-orange-100 text-orange-800 border-orange-400 font-bold shadow-2xs'
+                              : 'bg-white text-slate-600 border-orange-200 hover:bg-orange-50'
+                          }`}
+                        >
+                          {p.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Section 1: Revenue, Cash Reserves & Currency */}
             {(configFocusSection === 'all') && (
@@ -948,14 +1134,42 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
 
             <button
               type="button"
+              onClick={handleDownloadStatement}
+              disabled={isDownloadingStatement}
+              className="px-3 py-1.5 bg-white hover:bg-orange-50 text-slate-700 hover:text-slate-900 border border-orange-200/90 font-semibold rounded-lg text-xs transition-all flex items-center gap-1.5 shrink-0 shadow-2xs hover:border-orange-300 disabled:opacity-50 cursor-pointer"
+              title="Download entire accounts ledger statement as PDF"
+            >
+              <FileDown className="w-3.5 h-3.5 text-orange-600" />
+              <span>{isDownloadingStatement ? 'Exporting...' : 'Statement PDF'}</span>
+            </button>
+
+            <button
+              type="button"
               onClick={() => setShowAddInvoiceModal(true)}
-              className="px-3 py-1.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold rounded-lg text-xs transition-all flex items-center gap-1 shrink-0 shadow-[0_2px_12px_rgba(255,107,0,0.3)]"
+              className="px-3 py-1.5 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold rounded-lg text-xs transition-all flex items-center gap-1 shrink-0 shadow-[0_2px_12px_rgba(255,107,0,0.3)] cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>New Invoice</span>
             </button>
           </div>
         </div>
+
+        {/* PDF Download Toast Notification */}
+        {pdfSuccessMessage && (
+          <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-xl text-emerald-900 text-xs flex items-center justify-between font-semibold shadow-2xs animate-in fade-in">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>{pdfSuccessMessage}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setPdfSuccessMessage(null)}
+              className="p-1 text-emerald-600 hover:text-emerald-900 rounded"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
 
         {/* Ledger Table */}
         <div className="overflow-x-auto border border-orange-200 rounded-xl">
@@ -968,7 +1182,7 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                 <th className="py-2.5 px-3">Due Date</th>
                 <th className="py-2.5 px-3 text-right">Amount</th>
                 <th className="py-2.5 px-3 text-center">Status</th>
-                <th className="py-2.5 px-3 text-right">Action</th>
+                <th className="py-2.5 px-3 text-right">PDF & Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-orange-100">
@@ -1034,14 +1248,36 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                     </button>
                   </td>
                   <td className="py-2.5 px-3 text-right">
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteInvoice(inv.id)}
-                      className="p-1 text-slate-400 hover:text-rose-600 rounded transition-colors"
-                      title="Delete invoice"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    <div className="flex items-center justify-end gap-1.5">
+                      <button
+                        type="button"
+                        onClick={(e) => handleQuickDownloadPdf(inv, e)}
+                        disabled={downloadingInvoiceId === inv.id}
+                        className="px-2 py-1 bg-orange-50 hover:bg-orange-100 text-orange-800 hover:text-orange-950 border border-orange-300 rounded-lg text-[11px] font-semibold transition-all flex items-center gap-1 shadow-2xs cursor-pointer disabled:opacity-50"
+                        title={`Download PDF ${inv.type === 'receivable' ? 'Invoice' : 'Bill'}`}
+                      >
+                        <Download className="w-3 h-3 text-orange-600" />
+                        <span>{downloadingInvoiceId === inv.id ? 'Saving...' : 'PDF'}</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={(e) => handleOpenPdfModal(inv, e)}
+                        className="p-1 text-slate-500 hover:text-slate-900 hover:bg-orange-50 rounded-lg border border-slate-200 transition-colors cursor-pointer"
+                        title="Preview, Customize & Print PDF"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-slate-600" />
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteInvoice(inv.id)}
+                        className="p-1 text-slate-400 hover:text-rose-600 rounded hover:bg-rose-50 transition-colors cursor-pointer"
+                        title="Delete invoice"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -1223,17 +1459,29 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                 />
               </div>
 
+              <div className="pt-1">
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-slate-700 font-medium">
+                  <input
+                    type="checkbox"
+                    checked={downloadPdfAfterCreate}
+                    onChange={(e) => setDownloadPdfAfterCreate(e.target.checked)}
+                    className="rounded border-orange-300 text-orange-600 focus:ring-0"
+                  />
+                  <span>Automatically generate and download PDF document upon creation</span>
+                </label>
+              </div>
+
               <div className="pt-3 border-t border-orange-100 flex justify-end gap-2">
                 <button
                   type="button"
                   onClick={() => setShowAddInvoiceModal(false)}
-                  className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium"
+                  className="px-3 py-2 text-slate-600 hover:text-slate-900 font-medium cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold rounded-lg shadow-[0_2px_12px_rgba(255,107,0,0.3)] transition-all"
+                  className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold rounded-lg shadow-[0_2px_12px_rgba(255,107,0,0.3)] transition-all cursor-pointer"
                 >
                   Create Invoice
                 </button>
@@ -1278,7 +1526,7 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
               <button
                 type="button"
                 onClick={() => setShowAuditReportModal(false)}
-                className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold rounded-lg text-xs shadow-[0_2px_12px_rgba(255,107,0,0.3)] transition-all"
+                className="px-4 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold rounded-lg text-xs shadow-[0_2px_12px_rgba(255,107,0,0.3)] transition-all cursor-pointer"
               >
                 Done
               </button>
@@ -1286,6 +1534,19 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
           </div>
         </div>
       )}
+
+      {/* MODAL: Invoice / Bill PDF Preview & Customizer */}
+      <InvoicePdfPreviewModal
+        isOpen={isPdfModalOpen}
+        invoice={selectedInvoiceForPdf}
+        office={office}
+        company={company}
+        onClose={() => {
+          setIsPdfModalOpen(false);
+          setSelectedInvoiceForPdf(null);
+        }}
+        onUpdateInvoiceStatus={handleUpdateInvoiceStatus}
+      />
     </div>
   );
 };

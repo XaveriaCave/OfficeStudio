@@ -105,6 +105,7 @@ export const DEFAULT_COMPANIES: Company[] = [
     registeredAddress: 'Level 14, Orion Cyber Tower, Tech Hub Corridor, Bengaluru, Karnataka 560103',
     contactEmail: 'corp@pacificmind.io',
     phone: '+91 80 4910 2300',
+    defaultTaxRate: 18,
     officeIds: [
       'office-hq-100',
       'office-eng-201',

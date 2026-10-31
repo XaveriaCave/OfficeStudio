@@ -196,6 +196,7 @@ export interface Company {
   registeredAddress?: string;
   contactEmail?: string;
   phone?: string;
+  defaultTaxRate?: number;
   officeIds: string[];
   createdAt: string;
   updatedAt: string;

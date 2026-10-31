@@ -1443,6 +1443,7 @@ export default function App() {
             <div className="flex-1 flex flex-col h-full overflow-hidden bg-white">
               <AccountingPanel
                 office={activeOffice}
+                company={activeCompany}
                 onUpdateAccounting={handleUpdateAccounting}
                 onOpenAgentChat={(ag) => setChatAgent(ag)}
                 onOpenAgentManager={(ag) => {

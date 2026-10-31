@@ -396,7 +396,7 @@ export function getDefaultAccountingForOffice(
     monthlyRevenue: baseRevenue,
     cashReserves: baseReserves,
     currency: '$',
-    taxRate: 21,
+    taxRate: 18,
     monthlyLeaseRatePerM2: leasePerM2,
     averageSalaryPerAgent: salaryPerAgent,
     equipmentValuePerItem: 2800,
