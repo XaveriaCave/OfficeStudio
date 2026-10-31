@@ -838,36 +838,8 @@ export default function App() {
             className="text-base sm:text-lg font-bold tracking-tight text-slate-900 hover:text-orange-600 font-display whitespace-nowrap shrink-0 transition-colors flex items-center gap-2"
           >
             <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-tr from-orange-500 to-amber-400 shadow-[0_0_8px_rgba(255,120,40,0.7)] shrink-0" />
-            <span>office.studio.v</span>
+            <span>office.studio.ws</span>
           </a>
-
-          {activeCompany && (
-            <button
-              type="button"
-              onClick={() => {
-                setEditingCompany(activeCompany);
-                setIsCompanyModalOpen(true);
-              }}
-              className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 bg-orange-50/70 hover:bg-orange-100/70 text-xs border border-orange-200/80 rounded-lg text-slate-700 hover:text-slate-900 transition-colors shadow-sm"
-              title="Configure Company Legal Profile & Offices"
-            >
-              {activeCompany.logoUrl ? (
-                <img
-                  src={activeCompany.logoUrl}
-                  alt={activeCompany.name}
-                  className="w-4 h-4 rounded object-contain shrink-0"
-                />
-              ) : (
-                <Building2 className="w-3.5 h-3.5 text-orange-500 shrink-0" />
-              )}
-              <span className="font-semibold text-slate-900 max-w-[140px] truncate">
-                {activeCompany.name}
-              </span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded bg-orange-100 text-orange-700 font-medium">
-                {activeCompany.companyType}
-              </span>
-            </button>
-          )}
         </div>
 
         {/* Zone 2: 5 concise single-line text navigation links */}
@@ -941,21 +913,6 @@ export default function App() {
             }`}
           >
             Split Studio
-          </a>
-          <a
-            href="#accounting"
-            onClick={(e) => {
-              e.preventDefault();
-              setViewMode('accounting');
-            }}
-            className={`transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
-              viewMode === 'accounting'
-                ? 'text-orange-600 font-semibold underline underline-offset-8 decoration-orange-500 decoration-2 drop-shadow-[0_0_8px_rgba(255,120,40,0.25)]'
-                : 'hover:text-slate-900'
-            }`}
-          >
-            <DollarSign className="w-3.5 h-3.5 text-orange-500" />
-            <span>Accounting & Finance</span>
           </a>
         </nav>
 

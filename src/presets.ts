@@ -106,6 +106,7 @@ export const DEFAULT_COMPANIES: Company[] = [
     contactEmail: 'corp@pacificmind.io',
     phone: '+91 80 4910 2300',
     defaultTaxRate: 18,
+    themeColor: 'orange',
     officeIds: [
       'office-hq-100',
       'office-eng-201',

@@ -20,9 +20,11 @@ import {
   Image as ImageIcon,
   Sparkles,
   Link as LinkIcon,
+  Palette,
 } from 'lucide-react';
-import { Company, CompanyType, OfficeSpace, computePolygonArea } from '../types';
+import { Company, CompanyType, CompanyThemeColor, OfficeSpace, computePolygonArea } from '../types';
 import { PRESET_COMPANY_LOGOS } from '../presets';
+import { COMPANY_THEMES, getCompanyTheme } from '../utils/themePresets';
 
 interface CompanyModalProps {
   isOpen: boolean;
@@ -130,6 +132,7 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
   const [contactEmail, setContactEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [defaultTaxRate, setDefaultTaxRate] = useState<number>(18);
+  const [themeColor, setThemeColor] = useState<CompanyThemeColor>('orange');
   const [logoUrl, setLogoUrl] = useState('');
   const [customUrlInput, setCustomUrlInput] = useState('');
   const [showUrlInput, setShowUrlInput] = useState(false);
@@ -149,6 +152,7 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
       setCountry(company.country || 'India');
       setCurrency(company.currency || '$');
       setDefaultTaxRate(company.defaultTaxRate ?? 18);
+      setThemeColor(company.themeColor || 'orange');
       setRegistrationNumber(company.registrationNumber || '');
       setPanNumber(company.panNumber || '');
       setRegisteredAddress(company.registeredAddress || '');
@@ -166,6 +170,7 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
       setCountry('India');
       setCurrency('$');
       setDefaultTaxRate(18);
+      setThemeColor('orange');
       setRegistrationNumber('');
       setPanNumber('');
       setRegisteredAddress('');
@@ -275,6 +280,7 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
       contactEmail: contactEmail.trim() || undefined,
       phone: phone.trim() || undefined,
       defaultTaxRate: Number(defaultTaxRate),
+      themeColor: themeColor || 'orange',
       logoUrl: logoUrl.trim() || undefined,
       officeIds: selectedOfficeIds,
       createdAt: company?.createdAt || now,
@@ -508,6 +514,104 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* Company Theme & Color Palette Selection */}
+              <div className="p-4 rounded-xl bg-slate-50/70 border border-slate-200 shadow-2xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                  <div className="flex items-center gap-2.5">
+                    <div
+                      className="w-7 h-7 rounded-lg flex items-center justify-center text-white shadow-2xs shrink-0"
+                      style={{ backgroundColor: getCompanyTheme(themeColor).primaryHex }}
+                    >
+                      <Palette className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                        Company Brand Theme & Palette
+                        <span className="text-[10px] font-medium lowercase tracking-normal text-slate-500">
+                          (Orange/Amber is default)
+                        </span>
+                      </h4>
+                      <p className="text-[11px] text-slate-500">
+                        Configures top nav accents, spatial badges, office allocations, and dashboard cards for this enterprise.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-bold self-start sm:self-auto shrink-0 shadow-2xs"
+                    style={{
+                      backgroundColor: getCompanyTheme(themeColor).primaryLightHex,
+                      color: getCompanyTheme(themeColor).primaryHex,
+                      border: `1px solid ${getCompanyTheme(themeColor).borderHex}`,
+                    }}
+                  >
+                    <span
+                      className="w-2 h-2 rounded-full shadow-2xs"
+                      style={{ backgroundColor: getCompanyTheme(themeColor).primaryHex }}
+                    />
+                    <span>{getCompanyTheme(themeColor).name}</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                  {COMPANY_THEMES.map((theme) => {
+                    const isSelected = (themeColor || 'orange') === theme.id;
+                    return (
+                      <button
+                        key={theme.id}
+                        type="button"
+                        onClick={() => setThemeColor(theme.id)}
+                        className={`group relative p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                          isSelected
+                            ? 'bg-white shadow-xs'
+                            : 'bg-white hover:bg-slate-50/90 border-slate-200'
+                        }`}
+                        style={{
+                          borderColor: isSelected ? theme.primaryHex : undefined,
+                          boxShadow: isSelected
+                            ? `0 0 0 2px ${theme.borderHex}, 0 2px 8px ${theme.glowRgba}`
+                            : undefined,
+                        }}
+                      >
+                        <div className="flex items-center justify-between gap-1.5 mb-2">
+                          <div className="flex items-center gap-1.5">
+                            <span
+                              className="w-3.5 h-3.5 rounded-full shrink-0 shadow-2xs"
+                              style={{ backgroundColor: theme.primaryHex }}
+                            />
+                            <span
+                              className="h-2 w-6 rounded-full shrink-0"
+                              style={{ backgroundColor: theme.accentHex }}
+                            />
+                          </div>
+                          {isSelected ? (
+                            <span
+                              className="w-4 h-4 rounded-full flex items-center justify-center text-white text-[10px]"
+                              style={{ backgroundColor: theme.primaryHex }}
+                            >
+                              <Check className="w-2.5 h-2.5 stroke-[3]" />
+                            </span>
+                          ) : theme.isDefault ? (
+                            <span className="text-[9px] uppercase font-bold text-orange-600 bg-orange-50 px-1 py-0.5 rounded border border-orange-200">
+                              Default
+                            </span>
+                          ) : null}
+                        </div>
+
+                        <div>
+                          <div className="text-xs font-semibold text-slate-800 leading-tight">
+                            {theme.name}
+                          </div>
+                          <div className="text-[10px] text-slate-500 line-clamp-1 mt-0.5">
+                            {theme.tagline}
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 

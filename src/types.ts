@@ -183,6 +183,16 @@ export type CompanyType =
   | 'One Person Company'
   | 'Joint Venture';
 
+export type CompanyThemeColor =
+  | 'orange'
+  | 'blue'
+  | 'emerald'
+  | 'purple'
+  | 'rose'
+  | 'amber'
+  | 'slate'
+  | 'cyan';
+
 export interface Company {
   id: string;
   name: string;
@@ -197,6 +207,7 @@ export interface Company {
   contactEmail?: string;
   phone?: string;
   defaultTaxRate?: number;
+  themeColor?: CompanyThemeColor;
   officeIds: string[];
   createdAt: string;
   updatedAt: string;

@@ -43,6 +43,7 @@ import {
 import { HIERARCHY_COLORS } from '../utils/agentAccountingDefaults';
 import { downloadInvoicePdf, downloadStatementPdf } from '../utils/invoicePdfGenerator';
 import { InvoicePdfPreviewModal } from './InvoicePdfPreviewModal';
+import { getCompanyTheme } from '../utils/themePresets';
 
 interface AccountingPanelProps {
   office: OfficeSpace;
@@ -382,15 +383,46 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
     }
   };
 
+  const theme = getCompanyTheme(company?.themeColor);
+
   return (
     <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 max-w-7xl mx-auto w-full bg-white">
       {/* Top Banner: Accounting Management Status & Designated Agent */}
-      <div className="bg-gradient-to-r from-orange-500/10 via-amber-500/5 to-white border border-orange-300 rounded-2xl p-5 shadow-xs flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
+      <div
+        className="border rounded-2xl p-5 shadow-xs flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 transition-all"
+        style={{
+          background: `linear-gradient(to right, ${theme.primaryLightHex}, #ffffff)`,
+          borderColor: theme.borderHex,
+          boxShadow: `0 4px 20px ${theme.glowRgba}`,
+        }}
+      >
         <div>
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-mono text-xs px-2 py-0.5 rounded bg-orange-100 text-orange-800 font-bold border border-orange-300">
+            <span
+              className="font-mono text-xs px-2 py-0.5 rounded font-bold"
+              style={{
+                backgroundColor: theme.primaryLightHex,
+                color: theme.primaryHex,
+                border: `1px solid ${theme.borderHex}`,
+              }}
+            >
               GAAP Ledger & Runway
             </span>
+            {company && (
+              <span
+                className="text-xs px-2 py-0.5 rounded font-semibold flex items-center gap-1.5 bg-white shadow-2xs"
+                style={{
+                  color: theme.primaryHex,
+                  border: `1px solid ${theme.borderHex}`,
+                }}
+              >
+                <span
+                  className="w-1.5 h-1.5 rounded-full shadow-2xs"
+                  style={{ backgroundColor: theme.primaryHex }}
+                />
+                <span>{company.name}</span>
+              </span>
+            )}
             <span className="text-slate-400">·</span>
             <h2 className="text-lg font-bold text-slate-900 tracking-tight">
               {office.name} — Financial Operations
@@ -404,7 +436,10 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
         {/* Accounting Controller Agent Card(s) */}
         <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-end flex-wrap">
           {currentAccountingAgents.length > 0 ? (
-            <div className="flex items-center gap-2 bg-white border border-orange-200 p-2 rounded-xl shadow-xs">
+            <div
+              className="flex items-center gap-2 bg-white border p-2 rounded-xl shadow-xs"
+              style={{ borderColor: theme.borderHex }}
+            >
               {currentAccountingAgents.map((ag) => (
                 <div key={ag.id} className="flex items-center gap-2.5 pr-2">
                   <div
@@ -416,7 +451,14 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                   <div>
                     <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                       <span>{ag.name}</span>
-                      <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-orange-100 text-orange-800 font-semibold border border-orange-200">
+                      <span
+                        className="text-[10px] font-mono px-1.5 py-0.2 rounded font-semibold"
+                        style={{
+                          backgroundColor: theme.primaryLightHex,
+                          color: theme.primaryHex,
+                          border: `1px solid ${theme.borderHex}`,
+                        }}
+                      >
                         Controller
                       </span>
                     </div>
@@ -426,9 +468,14 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
                   <button
                     type="button"
                     onClick={() => onOpenAgentChat(ag)}
-                    className="ml-2 px-2.5 py-1 bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1 shadow-2xs"
+                    className="ml-2 px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1 shadow-2xs cursor-pointer hover:opacity-90"
+                    style={{
+                      backgroundColor: theme.primaryLightHex,
+                      border: `1px solid ${theme.borderHex}`,
+                      color: theme.primaryHex,
+                    }}
                   >
-                    <Bot className="w-3.5 h-3.5 text-orange-600" />
+                    <Bot className="w-3.5 h-3.5" style={{ color: theme.primaryHex }} />
                     <span>Chat</span>
                   </button>
                 </div>
@@ -445,16 +492,21 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
             <button
               type="button"
               onClick={() => setShowConfigAgentsModal(true)}
-              className="px-3 py-2 bg-white hover:bg-orange-50 text-slate-700 border border-orange-200 rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap shadow-xs"
+              className="px-3 py-2 bg-white hover:bg-slate-50 text-slate-700 border rounded-xl text-xs font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap shadow-xs cursor-pointer"
+              style={{ borderColor: theme.borderHex }}
             >
-              <UserCheck className="w-3.5 h-3.5 text-orange-600" />
+              <UserCheck className="w-3.5 h-3.5" style={{ color: theme.primaryHex }} />
               <span>Configure Agents</span>
             </button>
 
             <button
               type="button"
               onClick={handleTriggerAiAudit}
-              className="px-3.5 py-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 shadow-[0_2px_12px_rgba(255,107,0,0.3)] whitespace-nowrap"
+              className="px-3.5 py-2 text-white rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap shadow-sm cursor-pointer hover:opacity-95"
+              style={{
+                background: `linear-gradient(135deg, ${theme.primaryHex}, ${theme.accentHex})`,
+                boxShadow: `0 2px 12px ${theme.glowRgba}`,
+              }}
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span>Run AI Audit</span>
