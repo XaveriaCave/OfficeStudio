@@ -37,7 +37,6 @@ import {
   computePolygonBounds,
 } from '../types';
 import { buildFurniture3DModel, buildRoomArchitecture } from '../utils/threeBuilders';
-import { getCompanyTheme } from '../utils/themePresets';
 
 interface CompanyDashboardProps {
   offices: OfficeSpace[];
@@ -455,7 +454,6 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
 
   const activeCompany =
     companies.find((c) => c.id === selectedCompanyId) || companies[0];
-  const theme = getCompanyTheme(activeCompany?.themeColor);
 
   // Calculate aggregate company metrics
   const totalAreaSqM = offices.reduce(
@@ -674,24 +672,10 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
 
       {/* Corporate Company Profile & Branch Allocation Banner */}
       {activeCompany && (
-        <div
-          className="p-4 sm:p-5 rounded-2xl border space-y-4 transition-all"
-          style={{
-            background: `linear-gradient(to right, ${theme.primaryLightHex}, #ffffff)`,
-            borderColor: theme.borderHex,
-            boxShadow: `0 4px 25px ${theme.glowRgba}`,
-          }}
-        >
+        <div className="p-4 sm:p-5 rounded-2xl border border-orange-200/90 bg-gradient-to-r from-orange-50/70 via-amber-50/30 to-white shadow-sm space-y-4 transition-all">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="flex items-start sm:items-center gap-3.5">
-              <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm overflow-hidden p-1.5 transition-colors"
-                style={{
-                  backgroundColor: theme.primaryLightHex,
-                  border: `1px solid ${theme.borderHex}`,
-                  color: theme.primaryHex,
-                }}
-              >
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-sm overflow-hidden p-1.5 transition-colors bg-white border border-orange-200 text-orange-600">
                 {activeCompany.logoUrl ? (
                   <img
                     src={activeCompany.logoUrl}
@@ -699,7 +683,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                     className="w-full h-full object-contain"
                   />
                 ) : (
-                  <Building2 className="w-6 h-6" />
+                  <Building2 className="w-6 h-6 text-orange-500" />
                 )}
               </div>
               <div>
@@ -707,28 +691,8 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                   <h2 className="text-xl font-bold text-slate-900 tracking-tight">
                     {activeCompany.name}
                   </h2>
-                  <span
-                    className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-white shadow-2xs"
-                    style={{
-                      color: theme.primaryHex,
-                      border: `1px solid ${theme.borderHex}`,
-                    }}
-                  >
+                  <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-white text-orange-700 border border-orange-200 shadow-2xs">
                     {activeCompany.companyType}
-                  </span>
-                  <span
-                    className="px-2.5 py-0.5 text-xs font-semibold rounded-full flex items-center gap-1.5 shadow-2xs"
-                    style={{
-                      backgroundColor: theme.primaryLightHex,
-                      color: theme.primaryHex,
-                      border: `1px solid ${theme.borderHex}`,
-                    }}
-                  >
-                    <span
-                      className="w-2 h-2 rounded-full shadow-2xs shrink-0"
-                      style={{ backgroundColor: theme.primaryHex }}
-                    />
-                    <span>{theme.name}</span>
                   </span>
                   <span className="px-2 py-0.5 text-xs rounded bg-slate-100 text-slate-700 font-medium">
                     {activeCompany.country}
@@ -742,7 +706,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                     </span>
                   )}
                   {activeCompany.domain && (
-                    <span className="flex items-center gap-1 font-medium" style={{ color: theme.primaryHex }}>
+                    <span className="flex items-center gap-1 font-medium text-orange-600">
                       <Globe className="w-3.5 h-3.5" />
                       <span>{activeCompany.domain}</span>
                     </span>
@@ -755,7 +719,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                   <span className="text-slate-600">
                     Currency: <strong className="text-slate-900">{activeCompany.currency}</strong>
                   </span>
-                  <span className="font-semibold" style={{ color: theme.primaryHex }}>
+                  <span className="font-semibold text-orange-700">
                     {offices.filter((o) => o.companyId === activeCompany.id || activeCompany.officeIds?.includes(o.id)).length} Offices Assigned
                   </span>
                 </div>
@@ -768,8 +732,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                   <select
                     value={activeCompany.id}
                     onChange={(e) => onSelectCompany(e.target.value)}
-                    className="px-3 py-2 text-xs font-medium bg-white text-slate-800 border rounded-lg focus:outline-none shadow-xs cursor-pointer"
-                    style={{ borderColor: theme.borderHex }}
+                    className="px-3 py-2 text-xs font-medium bg-white text-slate-800 border border-orange-200 rounded-lg focus:outline-none shadow-xs cursor-pointer"
                   >
                     {companies.map((c) => (
                       <option key={c.id} value={c.id}>
@@ -785,16 +748,11 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                   <button
                     type="button"
                     onClick={() => onOpenConfigureCompany(activeCompany)}
-                    className="px-3.5 py-2 text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer hover:opacity-95"
-                    style={{
-                      backgroundColor: theme.primaryLightHex,
-                      border: `1px solid ${theme.borderHex}`,
-                      color: theme.primaryHex,
-                    }}
-                    title="Configure company name, type, GST, domain, country, brand theme palette, and assigned offices"
+                    className="px-3.5 py-2 text-xs font-semibold bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 rounded-lg transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
+                    title="Configure company name, type, GST, domain, country, and assigned offices"
                   >
-                    <Settings2 className="w-3.5 h-3.5" style={{ color: theme.primaryHex }} />
-                    <span>Configure Company & Theme</span>
+                    <Settings2 className="w-3.5 h-3.5 text-orange-600" />
+                    <span>Configure Company & Offices</span>
                   </button>
 
                   <button
