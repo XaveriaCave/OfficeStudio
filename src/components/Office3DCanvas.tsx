@@ -932,188 +932,197 @@ export const Office3DCanvas: React.FC<Office3DCanvasProps> = ({
         }`}
       />
 
-      {/* Top-Left Floating Viewport Controls HUD */}
-      <div className="absolute top-3 left-3 z-10 flex flex-wrap items-center gap-2 pointer-events-auto">
-        {/* Camera Angle Presets */}
-        <div className="flex items-center gap-1 p-1 bg-white/95 backdrop-blur-md border border-orange-200/90 rounded-lg shadow-sm">
-          <button
-            type="button"
-            onClick={() => applyCameraPreset('isometric')}
-            className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
-              activeCamPreset === 'isometric'
-                ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_10px_rgba(255,120,40,0.35)]'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-orange-50/60'
-            }`}
-            title="Isometric 3D Orbit View"
-          >
-            <Compass className="w-3.5 h-3.5" />
-            <span>Isometric</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => applyCameraPreset('top_down')}
-            className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
-              activeCamPreset === 'top_down'
-                ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_10px_rgba(255,120,40,0.35)]'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-orange-50/60'
-            }`}
-            title="Top-Down Architectural Plan View"
-          >
-            <Layers className="w-3.5 h-3.5" />
-            <span>Top Plan</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => applyCameraPreset('walkthrough')}
-            className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
-              activeCamPreset === 'walkthrough'
-                ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_10px_rgba(255,120,40,0.35)]'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-orange-50/60'
-            }`}
-            title="Interior Eye-Level Perspective"
-          >
-            <Eye className="w-3.5 h-3.5" />
-            <span>Eye Level</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => applyCameraPreset('corner')}
-            className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 ${
-              activeCamPreset === 'corner'
-                ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_10px_rgba(255,120,40,0.35)]'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-orange-50/60'
-            }`}
-            title="Reverse Corner Perspective"
-          >
-            <Camera className="w-3.5 h-3.5" />
-            <span>Corner</span>
-          </button>
+      {/* Unified Top Floating Viewport Controls HUD */}
+      <div className="absolute top-3 left-3 right-3 z-10 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+        {/* Left Control Group: Camera Angle Presets & Wall Cutaway */}
+        <div className="flex items-center gap-2 flex-wrap pointer-events-auto">
+          {/* Camera Angle Presets */}
+          <div className="flex items-center gap-1 p-1 bg-white/95 backdrop-blur-md border border-orange-200/90 rounded-lg shadow-sm">
+            <button
+              type="button"
+              onClick={() => applyCameraPreset('isometric')}
+              className={`px-2 sm:px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 sm:gap-1.5 ${
+                activeCamPreset === 'isometric'
+                  ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_10px_rgba(255,120,40,0.35)]'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-orange-50/60'
+              }`}
+              title="Isometric 3D Orbit View"
+            >
+              <Compass className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Isometric</span>
+              <span className="sm:hidden">Iso</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => applyCameraPreset('top_down')}
+              className={`px-2 sm:px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 sm:gap-1.5 ${
+                activeCamPreset === 'top_down'
+                  ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_10px_rgba(255,120,40,0.35)]'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-orange-50/60'
+              }`}
+              title="Top-Down Architectural Plan View"
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Top Plan</span>
+              <span className="sm:hidden">Top</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => applyCameraPreset('walkthrough')}
+              className={`px-2 sm:px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 sm:gap-1.5 ${
+                activeCamPreset === 'walkthrough'
+                  ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_10px_rgba(255,120,40,0.35)]'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-orange-50/60'
+              }`}
+              title="Interior Eye-Level Perspective"
+            >
+              <Eye className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Eye Level</span>
+              <span className="sm:hidden">Eye</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => applyCameraPreset('corner')}
+              className={`px-2 sm:px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 sm:gap-1.5 ${
+                activeCamPreset === 'corner'
+                  ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-semibold shadow-[0_0_10px_rgba(255,120,40,0.35)]'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-orange-50/60'
+              }`}
+              title="Reverse Corner Perspective"
+            >
+              <Camera className="w-3.5 h-3.5" />
+              <span>Corner</span>
+            </button>
+          </div>
+
+          {/* Wall Cutaway Mode Selector */}
+          {!compactMode && (
+            <div className="hidden lg:flex items-center gap-1 p-1 bg-white/95 backdrop-blur-md border border-orange-200/90 rounded-lg shadow-sm">
+              {(
+                [
+                  { id: 'smart_cutaway', label: 'Smart Cutaway' },
+                  { id: 'full', label: 'Full Walls' },
+                  { id: 'low_cut', label: 'Half Walls' },
+                  { id: 'hidden', label: 'Slab Only' },
+                ] as { id: WallDisplayMode; label: string }[]
+              ).map((wm) => (
+                <button
+                  key={wm.id}
+                  type="button"
+                  onClick={() => onUpdateOfficeMeta({ wallMode: wm.id })}
+                  className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
+                    office.wallMode === wm.id
+                      ? 'bg-orange-100 text-orange-800 font-semibold border border-orange-300/60'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-orange-50/60'
+                  }`}
+                >
+                  {wm.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Wall Cutaway Mode Selector */}
-        {!compactMode && (
+        {/* Right Control Group: Edit Mode Toggle, Grid Snap, Lighting & Fullscreen */}
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap pointer-events-auto ml-auto">
+          {/* Non-Edit Mode / Edit Mode Toggle Button */}
+          <button
+            type="button"
+            onClick={toggleEditMode}
+            className={`px-2 sm:px-2.5 py-1.5 text-xs font-semibold rounded-lg border backdrop-blur-md transition-all whitespace-nowrap shrink-0 flex items-center gap-1 sm:gap-1.5 shadow-sm ${
+              !isEditMode
+                ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-600 shadow-[0_0_12px_rgba(245,158,11,0.4)]'
+                : 'bg-white/95 hover:bg-orange-50 border-orange-200/90 text-slate-700 hover:text-orange-600'
+            }`}
+            title={
+              isEditMode
+                ? 'Disable Editing (Switch to Non-Edit / View-Only Mode)'
+                : 'Non-Edit Mode Active (Editing disabled). Click to enable editing'
+            }
+            aria-label={isEditMode ? 'Disable editing' : 'Enable editing'}
+          >
+            {!isEditMode ? (
+              <>
+                <Lock className="w-3.5 h-3.5 text-white" />
+                <span className="hidden sm:inline">Non-Edit Mode</span>
+                <span className="sm:hidden">Locked</span>
+              </>
+            ) : (
+              <>
+                <PencilOff className="w-3.5 h-3.5 text-orange-500" />
+                <span className="hidden sm:inline">Disable Edit</span>
+                <span className="sm:hidden">Edit</span>
+              </>
+            )}
+          </button>
+
+          {isEditMode && (
+            <button
+              type="button"
+              onClick={onToggleSnapToGrid}
+              className={`px-2 sm:px-2.5 py-1.5 text-xs font-medium rounded-lg border backdrop-blur-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 sm:gap-1.5 shadow-sm ${
+                snapToGrid
+                  ? 'bg-orange-50 border-orange-400 text-orange-700 shadow-[0_0_10px_rgba(255,120,40,0.25)]'
+                  : 'bg-white/95 border-orange-200/90 text-slate-600 hover:text-slate-900'
+              }`}
+              title="Toggle 0.25m Grid Snapping when dragging furniture"
+            >
+              <Grid className="w-3.5 h-3.5 text-orange-500" />
+              <span className="hidden md:inline">Snap 0.25m</span>
+              <span className="md:hidden">0.25m</span>
+            </button>
+          )}
+
           <div className="flex items-center gap-1 p-1 bg-white/95 backdrop-blur-md border border-orange-200/90 rounded-lg shadow-sm">
             {(
               [
-                { id: 'smart_cutaway', label: 'Smart Cutaway' },
-                { id: 'full', label: 'Full Walls' },
-                { id: 'low_cut', label: 'Half Walls' },
-                { id: 'hidden', label: 'Slab Only' },
-              ] as { id: WallDisplayMode; label: string }[]
-            ).map((wm) => (
-              <button
-                key={wm.id}
-                type="button"
-                onClick={() => onUpdateOfficeMeta({ wallMode: wm.id })}
-                className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
-                  office.wallMode === wm.id
-                    ? 'bg-orange-100 text-orange-800 font-semibold border border-orange-300/60'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-orange-50/60'
-                }`}
-              >
-                {wm.label}
-              </button>
-            ))}
+                { id: 'daylight', label: 'Daylight', icon: Sun },
+                { id: 'golden_hour', label: 'Sunset', icon: Sunset },
+                { id: 'night_studio', label: 'Night', icon: Moon },
+              ] as { id: LightingPreset; label: string; icon: React.FC<{ className?: string }> }[]
+            ).map((lp) => {
+              const Icon = lp.icon;
+              return (
+                <button
+                  key={lp.id}
+                  type="button"
+                  onClick={() => onUpdateOfficeMeta({ lightingPreset: lp.id })}
+                  className={`px-2 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 ${
+                    office.lightingPreset === lp.id
+                      ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-medium shadow-[0_0_8px_rgba(255,120,40,0.3)]'
+                      : 'text-slate-500 hover:text-slate-800 hover:bg-orange-50/60'
+                  }`}
+                  title={`${lp.label} Lighting`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  <span className="hidden xl:inline">{lp.label}</span>
+                </button>
+              );
+            })}
           </div>
-        )}
-      </div>
 
-      {/* Top-Right Lighting & Grid Snap Controls */}
-      <div className="absolute top-3 right-3 z-10 flex items-center gap-2 pointer-events-auto">
-        {/* Non-Edit Mode / Edit Mode Toggle Button */}
-        <button
-          type="button"
-          onClick={toggleEditMode}
-          className={`px-2.5 py-1.5 text-xs font-semibold rounded-lg border backdrop-blur-md transition-all whitespace-nowrap shrink-0 flex items-center gap-1.5 shadow-sm ${
-            !isEditMode
-              ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-600 shadow-[0_0_12px_rgba(245,158,11,0.4)]'
-              : 'bg-white/95 hover:bg-orange-50 border-orange-200/90 text-slate-700 hover:text-orange-600'
-          }`}
-          title={
-            isEditMode
-              ? 'Disable Editing (Switch to Non-Edit / View-Only Mode)'
-              : 'Non-Edit Mode Active (Editing disabled). Click to enable editing'
-          }
-          aria-label={isEditMode ? 'Disable editing' : 'Enable editing'}
-        >
-          {!isEditMode ? (
-            <>
-              <Lock className="w-3.5 h-3.5 text-white" />
-              <span>Non-Edit Mode</span>
-            </>
-          ) : (
-            <>
-              <PencilOff className="w-3.5 h-3.5 text-orange-500" />
-              <span className="hidden sm:inline">Disable Edit</span>
-            </>
+          {onToggleFullscreen && (
+            <button
+              type="button"
+              onClick={onToggleFullscreen}
+              className={`p-1.5 sm:px-2.5 sm:py-1.5 text-xs font-medium rounded-lg border backdrop-blur-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 shadow-sm ${
+                isFullscreen
+                  ? 'bg-orange-50 border-orange-400 text-orange-800'
+                  : 'bg-white/95 border-orange-200/90 text-slate-700 hover:text-slate-900 hover:bg-orange-50/60'
+              }`}
+              title={isFullscreen ? 'Exit Fullscreen (Esc or F)' : 'Fullscreen 3D Playground (F)'}
+            >
+              {isFullscreen ? (
+                <Minimize2 className="w-3.5 h-3.5 text-orange-500" />
+              ) : (
+                <Maximize2 className="w-3.5 h-3.5 text-orange-500" />
+              )}
+              <span className="hidden md:inline">
+                {isFullscreen ? 'Exit' : 'Fullscreen'}
+              </span>
+            </button>
           )}
-        </button>
-
-        {isEditMode && (
-          <button
-            type="button"
-            onClick={onToggleSnapToGrid}
-            className={`px-2.5 py-1.5 text-xs font-medium rounded-lg border backdrop-blur-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 shadow-sm ${
-              snapToGrid
-                ? 'bg-orange-50 border-orange-400 text-orange-700 shadow-[0_0_10px_rgba(255,120,40,0.25)]'
-                : 'bg-white/95 border-orange-200/90 text-slate-600 hover:text-slate-900'
-            }`}
-            title="Toggle 0.25m Grid Snapping when dragging furniture"
-          >
-            <Grid className="w-3.5 h-3.5 text-orange-500" />
-            <span>Snap 0.25m</span>
-          </button>
-        )}
-
-        <div className="flex items-center gap-1 p-1 bg-white/95 backdrop-blur-md border border-orange-200/90 rounded-lg shadow-sm">
-          {(
-            [
-              { id: 'daylight', label: 'Daylight', icon: Sun },
-              { id: 'golden_hour', label: 'Sunset', icon: Sunset },
-              { id: 'night_studio', label: 'Night', icon: Moon },
-            ] as { id: LightingPreset; label: string; icon: React.FC<{ className?: string }> }[]
-          ).map((lp) => {
-            const Icon = lp.icon;
-            return (
-              <button
-                key={lp.id}
-                type="button"
-                onClick={() => onUpdateOfficeMeta({ lightingPreset: lp.id })}
-                className={`px-2 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1 ${
-                  office.lightingPreset === lp.id
-                    ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white font-medium shadow-[0_0_8px_rgba(255,120,40,0.3)]'
-                    : 'text-slate-500 hover:text-slate-800 hover:bg-orange-50/60'
-                }`}
-                title={`${lp.label} Lighting`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">{lp.label}</span>
-              </button>
-            );
-          })}
         </div>
-
-        {onToggleFullscreen && (
-          <button
-            type="button"
-            onClick={onToggleFullscreen}
-            className={`px-2.5 py-1.5 text-xs font-medium rounded-lg border backdrop-blur-md transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 shadow-sm ${
-              isFullscreen
-                ? 'bg-orange-50 border-orange-400 text-orange-800'
-                : 'bg-white/95 border-orange-200/90 text-slate-700 hover:text-slate-900 hover:bg-orange-50/60'
-            }`}
-            title={isFullscreen ? 'Exit Fullscreen (Esc or F)' : 'Fullscreen 3D Playground (F)'}
-          >
-            {isFullscreen ? (
-              <Minimize2 className="w-3.5 h-3.5 text-orange-500" />
-            ) : (
-              <Maximize2 className="w-3.5 h-3.5 text-orange-500" />
-            )}
-            <span className="hidden sm:inline">
-              {isFullscreen ? 'Exit' : 'Fullscreen'}
-            </span>
-          </button>
-        )}
       </div>
 
       {/* Floating Quick Action Bar when a 3D Furniture Item is Selected */}
