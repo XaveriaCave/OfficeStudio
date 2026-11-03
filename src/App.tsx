@@ -26,6 +26,8 @@ import {
   FileText,
   Lock,
   PencilOff,
+  Scale,
+  Shield,
 } from 'lucide-react';
 import {
   Company,
@@ -51,6 +53,7 @@ import { AgentChatModal } from './components/AgentChatModal';
 import { AgentManagerModal } from './components/AgentManagerModal';
 import { AccountingPanel } from './components/AccountingPanel';
 import { CompanyModal } from './components/CompanyModal';
+import { LegalComplianceModal } from './components/LegalComplianceModal';
 import {
   getDefaultAccountingForOffice,
   getDefaultAgentsForOffice,
@@ -138,6 +141,11 @@ export default function App() {
   // Company Modal state
   const [isCompanyModalOpen, setIsCompanyModalOpen] = useState<boolean>(false);
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
+  const [companyModalInitialTab, setCompanyModalInitialTab] = useState<'profile' | 'offices' | 'compliance'>('profile');
+
+  // Legal & Compliance Modal state
+  const [isLegalModalOpen, setIsLegalModalOpen] = useState<boolean>(false);
+  const [legalModalTab, setLegalModalTab] = useState<'privacy' | 'terms' | 'disclaimer' | 'impressum'>('privacy');
 
   // Agent System & Accounting States
   const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
@@ -1334,7 +1342,7 @@ export default function App() {
             </div>
 
             {/* Sidebar Footer Action */}
-            <div className="p-2.5 md:p-3 border-t border-orange-100 bg-orange-50/30">
+            <div className="p-2.5 md:p-3 border-t border-orange-100 bg-orange-50/30 space-y-2">
               <button
                 type="button"
                 onClick={() => {
@@ -1347,6 +1355,61 @@ export default function App() {
                 <Plus className="w-3.5 h-3.5 text-orange-500" />
                 <span>Add Office Suite</span>
               </button>
+
+              {/* Per-Company Statutory Compliance & Legal Links */}
+              {activeCompany && (
+                <div className="pt-1.5 border-t border-orange-100/70 flex items-center justify-between text-[11px] text-slate-500">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLegalModalTab('impressum');
+                      setIsLegalModalOpen(true);
+                    }}
+                    className="flex items-center gap-1 text-slate-600 hover:text-orange-600 font-medium transition-colors truncate max-w-[100px]"
+                    title={`View Legal & Compliance dossier for ${activeCompany.name}`}
+                  >
+                    <Scale className="w-3 h-3 text-orange-500 shrink-0" />
+                    <span className="truncate">Legal & Notice</span>
+                  </button>
+                  <div className="flex items-center gap-1.5 shrink-0 text-slate-400">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLegalModalTab('privacy');
+                        setIsLegalModalOpen(true);
+                      }}
+                      className="hover:text-orange-600 transition-colors"
+                      title="Privacy Policy"
+                    >
+                      Privacy
+                    </button>
+                    <span>·</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLegalModalTab('terms');
+                        setIsLegalModalOpen(true);
+                      }}
+                      className="hover:text-orange-600 transition-colors"
+                      title="Terms of Service"
+                    >
+                      Terms
+                    </button>
+                    <span>·</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLegalModalTab('disclaimer');
+                        setIsLegalModalOpen(true);
+                      }}
+                      className="hover:text-orange-600 transition-colors"
+                      title="Financial & Structural Disclaimers"
+                    >
+                      Notice
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </aside>
         ) : null}
@@ -1378,7 +1441,13 @@ export default function App() {
                 onSelectCompany={setSelectedCompanyId}
                 onOpenConfigureCompany={(comp) => {
                   setEditingCompany(comp || null);
+                  setCompanyModalInitialTab('profile');
                   setIsCompanyModalOpen(true);
+                }}
+                onOpenLegalCompliance={(comp) => {
+                  setSelectedCompanyId(comp.id);
+                  setLegalModalTab('privacy');
+                  setIsLegalModalOpen(true);
                 }}
                 onDeleteCompany={handleDeleteCompany}
                 onSelectOfficeAndMode={handleSelectOfficeAndMode}
@@ -1406,6 +1475,10 @@ export default function App() {
                 onOpenAgentManager={(ag) => {
                   setEditingAgent(ag || null);
                   setIsAgentManagerOpen(true);
+                }}
+                onOpenLegalCompliance={() => {
+                  setLegalModalTab('disclaimer');
+                  setIsLegalModalOpen(true);
                 }}
               />
             </div>
@@ -1818,19 +1891,44 @@ export default function App() {
         onSaveOffice={handleSaveOfficeModal}
       />
 
-      {/* Company Configuration Modal (Name, Type, GST, Domain, Country, Assigned Offices) */}
+      {/* Company Configuration Modal (Name, Type, GST, Domain, Country, Assigned Offices, Legal Compliance) */}
       <CompanyModal
         isOpen={isCompanyModalOpen}
         company={editingCompany}
         allCompanies={companies}
         allOffices={offices}
+        initialTab={companyModalInitialTab}
         onClose={() => {
           setIsCompanyModalOpen(false);
           setEditingCompany(null);
+          setCompanyModalInitialTab('profile');
         }}
         onSaveCompany={handleSaveCompany}
         onDeleteCompany={handleDeleteCompany}
+        onOpenLegalModal={(comp) => {
+          setIsCompanyModalOpen(false);
+          setSelectedCompanyId(comp.id);
+          setLegalModalTab('privacy');
+          setIsLegalModalOpen(true);
+        }}
       />
+
+      {/* Per-Company Statutory Legal & Compliance Documentation Modal */}
+      {activeCompany && (
+        <LegalComplianceModal
+          isOpen={isLegalModalOpen}
+          company={activeCompany}
+          allCompanies={companies}
+          initialTab={legalModalTab}
+          onClose={() => setIsLegalModalOpen(false)}
+          onSelectCompany={(id) => setSelectedCompanyId(id)}
+          onOpenEditCompany={(comp) => {
+            setEditingCompany(comp);
+            setCompanyModalInitialTab('compliance');
+            setIsCompanyModalOpen(true);
+          }}
+        />
+      )}
 
       {/* Interactive Agent Chat Modal with individual API keys */}
       {chatAgent && activeOffice && (

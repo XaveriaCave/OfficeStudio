@@ -31,6 +31,7 @@ import {
   FileDown,
   Printer,
   Eye,
+  Scale,
 } from 'lucide-react';
 import {
   AccountingInvoice,
@@ -51,6 +52,7 @@ interface AccountingPanelProps {
   onUpdateAccounting: (patch: Partial<OfficeAccounting>) => void;
   onOpenAgentChat: (agent: OfficeAgent) => void;
   onOpenAgentManager: (agent?: OfficeAgent) => void;
+  onOpenLegalCompliance?: () => void;
 }
 
 export const AccountingPanel: React.FC<AccountingPanelProps> = ({
@@ -59,6 +61,7 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
   onUpdateAccounting,
   onOpenAgentChat,
   onOpenAgentManager,
+  onOpenLegalCompliance,
 }) => {
   const accounting = office.accounting;
   const agents = office.agents || [];
@@ -1336,6 +1339,25 @@ export const AccountingPanel: React.FC<AccountingPanelProps> = ({
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Statutory Financial & Invoicing Disclaimers Banner */}
+      <div className="p-4 rounded-xl bg-gradient-to-r from-orange-50/70 via-amber-50/40 to-white border border-orange-200/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-600 shadow-2xs">
+        <div className="flex items-start sm:items-center gap-2.5">
+          <Scale className="w-4 h-4 text-orange-600 shrink-0 mt-0.5 sm:mt-0" />
+          <span>
+            Financial forecasts, runway estimations, and GST/tax invoices calculated by office agents are advisory simulations for planning and operational management.
+          </span>
+        </div>
+        {onOpenLegalCompliance && (
+          <button
+            type="button"
+            onClick={onOpenLegalCompliance}
+            className="text-orange-700 hover:text-orange-800 font-bold underline underline-offset-4 shrink-0 transition-colors whitespace-nowrap self-start sm:self-auto cursor-pointer"
+          >
+            Review Statutory Disclaimers & Policies →
+          </button>
+        )}
       </div>
 
       {/* MODAL: Configure Accounting Agents */}

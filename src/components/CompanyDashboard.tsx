@@ -21,6 +21,7 @@ import {
   Settings2,
   Briefcase,
   ChevronDown,
+  Scale,
 } from 'lucide-react';
 import {
   FLOOR_MATERIAL_CONFIG,
@@ -47,6 +48,7 @@ interface CompanyDashboardProps {
   onSelectCompany?: (companyId: string) => void;
   onOpenConfigureCompany?: (company?: Company) => void;
   onDeleteCompany?: (companyId: string) => void;
+  onOpenLegalCompliance?: (company: Company) => void;
   onSelectOfficeAndMode: (officeId: string, mode: WorkspaceViewMode) => void;
   onOpenCreateModal: (parentOfficeId?: string | null) => void;
   onOpenEditModal: (office: OfficeSpace) => void;
@@ -438,6 +440,7 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
   onSelectCompany,
   onOpenConfigureCompany,
   onDeleteCompany,
+  onOpenLegalCompliance,
   onSelectOfficeAndMode,
   onOpenCreateModal,
   onOpenEditModal,
@@ -754,6 +757,18 @@ export const CompanyDashboard: React.FC<CompanyDashboardProps> = ({
                     <Settings2 className="w-3.5 h-3.5 text-orange-600" />
                     <span>Configure Company & Offices</span>
                   </button>
+
+                  {onOpenLegalCompliance && (
+                    <button
+                      type="button"
+                      onClick={() => onOpenLegalCompliance(activeCompany)}
+                      className="px-3 py-2 text-xs font-semibold bg-white hover:bg-orange-50 text-slate-700 hover:text-orange-900 border border-orange-200 rounded-lg transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer"
+                      title={`View Legal & Compliance Documentation for ${activeCompany.name}`}
+                    >
+                      <Scale className="w-3.5 h-3.5 text-orange-600" />
+                      <span>Legal & Privacy</span>
+                    </button>
+                  )}
 
                   <button
                     type="button"

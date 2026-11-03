@@ -107,6 +107,13 @@ export const DEFAULT_COMPANIES: Company[] = [
     phone: '+91 80 4910 2300',
     defaultTaxRate: 18,
     themeColor: 'orange',
+    legalCompliance: {
+      governingLaw: 'State of Karnataka & Republic of India',
+      legalContactEmail: 'legal@pacificmind.io',
+      dpoName: 'Elena Vance, Corporate Compliance Lead',
+      effectiveDate: 'November 2026',
+      cookieNoticeEnabled: true,
+    },
     officeIds: [
       'office-hq-100',
       'office-eng-201',

@@ -20,6 +20,11 @@ import {
   Image as ImageIcon,
   Sparkles,
   Link as LinkIcon,
+  Scale,
+  Shield,
+  AlertTriangle,
+  BookOpen,
+  Calendar,
 } from 'lucide-react';
 import { Company, CompanyType, OfficeSpace, computePolygonArea } from '../types';
 import { PRESET_COMPANY_LOGOS } from '../presets';
@@ -29,9 +34,11 @@ interface CompanyModalProps {
   company: Company | null; // null for creating a new company
   allCompanies: Company[];
   allOffices: OfficeSpace[];
+  initialTab?: 'profile' | 'offices' | 'compliance';
   onClose: () => void;
   onSaveCompany: (companyData: Company, isNew: boolean) => void;
   onDeleteCompany?: (companyId: string) => void;
+  onOpenLegalModal?: (company: Company) => void;
 }
 
 const COMPANY_TYPES: { type: CompanyType; label: string; desc: string }[] = [
@@ -112,9 +119,11 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
   company,
   allCompanies,
   allOffices,
+  initialTab,
   onClose,
   onSaveCompany,
   onDeleteCompany,
+  onOpenLegalModal,
 }) => {
   const isNew = !company;
 
@@ -135,9 +144,19 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [selectedOfficeIds, setSelectedOfficeIds] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [activeTab, setActiveTab] = useState<'profile' | 'offices'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'offices' | 'compliance'>('profile');
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Legal & Compliance state per company
+  const [governingLaw, setGoverningLaw] = useState('');
+  const [legalContactEmail, setLegalContactEmail] = useState('');
+  const [dpoName, setDpoName] = useState('');
+  const [effectiveDate, setEffectiveDate] = useState('November 2026');
+  const [customTerms, setCustomTerms] = useState('');
+  const [customPrivacy, setCustomPrivacy] = useState('');
+  const [customDisclaimer, setCustomDisclaimer] = useState('');
+  const [cookieNoticeEnabled, setCookieNoticeEnabled] = useState(true);
 
   useEffect(() => {
     setIsConfirmingDelete(false);
@@ -156,6 +175,21 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
       setPhone(company.phone || '');
       setLogoUrl(company.logoUrl || '');
       setSelectedOfficeIds(company.officeIds || []);
+
+      const comp = company.legalCompliance;
+      setGoverningLaw(
+        comp?.governingLaw ||
+          (company.country === 'India'
+            ? 'State of Karnataka & Republic of India'
+            : `Laws of ${company.country}`)
+      );
+      setLegalContactEmail(comp?.legalContactEmail || company.contactEmail || `legal@${company.domain}`);
+      setDpoName(comp?.dpoName || 'Elena Vance, Corporate Compliance Lead');
+      setEffectiveDate(comp?.effectiveDate || 'November 2026');
+      setCustomTerms(comp?.customTerms || '');
+      setCustomPrivacy(comp?.customPrivacy || '');
+      setCustomDisclaimer(comp?.customDisclaimer || '');
+      setCookieNoticeEnabled(comp?.cookieNoticeEnabled ?? true);
     } else {
       // New company defaults
       const randomId = Math.floor(Math.random() * 900) + 100;
@@ -172,17 +206,25 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
       setContactEmail('');
       setPhone('');
       setLogoUrl(PRESET_COMPANY_LOGOS[0]?.url || '');
-      // For a new company, by default no offices are pre-checked unless unassigned exist
       const unassignedOfficeIds = allOffices
         .filter((o) => !o.companyId || !allCompanies.some((c) => c.id === o.companyId))
         .map((o) => o.id);
       setSelectedOfficeIds(unassignedOfficeIds);
+
+      setGoverningLaw('State of Karnataka & Republic of India');
+      setLegalContactEmail('legal@example.com');
+      setDpoName('Corporate Compliance Officer');
+      setEffectiveDate('November 2026');
+      setCustomTerms('');
+      setCustomPrivacy('');
+      setCustomDisclaimer('');
+      setCookieNoticeEnabled(true);
     }
     setErrors({});
-    setActiveTab('profile');
+    setActiveTab(initialTab || 'profile');
     setShowUrlInput(false);
     setCustomUrlInput('');
-  }, [company, isOpen, allOffices, allCompanies]);
+  }, [company, isOpen, allOffices, allCompanies, initialTab]);
 
   if (!isOpen) return null;
 
@@ -276,6 +318,16 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
       phone: phone.trim() || undefined,
       defaultTaxRate: Number(defaultTaxRate),
       themeColor: company?.themeColor || 'orange',
+      legalCompliance: {
+        governingLaw: governingLaw.trim() || undefined,
+        legalContactEmail: legalContactEmail.trim() || undefined,
+        dpoName: dpoName.trim() || undefined,
+        effectiveDate: effectiveDate.trim() || undefined,
+        customTerms: customTerms.trim() || undefined,
+        customPrivacy: customPrivacy.trim() || undefined,
+        customDisclaimer: customDisclaimer.trim() || undefined,
+        cookieNoticeEnabled,
+      },
       logoUrl: logoUrl.trim() || undefined,
       officeIds: selectedOfficeIds,
       createdAt: company?.createdAt || now,
@@ -365,6 +417,19 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
           >
             <Layers className="w-3.5 h-3.5" />
             <span>Select & Set Offices ({selectedOfficeIds.length}/{allOffices.length})</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('compliance')}
+            className={`py-3 text-xs font-semibold border-b-2 flex items-center gap-2 transition-colors ${
+              activeTab === 'compliance'
+                ? 'border-orange-500 text-orange-600 font-bold'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <Scale className="w-3.5 h-3.5" />
+            <span>Privacy, Terms & Compliance</span>
           </button>
         </div>
 
@@ -736,7 +801,7 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
                 />
               </div>
             </div>
-          ) : (
+          ) : activeTab === 'offices' ? (
             /* Tab 2: Select / Set Offices */
             <div className="space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-orange-50/70 border border-orange-200">
@@ -865,6 +930,301 @@ export const CompanyModal: React.FC<CompanyModalProps> = ({
                     </div>
                   );
                 })}
+              </div>
+            </div>
+          ) : (
+            /* Tab 3: Privacy, Terms & Compliance */
+            <div className="space-y-6">
+              {/* Compliance Hero & Live Preview Banner */}
+              <div className="p-4 rounded-xl bg-gradient-to-r from-orange-50/70 via-amber-50/40 to-white border border-orange-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                <div className="flex items-start sm:items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-orange-100 border border-orange-300 flex items-center justify-center text-orange-600 shrink-0">
+                    <Scale className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 tracking-tight">
+                      Statutory Legal Framework & Policy Engine
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Auto-compiles GDPR / CCPA / Indian DPDP 2023 privacy policies, SaaS commercial terms, and financial disclaimers tailored to {name || 'this company'}.
+                    </p>
+                  </div>
+                </div>
+
+                {onOpenLegalModal && company && (
+                  <button
+                    type="button"
+                    onClick={() => onOpenLegalModal(company)}
+                    className="px-3.5 py-2 text-xs font-semibold bg-white hover:bg-orange-50 text-orange-700 border border-orange-300 rounded-lg transition-colors flex items-center gap-1.5 shadow-2xs whitespace-nowrap self-start sm:self-auto cursor-pointer"
+                  >
+                    <BookOpen className="w-3.5 h-3.5 text-orange-600" />
+                    <span>Preview Live Dossier</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Core Governance Parameters */}
+              <div className="p-4 rounded-xl bg-white border border-orange-200 space-y-4 shadow-2xs">
+                <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                  <Shield className="w-4 h-4 text-orange-600" />
+                  <span>Statutory Jurisdiction & Governance</span>
+                </h4>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Governing Law & Legal Jurisdiction
+                    </label>
+                    <input
+                      type="text"
+                      value={governingLaw}
+                      onChange={(e) => setGoverningLaw(e.target.value)}
+                      placeholder="e.g. State of Karnataka & Republic of India"
+                      className="w-full px-3 py-2 bg-white border border-orange-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-orange-500 shadow-2xs"
+                    />
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Specifies applicable courts and governing laws for all terms.
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Designated Compliance / Data Protection Officer (DPO)
+                    </label>
+                    <input
+                      type="text"
+                      value={dpoName}
+                      onChange={(e) => setDpoName(e.target.value)}
+                      placeholder="e.g. Elena Vance, Corporate Compliance Lead"
+                      className="w-full px-3 py-2 bg-white border border-orange-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-orange-500 shadow-2xs"
+                    />
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Named representative responsible for GDPR / DPDP data subject requests.
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Legal & Privacy Desk Email
+                    </label>
+                    <input
+                      type="email"
+                      value={legalContactEmail}
+                      onChange={(e) => setLegalContactEmail(e.target.value)}
+                      placeholder="e.g. legal@pacificmind.io"
+                      className="w-full px-3 py-2 bg-white border border-orange-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-orange-500 shadow-2xs font-mono"
+                    />
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Published in privacy and terms notices for user compliance queries.
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-700 mb-1">
+                      Policy Effective / Last Reviewed Date
+                    </label>
+                    <input
+                      type="text"
+                      value={effectiveDate}
+                      onChange={(e) => setEffectiveDate(e.target.value)}
+                      placeholder="e.g. November 2026"
+                      className="w-full px-3 py-2 bg-white border border-orange-200 rounded-lg text-xs text-slate-900 focus:outline-none focus:border-orange-500 shadow-2xs"
+                    />
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Displayed on published legal documents.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-orange-100 flex items-center justify-between">
+                  <div>
+                    <div className="text-xs font-semibold text-slate-800">
+                      Local Storage & Functional Cookie Disclosure
+                    </div>
+                    <div className="text-[11px] text-slate-500">
+                      Mandatory under ePrivacy / GDPR for client-side spatial persistence.
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setCookieNoticeEnabled((prev) => !prev)}
+                    className={`px-3 py-1 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+                      cookieNoticeEnabled
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                        : 'bg-slate-100 text-slate-600 border-slate-300'
+                    }`}
+                  >
+                    {cookieNoticeEnabled ? 'Active (Recommended)' : 'Disabled'}
+                  </button>
+                </div>
+              </div>
+
+              {/* Policy Text Customization & Overrides */}
+              <div className="space-y-4">
+                {/* 1. Privacy Policy Override */}
+                <div className="p-4 rounded-xl bg-white border border-orange-200 space-y-2 shadow-2xs">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <div className="text-xs font-bold text-slate-900 flex items-center gap-2">
+                        <span>1. Privacy Policy (GDPR / CCPA / DPDP)</span>
+                        {!customPrivacy ? (
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            Auto-Generated from Entity Profile
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 border border-orange-300">
+                            Custom Policy Override Active
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-slate-500">
+                        Leave blank to automatically compile standard statutory policy, or enter custom clauses below.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {customPrivacy ? (
+                        <button
+                          type="button"
+                          onClick={() => setCustomPrivacy('')}
+                          className="px-2 py-1 text-[11px] font-medium text-rose-600 hover:bg-rose-50 rounded border border-rose-200 transition-colors cursor-pointer"
+                        >
+                          Reset to Auto-Generated
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setCustomPrivacy(
+                              `1. DATA CONTROLLER: ${name || 'Company'}, registered under ${governingLaw}.\n2. DATA COLLECTED: Spatial geometry, agent configurations, and accounting ledger simulations stored locally in browser sandbox.\n3. ZERO DATA BROKERAGE: We never sell or share telemetry with third-party advertisers.\n4. STATUTORY RIGHTS: Contact ${legalContactEmail} to request export or erasure under GDPR / DPDP Act.`
+                            )
+                          }
+                          className="px-2 py-1 text-[11px] font-medium text-orange-700 hover:bg-orange-50 rounded border border-orange-200 transition-colors cursor-pointer"
+                        >
+                          Load Editable Template
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <textarea
+                    rows={3}
+                    value={customPrivacy}
+                    onChange={(e) => setCustomPrivacy(e.target.value)}
+                    placeholder="Auto-generating standard statutory privacy policy with company legal details..."
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:bg-white font-mono leading-relaxed"
+                  />
+                </div>
+
+                {/* 2. Terms of Service Override */}
+                <div className="p-4 rounded-xl bg-white border border-orange-200 space-y-2 shadow-2xs">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <div className="text-xs font-bold text-slate-900 flex items-center gap-2">
+                        <span>2. Terms of Service & SaaS License Agreement</span>
+                        {!customTerms ? (
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            Auto-Generated from Entity Profile
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 border border-orange-300">
+                            Custom Terms Override Active
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-slate-500">
+                        Defines commercial IP ownership over spatial designs and governing law.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {customTerms ? (
+                        <button
+                          type="button"
+                          onClick={() => setCustomTerms('')}
+                          className="px-2 py-1 text-[11px] font-medium text-rose-600 hover:bg-rose-50 rounded border border-rose-200 transition-colors cursor-pointer"
+                        >
+                          Reset to Auto-Generated
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setCustomTerms(
+                              `1. LICENSE GRANT: ${name || 'Company'} grants authorized users commercial access to virtualize office spaces.\n2. INTELLECTUAL PROPERTY: ${name || 'Company'} retains 100% ownership over all custom CAD designs and polygon footprints.\n3. GOVERNING LAW: Governed exclusively under ${governingLaw}.\n4. LIMITATION OF LIABILITY: Platform provided on an 'as-is' spatial simulation basis.`
+                            )
+                          }
+                          className="px-2 py-1 text-[11px] font-medium text-orange-700 hover:bg-orange-50 rounded border border-orange-200 transition-colors cursor-pointer"
+                        >
+                          Load Editable Template
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <textarea
+                    rows={3}
+                    value={customTerms}
+                    onChange={(e) => setCustomTerms(e.target.value)}
+                    placeholder="Auto-generating standard SaaS terms and CAD IP protection agreement..."
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:bg-white font-mono leading-relaxed"
+                  />
+                </div>
+
+                {/* 3. Disclaimers Override */}
+                <div className="p-4 rounded-xl bg-white border border-orange-200 space-y-2 shadow-2xs">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <div className="text-xs font-bold text-slate-900 flex items-center gap-2">
+                        <span>3. Financial Modeling & Structural Engineering Disclaimers</span>
+                        {!customDisclaimer ? (
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            Auto-Generated from Entity Profile
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 border border-orange-300">
+                            Custom Disclaimer Override Active
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-slate-500">
+                        Discloses non-CPA simulation nature of runways and structural requirements for CAD layouts.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {customDisclaimer ? (
+                        <button
+                          type="button"
+                          onClick={() => setCustomDisclaimer('')}
+                          className="px-2 py-1 text-[11px] font-medium text-rose-600 hover:bg-rose-50 rounded border border-rose-200 transition-colors cursor-pointer"
+                        >
+                          Reset to Auto-Generated
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setCustomDisclaimer(
+                              `FINANCIAL NOTICE: Cash runway forecasts, lease amortizations, and GST calculations are automated planning tools and do not constitute formal CPA auditing or certified tax filings.\nSTRUCTURAL SAFETY: 2D/3D architectural CAD models are conceptual designs. Real-world construction and fire-egress routes must be certified by a licensed structural engineer.`
+                            )
+                          }
+                          className="px-2 py-1 text-[11px] font-medium text-orange-700 hover:bg-orange-50 rounded border border-orange-200 transition-colors cursor-pointer"
+                        >
+                          Load Editable Template
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  <textarea
+                    rows={3}
+                    value={customDisclaimer}
+                    onChange={(e) => setCustomDisclaimer(e.target.value)}
+                    placeholder="Auto-generating standard financial advisory and structural safety disclaimers..."
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:bg-white font-mono leading-relaxed"
+                  />
+                </div>
               </div>
             </div>
           )}

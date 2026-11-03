@@ -193,6 +193,19 @@ export type CompanyThemeColor =
   | 'slate'
   | 'cyan';
 
+export interface CompanyLegalCompliance {
+  governingLaw?: string;
+  legalContactEmail?: string;
+  dpoName?: string;
+  effectiveDate?: string;
+  customTerms?: string;
+  customPrivacy?: string;
+  customDisclaimer?: string;
+  termsUrl?: string;
+  privacyUrl?: string;
+  cookieNoticeEnabled?: boolean;
+}
+
 export interface Company {
   id: string;
   name: string;
@@ -208,6 +221,7 @@ export interface Company {
   phone?: string;
   defaultTaxRate?: number;
   themeColor?: CompanyThemeColor;
+  legalCompliance?: CompanyLegalCompliance;
   officeIds: string[];
   createdAt: string;
   updatedAt: string;
