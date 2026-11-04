@@ -54,6 +54,7 @@ import { AgentManagerModal } from './components/AgentManagerModal';
 import { AccountingPanel } from './components/AccountingPanel';
 import { CompanyModal } from './components/CompanyModal';
 import { LegalComplianceModal } from './components/LegalComplianceModal';
+import { LandingPage } from './components/LandingPage';
 import {
   getDefaultAccountingForOffice,
   getDefaultAgentsForOffice,
@@ -116,8 +117,18 @@ export default function App() {
   const [selectedOfficeId, setSelectedOfficeId] = useState<string>(() => {
     return offices[0]?.id || INITIAL_OFFICES[0].id;
   });
-  const [viewMode, setViewMode] = useState<WorkspaceViewMode>('playground_3d');
+  const [viewMode, setViewMode] = useState<WorkspaceViewMode>('landing');
   const [selectedFurnitureId, setSelectedFurnitureId] = useState<string | null>(null);
+
+  const handleEnterMatrix = useCallback(
+    (targetMode: WorkspaceViewMode = 'playground_3d', officeId?: string) => {
+      if (officeId) {
+        setSelectedOfficeId(officeId);
+      }
+      setViewMode(targetMode);
+    },
+    []
+  );
   const [draggingCatalogType, setDraggingCatalogType] = useState<FurnitureType | null>(null);
   const [snapToGrid, setSnapToGrid] = useState<boolean>(true);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
@@ -813,6 +824,41 @@ export default function App() {
       }, 0)
     : 0;
 
+  if (viewMode === 'landing') {
+    return (
+      <div className="min-h-screen w-full bg-[#faf9f6]">
+        <LandingPage
+          onEnterMatrix={handleEnterMatrix}
+          activeCompany={activeCompany}
+          companies={companies}
+          offices={offices}
+          onOpenLegalModal={(tab) => {
+            setLegalModalTab(tab);
+            setIsLegalModalOpen(true);
+          }}
+          onSelectCompany={setSelectedCompanyId}
+        />
+
+        {/* Per-Company Statutory Legal & Compliance Documentation Modal */}
+        {activeCompany && (
+          <LegalComplianceModal
+            isOpen={isLegalModalOpen}
+            company={activeCompany}
+            allCompanies={companies}
+            initialTab={legalModalTab}
+            onClose={() => setIsLegalModalOpen(false)}
+            onSelectCompany={(id) => setSelectedCompanyId(id)}
+            onOpenEditCompany={(comp) => {
+              setEditingCompany(comp);
+              setCompanyModalInitialTab('compliance');
+              setIsCompanyModalOpen(true);
+            }}
+          />
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen md:h-screen w-screen flex flex-col bg-white text-slate-900 overflow-y-auto md:overflow-hidden">
       {/* TOP BAR CONTRACT: Strictly 3 zones separated by gap-8 */}
@@ -838,20 +884,32 @@ export default function App() {
           </button>
 
           <a
-            href="#top"
+            href="#landing"
             onClick={(e) => {
               e.preventDefault();
-              setViewMode('dashboard');
+              setViewMode('landing');
             }}
             className="text-base sm:text-lg font-bold tracking-tight text-slate-900 hover:text-orange-600 font-display whitespace-nowrap shrink-0 transition-colors flex items-center gap-2"
+            title="Return to office.studio.ws Landing Page"
           >
             <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-tr from-orange-500 to-amber-400 shadow-[0_0_8px_rgba(255,120,40,0.7)] shrink-0" />
             <span>office.studio.ws</span>
           </a>
         </div>
 
-        {/* Zone 2: 5 concise single-line text navigation links */}
+        {/* Zone 2: Navigation links */}
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
+          <a
+            href="#landing"
+            onClick={(e) => {
+              e.preventDefault();
+              setViewMode('landing');
+            }}
+            className="text-slate-500 hover:text-orange-600 transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5"
+            title="Go to Landing Page"
+          >
+            <span>Landing</span>
+          </a>
           <a
             href="#dashboard"
             onClick={(e) => {

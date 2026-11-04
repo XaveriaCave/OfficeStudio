@@ -251,6 +251,7 @@ export interface OfficeSpace {
 }
 
 export type WorkspaceViewMode =
+  | 'landing'
   | 'dashboard'
   | 'playground_3d'
   | 'editor_2d'
