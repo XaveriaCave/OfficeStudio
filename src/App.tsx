@@ -890,7 +890,7 @@ export default function App() {
               setViewMode('landing');
             }}
             className="text-base sm:text-lg font-bold tracking-tight text-slate-900 hover:text-orange-600 font-display whitespace-nowrap shrink-0 transition-colors flex items-center gap-2"
-            title="Return to office.studio.ws Landing Page"
+            title="Return to office.studio.ws Home"
           >
             <span className="w-2.5 h-2.5 rounded-full bg-gradient-to-tr from-orange-500 to-amber-400 shadow-[0_0_8px_rgba(255,120,40,0.7)] shrink-0" />
             <span>office.studio.ws</span>
@@ -900,15 +900,15 @@ export default function App() {
         {/* Zone 2: Navigation links */}
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600">
           <a
-            href="#landing"
+            href="#home"
             onClick={(e) => {
               e.preventDefault();
               setViewMode('landing');
             }}
             className="text-slate-500 hover:text-orange-600 transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5"
-            title="Go to Landing Page"
+            title="Go to Home"
           >
-            <span>Landing</span>
+            <span>Home</span>
           </a>
           <a
             href="#dashboard"
